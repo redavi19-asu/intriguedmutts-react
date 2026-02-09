@@ -1,3 +1,6 @@
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import FadeOverlay from "../components/FadeOverlay";
 export default function MerchGate() {
   const navigate = useNavigate();
   const enterRef = useRef(null);
