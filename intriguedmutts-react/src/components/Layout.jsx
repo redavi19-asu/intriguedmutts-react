@@ -1,10 +1,14 @@
+
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import ScrollToHash from "./ScrollToHash";
 
 export default function Layout({ children }) {
+
   return (
     <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
       <Navbar />
+      <ScrollToHash />
 
       {/* subtle background glow */}
       <div className="pointer-events-none fixed inset-0 -z-10">

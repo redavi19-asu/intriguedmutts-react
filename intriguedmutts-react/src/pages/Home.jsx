@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Hero from "../components/Hero";
 
 function Section({ title, kicker, children, ctaTo, ctaText, id }) {
@@ -31,6 +31,7 @@ function Section({ title, kicker, children, ctaTo, ctaText, id }) {
 }
 
 export default function Home() {
+  const navigate = useNavigate();
   return (
     <div className="w-full">
       <Hero />
@@ -63,41 +64,46 @@ export default function Home() {
         </Section>
       </motion.div>
 
-      {/* Merch section */}
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-120px" }}
-        transition={{ duration: 0.6 }}
+      {/* Merch section (full version with ENTER button) */}
+      <section
+        id="merch"
+        className="py-28 border-t border-white/10 relative overflow-hidden"
       >
-        <Section
-          id="merch"
-          kicker="Physical"
-          title="MERCH DROPS"
-          ctaTo="/merch"
-          ctaText="Shop merch"
-        >
-          <p>
-            Clean, wearable, limited. This is where we plug in your PayPal +
-            Printful flow once the visuals are locked.
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
+            Restricted area
           </p>
-
-          <div className="mt-6 grid sm:grid-cols-2 gap-4">
-            <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
-              <p className="font-semibold">Drop 001</p>
-              <p className="text-sm text-gray-400 mt-2">
-                Signature logo + “pack” pieces (hoodie / tee).
-              </p>
-            </div>
-            <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
-              <p className="font-semibold">Drop 002</p>
-              <p className="text-sm text-gray-400 mt-2">
-                Scene-based art prints + limited color pop variants.
-              </p>
-            </div>
+          <h2 className="mt-3 text-4xl md:text-5xl font-black tracking-tight">
+            MERCH VAULT
+          </h2>
+          <p className="mt-4 text-white/70 max-w-2xl mx-auto">
+            Apparel, prints, limited drops — accessible only from inside the Society.
+          </p>
+          {/* teaser cards */}
+          <div className="mt-16 grid sm:grid-cols-2 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+              >
+                <div className="aspect-square bg-white/10 rounded-xl mb-4" />
+                <p className="font-semibold">Vault Item #{i}</p>
+                <p className="text-sm text-white/60">Locked</p>
+              </div>
+            ))}
           </div>
-        </Section>
-      </motion.div>
+          {/* ENTER BUTTON */}
+          <div className="mt-16">
+            <button
+              onClick={() => navigate("/merch-gate")}
+              className="group relative px-10 py-4 rounded-xl border border-white/30 hover:border-white/70 transition text-sm tracking-[0.3em]"
+            >
+              <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition bg-white/5" />
+              <span className="relative">ENTER MERCH VAULT</span>
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Stock section (placeholder, no API) */}
       <section id="stock" className="py-24 border-t border-white/10">
