@@ -11,7 +11,7 @@ export default function Navbar() {
         <button onClick={() => navigate("/home")}
           className="hover:opacity-80 transition"
         >
-          <img src="/intrigued-mutts-society-transparent.png" className="h-10" />
+          <img src={`intrigued-mutts-society-transparent.png`} className="h-10" />
         </button>
 
         <div className="flex items-center gap-2">

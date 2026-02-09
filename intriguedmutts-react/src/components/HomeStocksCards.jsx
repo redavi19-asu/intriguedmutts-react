@@ -39,7 +39,7 @@ export default function HomeStocksCards() {
         gap: 14,
       }}
     >
-      <Link to="/stocks-gate#watchlist" style={{ textDecoration: "none", color: "inherit" }}>
+      <Link to="/stocks-gate?tab=watchlist" style={{ textDecoration: "none", color: "inherit" }}>
         <div style={cardStyle}>
           <div style={{ fontWeight: 900 }}>Watchlist</div>
           <div style={{ opacity: 0.8, marginTop: 6, fontSize: 13 }}>

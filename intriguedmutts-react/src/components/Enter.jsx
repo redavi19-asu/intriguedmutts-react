@@ -8,7 +8,7 @@ export default function Enter() {
   const [isFading, setIsFading] = useState(false);
 
   // ONLY entrance clip
-  const enterClip = "/videos/thewalktodoor.mp4";
+  const enterClip = `videos/thewalktodoor.mp4`;
 
   useEffect(() => {
     if (!entering || !enterRef.current) return;
@@ -26,7 +26,7 @@ export default function Enter() {
       {!entering && (
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
           <img
-            src="/intrigued-mutts-society-transparent.png"
+            src={`intrigued-mutts-society-transparent.png`}
             alt="Intrigued Mutts Society"
             className="w-[320px] sm:w-[420px] md:w-[520px]"
           />

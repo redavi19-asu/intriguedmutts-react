@@ -8,7 +8,7 @@ export default function MerchGate() {
   const [isFading, setIsFading] = useState(false);
 
   // MERCH entrance clip
-  const enterClip = "/videos/walktoclosetmerch.mp4";
+  const enterClip = `videos/walktoclosetmerch.mp4`;
 
   useEffect(() => {
     if (!entering || !enterRef.current) return;
@@ -23,7 +23,7 @@ export default function MerchGate() {
       {!entering && (
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
           <img
-            src="/intrigued-mutts-society-transparent.png"
+            src={`intrigued-mutts-society-transparent.png`}
             alt="Intrigued Mutts Society"
             className="w-[320px] sm:w-[420px] md:w-[520px]"
           />

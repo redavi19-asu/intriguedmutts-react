@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Enter from "./components/Enter";
 import MerchGate from "./pages/MerchGate";
@@ -11,7 +11,7 @@ import StocksGate from "./pages/StocksGate";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Enter />} />
         <Route path="/home" element={<Layout><Home /></Layout>} />
@@ -21,7 +21,8 @@ export default function App() {
         <Route path="/merch-gate" element={<MerchGate />} />
         <Route path="/stocks-gate" element={<StocksGate />} />
         <Route path="/stocks" element={<Stocks />} />
+        <Route path="/watchlist" element={<Navigate to="/stocks?tab=watchlist" replace />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
