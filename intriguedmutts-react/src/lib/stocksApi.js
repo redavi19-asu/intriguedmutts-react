@@ -10,3 +10,14 @@ export async function getQuote(symbol = "AAPL") {
   }
   return res.json();
 }
+
+export async function getWatchlist() {
+  const url = `${WORKER_BASE}/watchlist`;
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Worker error ${res.status}: ${text}`);
+  }
+  return res.json();
+}

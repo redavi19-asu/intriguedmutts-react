@@ -25,7 +25,7 @@ export default function Navbar() {
           >
             Merch
           </button>
-          <button onClick={() => navigate("/home#stock")}
+          <button onClick={() => navigate("/stocks-gate")}
             className="hover:opacity-80 transition"
           >
             Stocks

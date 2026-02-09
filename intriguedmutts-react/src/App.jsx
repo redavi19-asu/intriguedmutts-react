@@ -3,41 +3,25 @@ import Layout from "./components/Layout";
 import Enter from "./components/Enter";
 import MerchGate from "./pages/MerchGate";
 import Merch from "./pages/Merch";
-
 import Home from "./pages/Home";
 import About from "./pages/About";
 import NFTs from "./pages/NFTs";
-import StockQuoteTest from "./components/StockQuoteTest";
+import Stocks from "./pages/Stocks.jsx";
+import StocksGate from "./pages/StocksGate";
 
 export default function App() {
   return (
-    <>
-      {/* Remove or move this line as needed for testing */}
-      <StockQuoteTest symbol="AAPL" />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Enter />} />
-          <Route
-            path="/home"
-            element={
-              <Layout>
-                <Home />
-              </Layout>
-            }
-          />
-          <Route path="/society" element={<About />} />
-          <Route path="/nfts" element={<NFTs />} />
-          <Route path="/merch-gate" element={<MerchGate />} />
-          <Route
-            path="/merch"
-            element={
-              <Layout>
-                <Merch />
-              </Layout>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Enter />} />
+        <Route path="/home" element={<Layout><Home /></Layout>} />
+        <Route path="/about" element={<Layout><About /></Layout>} />
+        <Route path="/nfts" element={<Layout><NFTs /></Layout>} />
+        <Route path="/merch" element={<Layout><Merch /></Layout>} />
+        <Route path="/merch-gate" element={<MerchGate />} />
+        <Route path="/stocks-gate" element={<StocksGate />} />
+        <Route path="/stocks" element={<Stocks />} />
+      </Routes>
+    </BrowserRouter>
   );
 }

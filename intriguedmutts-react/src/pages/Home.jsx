@@ -1,5 +1,7 @@
-import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
+import HomeStocksCards from "../components/HomeStocksCards";
+import { useEffect } from "react";
+import { motion } from "framer-motion";
 import Hero from "../components/Hero";
 
 function Section({ title, kicker, children, ctaTo, ctaText, id }) {
@@ -32,6 +34,10 @@ function Section({ title, kicker, children, ctaTo, ctaText, id }) {
 
 export default function Home() {
   const navigate = useNavigate();
+  useEffect(() => {
+    // any time Home loads, allow the intro again
+    sessionStorage.removeItem("stocks_gate_passed");
+  }, []);
   return (
     <div className="w-full">
       <Hero />
@@ -119,19 +125,8 @@ export default function Home() {
             and pack picks. For now, we’re finishing the world first.
           </p>
 
-          <div className="mt-10 grid sm:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <p className="font-semibold">Watchlist</p>
-              <p className="mt-2 text-white/70 text-sm">Saved tickers + alerts</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <p className="font-semibold">52-week heatmap</p>
-              <p className="mt-2 text-white/70 text-sm">Closest to the lows</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-              <p className="font-semibold">Pack picks</p>
-              <p className="mt-2 text-white/70 text-sm">Notes + conviction list</p>
-            </div>
+          <div className="mt-10">
+            <HomeStocksCards />
           </div>
         </div>
       </section>
