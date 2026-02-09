@@ -6,7 +6,7 @@ export default function Layout({ children }) {
       <Navbar />
 
       <main className="pt-28 flex justify-center">
-        <div className="w-full max-w-6xl">
+        <div className="w-full max-w-7xl">
           {children}
         </div>
       </main>

@@ -1,31 +1,19 @@
 
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom"
-import { AnimatePresence } from "framer-motion"
-
-import Home from "./pages/Home"
-import NFTs from "./pages/NFTs"
-import Merch from "./pages/Merch"
-import About from "./pages/About"
-
-function AnimatedRoutes() {
-  const location = useLocation()
-
-  return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Home />} />
-        <Route path="/nfts" element={<NFTs />} />
-        <Route path="/merch" element={<Merch />} />
-        <Route path="/about" element={<About />} />
-      </Routes>
-    </AnimatePresence>
-  )
-}
-
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
 export default function App() {
   return (
     <BrowserRouter>
-      <AnimatedRoutes />
+      <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
+        <Navbar />
+
+        <main className="w-full flex justify-center">
+          <Routes>
+            <Route path="/" element={<Home />} />
+          </Routes>
+        </main>
+      </div>
     </BrowserRouter>
-  )
+  );
 }
