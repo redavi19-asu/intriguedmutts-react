@@ -1,15 +1,14 @@
-import Navbar from "./Navbar"
+import Navbar from "./Navbar";
 
 export default function Layout({ children }) {
   return (
-    <div className="bg-black text-white min-h-screen">
+    <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
       <Navbar />
 
-      <main className="pt-28 flex justify-center">
-        <div className="w-full max-w-7xl">
-          {children}
-        </div>
+      {/* pt keeps content from hiding behind fixed navbar */}
+      <main className="pt-20 w-full flex justify-center">
+        <div className="w-full max-w-7xl px-6">{children}</div>
       </main>
     </div>
-  )
+  );
 }

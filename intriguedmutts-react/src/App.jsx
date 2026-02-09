@@ -1,19 +1,22 @@
-
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
+import Layout from "./components/Layout";
+
 import Home from "./pages/Home";
+import About from "./pages/About";
+import NFTs from "./pages/NFTs";
+import Merch from "./pages/Merch";
+
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen w-full bg-black text-white overflow-x-hidden">
-        <Navbar />
-
-        <main className="w-full flex justify-center">
-          <Routes>
-            <Route path="/" element={<Home />} />
-          </Routes>
-        </main>
-      </div>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/society" element={<About />} />
+          <Route path="/nfts" element={<NFTs />} />
+          <Route path="/merch" element={<Merch />} />
+        </Routes>
+      </Layout>
     </BrowserRouter>
   );
 }
