@@ -99,53 +99,90 @@ export default function Home() {
         </Section>
       </motion.div>
 
-      {/* Stock section (was NFTs) */}
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-120px" }}
-        transition={{ duration: 0.6 }}
-      >
-        <Section
-          id="stock"
-          kicker="Digital"
-          title="STOCKS"
-          ctaTo="/stock"
-          ctaText="View the stocks"
-        >
-          <p>
-            The collection is the “membership card” — a visual identity for the
-            pack. This page will become the home for supply info, traits, and
-            drop schedules.
+      {/* Stock section (placeholder, no API) */}
+      <section id="stock" className="py-24 border-t border-white/10">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
+            Coming soon
+          </p>
+          <h2 className="mt-3 text-4xl md:text-5xl font-black tracking-tight">
+            INTRIGUED STOCKS
+          </h2>
+          <p className="mt-4 text-white/70 max-w-2xl">
+            This section will become our “market board” later — watchlist, 52-week lows,
+            and pack picks. For now, we’re finishing the world first.
           </p>
 
-          <div className="mt-6 p-5 rounded-2xl border border-white/10 bg-white/5">
-            <p className="text-sm text-gray-300">
-              Next up: featured tiles + trait filters + drop countdown.
-            </p>
+          <div className="mt-10 grid sm:grid-cols-3 gap-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="font-semibold">Watchlist</p>
+              <p className="mt-2 text-white/70 text-sm">Saved tickers + alerts</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="font-semibold">52-week heatmap</p>
+              <p className="mt-2 text-white/70 text-sm">Closest to the lows</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="font-semibold">Pack picks</p>
+              <p className="mt-2 text-white/70 text-sm">Notes + conviction list</p>
+            </div>
           </div>
-        </Section>
-      </motion.div>
+        </div>
+      </section>
 
-      {/* NFTs section (new, placeholder) */}
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-120px" }}
-        transition={{ duration: 0.6 }}
-      >
-        <Section
-          id="nfts"
-          kicker="NFTs"
-          title="NFT COLLECTION"
-          ctaTo="/nfts"
-          ctaText="View the collection"
-        >
-          <p>
-            NFT section placeholder.
+      {/* NFTs section (now last) */}
+      <section id="nfts" className="py-24 border-t border-white/10">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
+            Coming soon
           </p>
-        </Section>
-      </motion.div>
+
+          <h2 className="mt-3 text-4xl md:text-5xl font-black tracking-tight">
+            NFT VAULT
+          </h2>
+
+          <p className="mt-4 text-white/70 max-w-2xl">
+            The collection will live here — supply, traits, drop schedule, and mint access.
+            We’re finishing the world first, then we open the vault.
+          </p>
+
+          <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="font-semibold">Collection overview</p>
+              <p className="mt-2 text-white/70 text-sm">
+                Supply, tiers, and how the Society ties in.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="font-semibold">Traits + rarity</p>
+              <p className="mt-2 text-white/70 text-sm">
+                Visual traits, rarity distribution, and filters.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <p className="font-semibold">Mint & access</p>
+              <p className="mt-2 text-white/70 text-sm">
+                Wallet connect, allowlist, and mint mechanics.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6 flex items-center justify-between gap-4 flex-wrap">
+            <p className="text-white/70 text-sm">
+              Want a “notify me” box here later? We can add email capture when you’re ready.
+            </p>
+
+            <button
+              type="button"
+              className="px-5 py-3 rounded-xl border border-white/25 text-white hover:border-white/60 transition"
+            >
+              Notify Me (Soon)
+            </button>
+          </div>
+        </div>
+      </section>
 
       <footer className="py-10 text-xs text-gray-500 border-t border-white/10">
         © {new Date().getFullYear()} Intrigued Mutts
