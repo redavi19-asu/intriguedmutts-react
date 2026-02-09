@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import Hero from "../components/Hero";
 
-function Section({ title, kicker, children, ctaTo, ctaText }) {
+function Section({ title, kicker, children, ctaTo, ctaText, id }) {
   return (
-    <section className="py-24 border-t border-white/10">
+    <section id={id} className="py-24 border-t border-white/10">
       <div className="grid md:grid-cols-2 gap-10 items-start">
         <div>
           <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
@@ -35,6 +35,7 @@ export default function Home() {
     <div className="w-full">
       <Hero />
 
+      {/* Society section */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -42,6 +43,7 @@ export default function Home() {
         transition={{ duration: 0.6 }}
       >
         <Section
+          id="society"
           kicker="The story"
           title="THE SOCIETY"
           ctaTo="/society"
@@ -61,6 +63,7 @@ export default function Home() {
         </Section>
       </motion.div>
 
+      {/* Merch section */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -68,32 +71,7 @@ export default function Home() {
         transition={{ duration: 0.6 }}
       >
         <Section
-          kicker="Digital"
-          title="NFT COLLECTION"
-          ctaTo="/nfts"
-          ctaText="View the collection"
-        >
-          <p>
-            The collection is the “membership card” — a visual identity for the
-            pack. This page will become the home for supply info, traits, and
-            drop schedules.
-          </p>
-
-          <div className="mt-6 p-5 rounded-2xl border border-white/10 bg-white/5">
-            <p className="text-sm text-gray-300">
-              Next up: featured tiles + trait filters + drop countdown.
-            </p>
-          </div>
-        </Section>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0, y: 18 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-120px" }}
-        transition={{ duration: 0.6 }}
-      >
-        <Section
+          id="merch"
           kicker="Physical"
           title="MERCH DROPS"
           ctaTo="/merch"
@@ -118,6 +96,54 @@ export default function Home() {
               </p>
             </div>
           </div>
+        </Section>
+      </motion.div>
+
+      {/* Stock section (was NFTs) */}
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-120px" }}
+        transition={{ duration: 0.6 }}
+      >
+        <Section
+          id="stock"
+          kicker="Digital"
+          title="STOCKS"
+          ctaTo="/stock"
+          ctaText="View the stocks"
+        >
+          <p>
+            The collection is the “membership card” — a visual identity for the
+            pack. This page will become the home for supply info, traits, and
+            drop schedules.
+          </p>
+
+          <div className="mt-6 p-5 rounded-2xl border border-white/10 bg-white/5">
+            <p className="text-sm text-gray-300">
+              Next up: featured tiles + trait filters + drop countdown.
+            </p>
+          </div>
+        </Section>
+      </motion.div>
+
+      {/* NFTs section (new, placeholder) */}
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-120px" }}
+        transition={{ duration: 0.6 }}
+      >
+        <Section
+          id="nfts"
+          kicker="NFTs"
+          title="NFT COLLECTION"
+          ctaTo="/nfts"
+          ctaText="View the collection"
+        >
+          <p>
+            NFT section placeholder.
+          </p>
         </Section>
       </motion.div>
 

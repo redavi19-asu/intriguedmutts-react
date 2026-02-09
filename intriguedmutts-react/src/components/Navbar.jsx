@@ -8,29 +8,20 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <NavLink to="/" className="font-black tracking-tight text-xl">
-          INTRIGUED MUTTS
-        </NavLink>
+        <a href="#society" className="hover:opacity-80 transition">
+          SOCIETY
+        </a>
 
         <div className="flex items-center gap-2">
-          <NavLink
-            to="/society"
-            className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ""}`}
-          >
-            Society
-          </NavLink>
-          <NavLink
-            to="/nfts"
-            className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ""}`}
-          >
-            NFTs
-          </NavLink>
-          <NavLink
-            to="/merch"
-            className={({ isActive }) => `${linkBase} ${isActive ? linkActive : ""}`}
-          >
-            Merch
-          </NavLink>
+          <a href="#merch" className="hover:opacity-80 transition">
+            MERCH
+          </a>
+          <a href="#stock" className="hover:opacity-80 transition">
+            STOCKS
+          </a>
+          <a href="#nfts" className="hover:opacity-80 transition">
+            NFTS
+          </a>
         </div>
       </div>
     </nav>
