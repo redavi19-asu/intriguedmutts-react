@@ -47,7 +47,7 @@ export default function Enter() {
         <div className="absolute inset-0 z-50 bg-black">
           <video
             ref={enterRef}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain bg-black"
             src={enterClip}
             muted
             playsInline

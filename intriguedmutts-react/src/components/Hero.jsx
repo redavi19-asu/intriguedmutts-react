@@ -4,7 +4,7 @@ export default function Hero() {
   return (
     <section className="relative h-[85vh] w-full overflow-hidden">
       <video
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-contain bg-black"
         src="/videos/interactive.mp4"
         autoPlay
         muted
