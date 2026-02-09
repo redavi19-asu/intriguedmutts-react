@@ -12,10 +12,8 @@ export default function MerchGate() {
 
   useEffect(() => {
     if (!entering || !enterRef.current) return;
-
     const v = enterRef.current;
     v.currentTime = 0;
-
     const p = v.play();
     if (p?.catch) p.catch(() => {});
   }, [entering]);
@@ -29,11 +27,9 @@ export default function MerchGate() {
             alt="Intrigued Mutts Society"
             className="w-[320px] sm:w-[420px] md:w-[520px]"
           />
-
           <p className="mt-6 text-white/75 max-w-xl">
             Enter the merch vault.
           </p>
-
           <button
             onClick={() => setEntering(true)}
             className="mt-10 px-7 py-3 rounded-xl bg-white text-black font-semibold hover:opacity-90 transition"
@@ -42,7 +38,6 @@ export default function MerchGate() {
           </button>
         </div>
       )}
-
       {entering && (
         <div className="absolute inset-0 z-50 bg-black">
           <video
