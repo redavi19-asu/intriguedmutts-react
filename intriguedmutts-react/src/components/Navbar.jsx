@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 
 const linkBase =
   "px-3 py-2 text-sm uppercase tracking-widest text-gray-300 hover:text-white transition";
@@ -13,9 +13,9 @@ export default function Navbar() {
         </a>
 
         <div className="flex items-center gap-2">
-          <a href="#merch" className="hover:opacity-80 transition">
+          <Link to="/merch-gate" className="hover:opacity-80 transition">
             MERCH
-          </a>
+          </Link>
           <a href="#stock" className="hover:opacity-80 transition">
             STOCKS
           </a>
