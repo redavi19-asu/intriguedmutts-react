@@ -13,7 +13,7 @@ export default function Home() {
 
       {/* Society */}
       <motion.section
-        className="min-h-screen w-full flex-shrink-0 flex items-center justify-center bg-red-900/20"
+        className="min-h-screen flex items-center justify-center bg-red-900/20"
       >
         <div className="max-w-3xl text-center px-8">
           <h2 className="text-5xl font-black mb-6">THE SOCIETY</h2>
@@ -31,7 +31,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-150px" }}
         transition={{ duration: 0.9 }}
-        className="min-h-screen w-full flex-shrink-0 flex items-center justify-center"
+        className="min-h-screen flex items-center justify-center"
       >
         <div className="max-w-3xl text-center px-8">
           <h2 className="text-5xl font-black mb-6">NFT DROPS</h2>
@@ -48,7 +48,7 @@ export default function Home() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-150px" }}
         transition={{ duration: 0.9 }}
-        className="min-h-screen w-full flex-shrink-0 flex items-center justify-center"
+        className="min-h-screen flex items-center justify-center"
       >
         <div className="max-w-3xl text-center px-8">
           <h2 className="text-5xl font-black mb-6">MERCH</h2>

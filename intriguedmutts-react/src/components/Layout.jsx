@@ -2,11 +2,13 @@ import Navbar from "./Navbar"
 
 export default function Layout({ children }) {
   return (
-    <div className="w-full min-h-screen bg-black text-white">
+    <div className="bg-black text-white min-h-screen">
       <Navbar />
 
-      <main className="pt-28 flex flex-col items-center w-full">
-        {children}
+      <main className="pt-28 flex justify-center">
+        <div className="w-full max-w-6xl">
+          {children}
+        </div>
       </main>
     </div>
   )
