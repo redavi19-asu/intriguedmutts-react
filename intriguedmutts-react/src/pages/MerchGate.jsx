@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-
 export default function MerchGate() {
   const navigate = useNavigate();
   const enterRef = useRef(null);
   const [entering, setEntering] = useState(false);
+  const [isFading, setIsFading] = useState(false);
 
   // MERCH entrance clip
   const enterClip = "/videos/walktoclosetmerch.mp4";
@@ -51,7 +49,12 @@ export default function MerchGate() {
             muted
             playsInline
             preload="auto"
-            onEnded={() => navigate("/merch", { replace: true })}
+            onEnded={() => setIsFading(true)}
+          />
+          <FadeOverlay
+            show={isFading}
+            duration={600}
+            onFadeEnd={() => navigate("/merch", { replace: true })}
           />
         </div>
       )}
