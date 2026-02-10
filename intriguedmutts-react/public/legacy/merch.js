@@ -1,3 +1,22 @@
+// ✅ Close product modal with Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  const modalBackEl = document.getElementById("modalBack");
+  if (modalBackEl && getComputedStyle(modalBackEl).display !== "none") {
+    modalBackEl.style.display = "none";
+  }
+});
+// ✅ Close product modal when clicking the backdrop (safe: won't redeclare)
+(() => {
+  const modalBackEl = document.getElementById("modalBack");
+  if (!modalBackEl) return;
+
+  modalBackEl.addEventListener("click", (e) => {
+    if (e.target === modalBackEl) {
+      modalBackEl.style.display = "none";
+    }
+  });
+})();
 // ...removed duplicate and broken event handler assignments; all event binding is now handled in bindLegacyButtons() below...
 function waitFor(id) {
   return new Promise(resolve => {
@@ -944,7 +963,45 @@ function bindLegacyButtons() {
     openCart();
   };
 
+
   console.log("✅ Legacy merch buttons bound");
+
+  // ✅ HARD RESET: cart must be CLOSED on load + open as RIGHT drawer
+  (() => {
+    const cartBack = document.getElementById("cartBack");
+    const cartItems = document.getElementById("cartItems");
+    const cartBtn = document.querySelector(".cartBtn");
+
+    if (!cartBack || !cartItems || !cartBtn) return;
+
+    // Force the overlay to behave like a right-side drawer
+    cartBack.style.position = "fixed";
+    cartBack.style.inset = "0";
+    cartBack.style.display = "none";          // <-- KEY: closed on load
+    cartBack.style.flexDirection = "row";     // <-- prevent row-reverse surprises
+    cartBack.style.justifyContent = "flex-end";
+    cartBack.style.alignItems = "stretch";
+    cartBack.style.zIndex = "50";
+
+    // Force drawer panel to sit on the RIGHT inside the flex overlay
+    cartItems.style.marginLeft = "auto";
+
+
+    // Toggle open/close on Cart button (capture phase + stopImmediatePropagation)
+    cartBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation(); // <-- blocks the legacy "always open" handler
+
+      const open = getComputedStyle(cartBack).display !== "none";
+      cartBack.style.display = open ? "none" : "flex";
+    }, true); // <-- CAPTURE phase so we intercept first
+
+    // Click outside the drawer closes it
+    cartBack.addEventListener("click", (e) => {
+      if (e.target === cartBack) cartBack.style.display = "none";
+    });
+  })();
 }
 
 

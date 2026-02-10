@@ -1,63 +1,467 @@
 
 /* ===============================
-   2-COLUMN MERCH LAYOUT RESTORE
+   CART HOTFIX v1 (LAST RULES WIN)
+   Forces: right drawer + visible buttons + footer aligned
 ================================= */
 
-#merchLayout{
-  max-width: 1300px;
-  margin: 0 auto;
-  padding: 16px;
-  display: grid;
-  grid-template-columns: 1fr 360px; /* left products, right cart */
-  gap: 18px;
-  align-items: start;
-}
-
-/* LEFT */
-#merchMain{
-  min-width: 0;
-}
-
-/* RIGHT */
-#merchSide{
-  position: sticky;
-  top: 16px;
-}
-
-/* cart column panel */
+/* Overlay */
 #cartBack{
-  display: block !important;     /* keep it visible as a column */
-  position: static !important;   /* not an overlay */
-  inset: auto !important;
-  background: rgba(10,10,10,.85);
-  border: 1px solid rgba(255,255,255,.10);
+  position: fixed !important;
+  inset: 0 !important;
+  display: none;                 /* JS toggles to flex */
+  justify-content: flex-end !important;
+  align-items: stretch !important;
+  background: rgba(0,0,0,.70) !important;
+  z-index: 9999 !important;
+}
+#cartBack::before{
+  content: none !important;
+  display: none !important;
+}
+
+/* Drawer */
+#cartItems{
+  position: relative !important;
+  margin-left: auto !important;
+  width: min(460px, 94vw) !important;
+  height: 100vh !important;
+  overflow: auto !important;
+  background: rgba(12,12,12,.98) !important;
+  border-left: 1px solid rgba(255,255,255,.12) !important;
+  padding: 70px 14px 220px !important; /* room for top + pinned footer */
+  box-sizing: border-box !important;
+}
+
+/* Close button always visible */
+#closeCartBtn{
+  position: fixed !important;
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 10002 !important;
+  display: inline-block !important;
+}
+
+/* Footer + shipping UI pinned to drawer width (fixes “too far left”) */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote,
+#checkoutBtn,
+#editShippingFromCartBtn,
+#shipStatusPill{
+  position: fixed !important;
+  left: auto !important;
+  right: 14px !important;
+  width: min(460px, 94vw) !important;
+  z-index: 10001 !important;
+  box-sizing: border-box !important;
+}
+
+/* top pills */
+#shipStatusPill{ top: 54px !important; bottom: auto !important; }
+#editShippingFromCartBtn{ top: 50px !important; bottom: auto !important; width: auto !important; right: 14px !important; }
+
+/* bottom stack */
+#checkoutBtn{ bottom: 14px !important; }
+#paypalTotalNote{ bottom: 54px !important; }
+#cartTotal{ bottom: 78px !important; padding-top: 10px !important; border-top: 1px solid rgba(255,255,255,.12) !important; }
+#cartTax{ bottom: 106px !important; }
+#cartShip{ bottom: 130px !important; }
+#cartSubtotal{ bottom: 154px !important; }
+#cartProdSubtotal{ bottom: 178px !important; }
+/* ===============================
+   FORCE "OLD CART" LOOK (drawer)
+   Matches screenshot: header, pill+edit, pinned totals, full-width checkout
+================================= */
+
+/* Backdrop + drawer stays on RIGHT */
+#cartBack{
+  display:none;                 /* JS controls open/close */
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 50;
+  align-items: stretch;
+  justify-content: flex-end;    /* RIGHT side */
+}
+#cartBack::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+/* Drawer panel */
+#cartItems{
+  position: relative;
+  z-index: 2;
+  width: min(460px, 94vw);
+  height: 100vh;
+  overflow: auto;
+  background: rgba(12,12,12,.98);
+  border-left: 1px solid rgba(255,255,255,.10);
+  padding: 76px 16px 190px;     /* top space for header + bottom space for totals */
+}
+
+/* Close button in top-right like screenshot */
+#closeCartBtn{
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
+  border: 1px solid rgba(58,160,255,.55);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+/* "Cart" title area (if your JS injects it, this helps) */
+#cartItems h2,
+#cartItems h1{
+  margin: 0 0 12px;
+  font-size: 30px;
+  font-weight: 1000;
+}
+
+/* Shipping pill at top-left */
+#shipStatusPill{
+  position: absolute;
+  left: 16px;
+  top: 56px;
+  z-index: 3;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(58,160,255,.45);
+  background: rgba(58,160,255,.14);
+  color: #cfe9ff;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+/* Edit button near pill like screenshot */
+#editShippingFromCartBtn{
+  position: absolute;
+  left: 170px;                  /* sits next to pill */
+  top: 52px;
+  z-index: 3;
+  border: 1px solid rgba(58,160,255,.45);
+  background: rgba(0,0,0,.35);
+  color:#fff;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+/* Cart item card: matches old sizing */
+.cartItem{
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  padding: 14px;
   border-radius: 16px;
-  padding: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  margin-bottom: 14px;
+}
+.cartItem img{
+  width:64px;
+  height:64px;
+  border-radius: 14px;
+  object-fit: cover;
+  background:#111;
+}
+.cartName{ font-weight: 1000; font-size: 16px; }
+.cartMeta{ font-size: 12px; color: rgba(255,255,255,.65); }
+
+/* Qty controls */
+.qtyBtn{
+  width:34px; height:34px;
+  border-radius: 12px;
+  border:1px solid rgba(58,160,255,.55);
+  background: rgba(0,0,0,.25);
+  color:#fff;
+  font-weight: 1000;
+}
+.qtyNum{ min-width: 22px; text-align:center; font-weight: 1000; }
+
+/* Remove button pill */
+.removeBtn{
+  border: 1px solid rgba(255,60,60,.55);
+  background: rgba(0,0,0,.20);
+  color:#fff;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+/* ===== Pinned totals block (bottom) ===== */
+#cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  z-index: 3;
+  font-weight: 900;
+}
+
+/* Spacing stack like screenshot */
+#cartSubtotal{ bottom: 128px; font-size: 14px; opacity: .95; }
+#cartProdSubtotal{ bottom: 106px; font-size: 14px; opacity: .85; }
+#cartShip{ bottom: 84px; font-size: 14px; opacity: .85; }
+#cartTax{ bottom: 62px; font-size: 14px; opacity: .85; }
+#cartTotal{
+  bottom: 38px;
+  font-size: 18px;
+  font-weight: 1000;
+  border-top: 1px solid rgba(255,255,255,.12);
+  padding-top: 10px;
+}
+#paypalTotalNote{
+  bottom: 16px;
+  font-size: 12px;
+  color: rgba(255,255,255,.70);
+  display: block !important;
+}
+
+/* Checkout button full-width at very bottom */
+#checkoutBtn{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0px;
+  margin-bottom: 8px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(58,160,255,.55);
+  background: rgba(0,0,0,.22);
+  color:#fff;
+  font-weight: 1000;
+}
+#checkoutBtn:disabled{ opacity:.45; }
+
+/* Prevent any old "blue bar"/random input from stretching outside */
+#cartItems input, #cartItems select, #cartItems textarea{
+  max-width: 100%;
+}
+/* ===============================
+   SHRINK CART UI ~25% (SAFE)
+   (does NOT change overlay behavior)
+================================= */
+
+/* Drawer panel: narrower + tighter padding */
+#cartItems{
+  width: min(390px, 92vw) !important;      /* was ~520px */
+  padding: 62px 12px 120px !important;     /* tighter */
+}
+
+/* Cart item cards: smaller */
+.cartItem{
+  grid-template-columns: 52px 1fr auto !important; /* was 64px */
+  gap: 10px !important;
+  padding: 10px !important;
+  border-radius: 14px !important;
+  margin-bottom: 10px !important;
+}
+.cartItem img{
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 10px !important;
+}
+
+/* Text sizing */
+.cartName{ font-size: 13px !important; }
+.cartMeta{ font-size: 11px !important; }
+
+/* Qty buttons smaller */
+.qtyBtn{
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 9px !important;
+  font-size: 14px !important;
+}
+.qtyNum{ font-size: 13px !important; }
+
+/* Remove button smaller */
+.removeBtn{
+  padding: 7px 9px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+}
+
+/* Totals footer: smaller + nudged up a bit */
+#cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote{
+  left: 12px !important;
+  right: 12px !important;
+  font-size: 13px !important;
+}
+#cartSubtotal{ bottom: 104px !important; }
+#cartShip{ bottom: 82px !important; }
+#cartTax{ bottom: 62px !important; }
+#cartTotal{ bottom: 42px !important; font-size: 14px !important; }
+#paypalTotalNote{ bottom: 24px !important; font-size: 12px !important; }
+
+/* Footer buttons: smaller */
+#editShippingFromCartBtn{
+  right: 12px !important;
+  bottom: 104px !important;
+  padding: 8px 10px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+}
+#checkoutBtn{
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+}
+/* ===== FIX: cart ghost overlay + footer escaping drawer ===== */
+
+/* 1) Kill any backdrop/ghost coming from cartBack */
+#cartBack{
+  background: transparent !important;  /* no full-screen wash */
+}
+#cartBack::before{
+  content: none !important;            /* remove legacy overlay layer */
+  display: none !important;
+}
+
+/* 2) Make the cart drawer a real column so footer stays inside */
+#cartItems{
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  padding: 70px 16px 16px !important;  /* remove giant bottom padding */
+  overflow: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* 3) STOP legacy absolute footer positioning (this is why text/blue bar escape) */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote,
+#checkoutBtn,
+#editShippingFromCartBtn{
+  position: static !important;         /* <-- key fix */
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  top: auto !important;
+  margin: 8px 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  text-align: left !important;
   z-index: auto !important;
 }
 
-/* grid stays left and looks like a grid again */
-#grid{
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 16px;
+/* 4) Keep checkout + edit button neatly stacked inside the drawer */
+#editShippingFromCartBtn{
+  align-self: flex-end !important;
+  margin-top: 6px !important;
+}
+#checkoutBtn{
+  margin-top: 10px !important;
+}
+/* CLEANUP 1: kill the faint left “ghost rail” (cart backdrop) */
+#cartBack::before{
+  display: none !important;   /* removes the leftover shaded overlay */
+}
+
+/* CLEANUP 2: align totals/shipping block nicely inside the drawer */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote{
+  text-align: left !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+}
+/* ONE FIX: move the CART FOOTER (totals/shipping/checkout) into the right drawer */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote,
+#editShippingFromCartBtn,
+#checkoutBtn,
+#shipStatusPill{
+  position: fixed !important;
+  right: 16px !important;
+  left: auto !important;
+  width: min(520px, 92vw) !important;
+  margin: 0 !important;
+  z-index: 60 !important;
+}
+
+/* stack them from bottom up INSIDE the drawer */
+#checkoutBtn{ bottom: 12px !important; }
+#paypalTotalNote{ bottom: 56px !important; }
+#cartTotal{ bottom: 80px !important; }
+#cartTax{ bottom: 104px !important; }
+#cartShip{ bottom: 128px !important; }
+#cartSubtotal{ bottom: 152px !important; }
+#cartProdSubtotal{ bottom: 176px !important; }
+#editShippingFromCartBtn{ bottom: 152px !important; right: 20px !important; width: auto !important; }
+#shipStatusPill{ top: 16px !important; bottom: auto !important; right: 16px !important; }
+/* ONE FIX: pin the drawer to the RIGHT */
+#cartItems{
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  margin: 0 !important;
+  height: 100vh !important;
+  width: min(520px, 92vw) !important;
+}
+/* FORCE CART DRAWER TO THE RIGHT */
+#cartBack{
+  display: none;                 /* JS toggles to flex */
+  position: fixed;
+  inset: 0;
+  justify-content: flex-end;     /* <-- RIGHT side */
+  align-items: stretch;
   padding: 0;
+  z-index: 50;
 }
 
-/* status text sits above grid */
-#statusText{
-  margin: 10px 0 12px;
+/* the drawer panel itself */
+#cartItems{
+  margin-left: auto;            /* <-- RIGHT side */
+  margin-right: 0;
+  width: min(520px, 92vw);
+  height: 100vh;
+}
+/* STEP 1: Force cart drawer to the RIGHT side */
+#cartBack{
+  justify-content: flex-end !important; /* backdrop flex aligns drawer right */
 }
 
-/* mobile: stack columns */
-@media (max-width: 900px){
-  #merchLayout{
-    grid-template-columns: 1fr;
-  }
-  #merchSide{
-    position: static;
-  }
+#cartItems{
+  margin-left: auto !important;  /* shove drawer to the right */
+  left: auto !important;
+  right: 0 !important;
 }
+
+
+/* If JS opens the cart with display:block, force it into flex so drawer goes right */
+#cartBack[style*="display: block"]{
+  display: flex !important;
+}
+#grid { outline: 6px solid magenta !important; }
+
+
 
 /* ===============================
    FIX BROKEN HEADER/TOTALS LAYOUT
@@ -326,6 +730,19 @@ body{ margin:0; background:var(--bg); color:var(--text); font-family: system-ui,
   justify-content: flex-end;
   padding: 0;
 }
+
+/*
+#cartBack{
+  display: block !important;
+  position: static !important;
+  inset: auto !important;
+  background: rgba(10,10,10,.85);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
+  padding: 12px;
+  z-index: auto !important;
+}
+*/
 #cartBack::before{
   content:"";
   position:absolute;

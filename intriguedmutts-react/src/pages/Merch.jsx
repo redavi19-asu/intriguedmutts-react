@@ -9,7 +9,7 @@ export default function Merch() {
       const link = document.createElement("link");
       link.id = "legacy-merch-css";
       link.rel = "stylesheet";
-      link.href = `${base}legacy/merchLegacy.css`;
+      link.href = `${base}legacy/merch.css`;
       document.head.appendChild(link);
     }
 
@@ -30,16 +30,22 @@ export default function Merch() {
       <div id="topBar" />
 
       {/* page layout wrapper */}
-      <div id="merchLayout">
-        {/* LEFT column */}
-        <div id="merchMain">
+      <div
+        id="merchLayout"
+        className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start"
+      >
+        <div className="min-w-0">
+          {/* product cards grid/list goes here */}
           <div id="statusText" />
           <div id="grid" />
         </div>
 
-        {/* RIGHT column (cart stays here) */}
-        <div id="merchSide">
-          <div id="cartBack" style={{ display: "block" }}>
+        <aside
+          id="merchSide"
+          className="min-w-0 lg:sticky lg:top-24"
+        >
+          {/* cart / shipping UI goes here */}
+          <div id="cartBack" style={{ display: "block" }} className="w-full lg:w-[360px]">
             <button id="closeCartBtn" />
             <div id="cartItems" />
             <div id="cartSubtotal" />
@@ -52,7 +58,7 @@ export default function Merch() {
             <button id="editShippingFromCartBtn" />
             <div id="shipStatusPill" />
           </div>
-        </div>
+        </aside>
       </div>
 
       {/* keep shipping + modal + lightbox EXACTLY as you already have */}
