@@ -14,7 +14,11 @@ import HeatmapGrid from "../components/HeatmapGrid";
 const TABS = [
   { key: "watchlist", title: "Watchlist", desc: "Saved tickers + quick pulse" },
   { key: "heatmap", title: "52-week heatmap", desc: "Closest to the lows (next)" },
-  { key: "packs", title: "Pack picks", desc: "Notes + conviction list (next)" },
+  {
+    key: "packs",
+    title: "Options Picks",
+    desc: "Income + directional contracts (next)",
+  },
 ];
 
 export default function Stocks() {

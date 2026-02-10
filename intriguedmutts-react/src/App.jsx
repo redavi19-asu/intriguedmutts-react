@@ -8,10 +8,13 @@ import About from "./pages/About";
 import NFTs from "./pages/NFTs";
 import Stocks from "./pages/Stocks.jsx";
 import StocksGate from "./pages/StocksGate";
+import Society from "./pages/Society";
+import ScrollToTop from "./components/ScrollToTop";
 
 export default function App() {
   return (
     <HashRouter>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Enter />} />
         <Route path="/home" element={<Layout><Home /></Layout>} />
@@ -21,6 +24,7 @@ export default function App() {
         <Route path="/merch-gate" element={<MerchGate />} />
         <Route path="/stocks-gate" element={<StocksGate />} />
         <Route path="/stocks" element={<Stocks />} />
+        <Route path="/society" element={<Society />} />
         <Route path="/watchlist" element={<Navigate to="/stocks?tab=watchlist" replace />} />
       </Routes>
     </HashRouter>

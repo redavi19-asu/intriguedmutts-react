@@ -65,9 +65,9 @@ export default function HomeStocksCards() {
 
       <Link to="/stocks-gate#packs" style={{ textDecoration: "none", color: "inherit" }}>
         <div style={cardStyle}>
-          <div style={{ fontWeight: 900 }}>Pack picks</div>
+          <div style={{ fontWeight: 900 }}>Options Picks</div>
           <div style={{ opacity: 0.8, marginTop: 6, fontSize: 13 }}>
-            Notes + conviction list (members later)
+            Income + directional contracts (educational)
           </div>
           <div style={{ opacity: 0.6, marginTop: 10, fontSize: 12 }}>
             (Next step stores picks in KV/D1)
