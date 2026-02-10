@@ -21,3 +21,15 @@ export async function getWatchlist() {
   }
   return res.json();
 }
+
+export async function fetchHeatmap() {
+  const r = await fetch(
+    "https://intriguedmutts-stocks.ryanedavis.workers.dev/heatmap"
+  );
+
+  if (!r.ok) {
+    throw new Error("Heatmap fetch failed");
+  }
+
+  return r.json();
+}

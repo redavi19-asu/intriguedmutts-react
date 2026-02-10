@@ -9,6 +9,7 @@ const darkCard = {
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import WatchlistTiles from "../components/WatchlistTiles";
+import HeatmapGrid from "../components/HeatmapGrid";
 
 const TABS = [
   { key: "watchlist", title: "Watchlist", desc: "Saved tickers + quick pulse" },
@@ -326,14 +327,11 @@ export default function Stocks() {
             borderRadius: 18,
             padding: 18,
             border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(255,255,255,0.02)",
+            background: "rgba(0,0,0,0.55)",
           }}
         >
           <h2 style={{ marginTop: 0 }}>52-week heatmap</h2>
-          <p style={{ opacity: 0.8, marginBottom: 0 }}>
-            Next step: add a Worker endpoint that returns 52-week high/low + distance-to-low,
-            then render a sorted heat list here.
-          </p>
+          <HeatmapGrid />
         </div>
       )}
 
@@ -343,7 +341,7 @@ export default function Stocks() {
             borderRadius: 18,
             padding: 18,
             border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(255,255,255,0.02)",
+            background: "rgba(0,0,0,0.55)",
           }}
         >
           <h2 style={{ marginTop: 0 }}>Pack picks</h2>
