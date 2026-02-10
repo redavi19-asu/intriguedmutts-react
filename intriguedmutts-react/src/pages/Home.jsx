@@ -114,9 +114,7 @@ export default function Home() {
       {/* Stock section (placeholder, no API) */}
       <section id="stock" className="py-24 border-t border-white/10">
         <div className="max-w-6xl mx-auto px-6">
-          <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
-            Coming soon
-          </p>
+            {/* ...existing code... */}
           <h2 className="mt-3 text-4xl md:text-5xl font-black tracking-tight">
             INTRIGUED STOCKS
           </h2>
