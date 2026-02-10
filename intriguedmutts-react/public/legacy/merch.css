@@ -1,4 +1,129 @@
 
+/* ===========================
+   Shipping modal: make it readable + real form UI
+   =========================== */
+
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999 !important;
+  background: rgba(0,0,0,.72) !important;
+
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+}
+
+#shipBack[style*="display: block"],
+#shipBack[style*="display:block"],
+#shipBack[style*="display: flex"],
+#shipBack[style*="display:flex"]{
+  display: flex !important;
+}
+
+/* panel wrapper look (shipBack is the panel in your markup) */
+#shipBack{
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+/* Make the pill + buttons visible */
+#shipModePill{
+  width: min(560px, 92vw) !important;
+  color: #cfe9ff !important;
+  font-weight: 900 !important;
+  margin-bottom: 6px !important;
+}
+
+#shipCloseBtn, #shipClearBtn, #shipSaveBtn, #shipSaveAndCheckoutBtn{
+  width: min(560px, 92vw) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background: rgba(16,16,16,.9) !important;
+  color: #fff !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  font-weight: 900 !important;
+}
+
+/* THIS is the big fix: force inputs to be real inputs, not “blank bars” */
+#shipBack input{
+  width: min(560px, 92vw) !important;
+  height: auto !important;
+  padding: 12px 12px !important;
+
+  background: #0f0f0f !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 12px !important;
+
+  font-size: 14px !important;
+  font-weight: 700 !important;
+
+  opacity: 1 !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Placeholder color if any */
+#shipBack input::placeholder{
+  color: rgba(255,255,255,.45) !important;
+}
+
+/* ===========================
+   FIX: Shipping modal layering + layout
+   =========================== */
+
+/* cart overlay stays below modals */
+#cartBack { z-index: 100 !important; }
+
+/* shipping editor must sit ABOVE cart and cover the screen */
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 250 !important;
+  background: rgba(0,0,0,.72) !important;
+
+  /* force a clean centered modal layout (not a horizontal strip) */
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+/* if legacy JS flips display:block or display:flex inline, keep it modal */
+#shipBack[style*="display: block"],
+#shipBack[style*="display:block"],
+#shipBack[style*="display: flex"],
+#shipBack[style*="display:flex"]{
+  display: flex !important;
+}
+
+/* inputs stack nicely */
+#shipBack input{
+  width: min(520px, 92vw) !important;
+  display: block !important;
+}
+
+/* keep ship pills from doing weird fixed overlap behavior */
+#shipStatusPill{
+  position: absolute !important;
+  top: 14px !important;
+  left: 14px !important;
+  right: auto !important;
+}
+
+#paypalTotalNote{
+  position: absolute !important;
+  top: auto !important;
+  bottom: 70px !important;
+  left: 14px !important;
+  right: 14px !important;
+}
+
 /* ===== FINAL CART DRAWER LAYOUT (authoritative) ===== */
 
 #cartBack{
@@ -709,6 +834,41 @@ body{ margin:0; background:var(--bg); color:var(--text); font-family: system-ui,
 }
 
 /* Modal header */
+/* FIX: ensure cart + buttons are clickable above page */
+#cartBack {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+#cartItems {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: min(420px, calc(100vw - 32px));
+  overflow: auto;
+  pointer-events: auto;
+}
+
+/* FIX: shipping modal must be above cart when opened */
+#shipBack {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: auto;
+}
+.shipCard { max-width: 860px; margin: 40px auto; padding: 22px; border-radius: 18px; }
+.shipHeader { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.shipTitle { font-size: 34px; font-weight: 800; }
+.shipSubRow { display:flex; align-items:center; gap:12px; margin: 10px 0 18px; }
+.shipSubText { opacity:.85; }
+.shipForm { display:flex; flex-direction:column; gap:10px; }
+.shipLabel { font-size: 14px; opacity:.9; margin-top:6px; }
+.shipGrid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
+.shipNote { margin-top: 10px; opacity:.8; font-size: 13px; }
+.shipFooter { display:flex; justify-content:flex-end; gap:12px; margin-top: 18px; flex-wrap:wrap; }
 #modalTitle{
   font-weight: 1000;
   font-size: 18px;

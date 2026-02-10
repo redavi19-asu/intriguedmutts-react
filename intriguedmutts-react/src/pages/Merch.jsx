@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 
 export default function Merch() {
@@ -22,6 +21,44 @@ export default function Merch() {
       script.defer = true;
       document.body.appendChild(script);
     }
+
+    // 3) Keep Edit Shipping working even if legacy JS rebuilds the cart DOM
+    const bindCartButtons = () => {
+      const shipBack = document.getElementById("shipBack");
+      const editBtn = document.getElementById("editShippingFromCartBtn");
+
+      // Force a valid country code so Printful estimate works
+      const shipCountry = document.getElementById("shipCountry");
+      if (shipCountry && shipCountry.value && shipCountry.value.length !== 2) {
+        shipCountry.value = "US";
+      }
+      if (shipCountry && !shipCountry.value) shipCountry.value = "US";
+
+      if (!shipBack || !editBtn) return;
+
+      // prevent duplicate binds
+      if (editBtn.dataset.bound === "1") return;
+      editBtn.dataset.bound = "1";
+
+      editBtn.addEventListener(
+        "click",
+        (e) => {
+          e.preventDefault();
+          shipBack.style.display = "block";
+        },
+        true
+      );
+    };
+
+    const obs = new MutationObserver(bindCartButtons);
+    obs.observe(document.body, { childList: true, subtree: true });
+
+    const t = setTimeout(bindCartButtons, 200);
+
+    return () => {
+      clearTimeout(t);
+      obs.disconnect();
+    };
   }, []);
 
   return (
@@ -30,35 +67,35 @@ export default function Merch() {
       <div id="topBar" />
 
       {/* page layout wrapper */}
+
       <div
         id="merchLayout"
         className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start"
       >
         <div className="min-w-0">
-          {/* product cards grid/list goes here */}
           <div id="statusText" />
           <div id="grid" />
         </div>
+      </div>
 
-        <aside
-          id="merchSide"
-          className="min-w-0 lg:sticky lg:top-24"
-        >
-          {/* cart / shipping UI goes here */}
-          <div id="cartBack" style={{ display: "block" }} className="w-full lg:w-[360px]">
-            <button id="closeCartBtn" />
-            <div id="cartItems" />
-            <div id="cartSubtotal" />
-            <div id="cartProdSubtotal" />
-            <div id="cartShip" />
-            <div id="cartTax" />
-            <div id="cartTotal" />
-            <div id="paypalTotalNote" />
-            <button id="checkoutBtn" />
-            <button id="editShippingFromCartBtn" />
-            <div id="shipStatusPill" />
-          </div>
-        </aside>
+      {/* Cart Drawer (overlay) */}
+      <div id="cartBack">
+        <div id="cartItems">
+          <button id="closeCartBtn">Close</button>
+          <div id="shipStatusPill"></div>
+
+          <div id="cartList"></div>
+
+          <div id="cartProdSubtotal"></div>
+          <div id="cartSubtotal"></div>
+          <div id="cartShip"></div>
+          <div id="cartTax"></div>
+          <div id="cartTotal"></div>
+          <div id="paypalTotalNote"></div>
+
+          <button id="editShippingFromCartBtn">Edit shipping</button>
+          <button id="checkoutBtn">Checkout (PayPal)</button>
+        </div>
       </div>
 
       {/* keep shipping + modal + lightbox EXACTLY as you already have */}
@@ -75,20 +112,73 @@ export default function Merch() {
       </div>
 
       <div id="shipBack" style={{ display: "none" }}>
-        <div id="shipModePill" />
-        <button id="shipCloseBtn" />
-        <button id="shipClearBtn" />
-        <button id="shipSaveBtn" />
-        <button id="shipSaveAndCheckoutBtn" />
+        <div className="shipTop">
+          <h2>Shipping details</h2>
 
-        <input id="shipName" />
-        <input id="shipPhone" />
-        <input id="shipAddress1" />
-        <input id="shipAddress2" />
-        <input id="shipCity" />
-        <input id="shipState" />
-        <input id="shipZip" />
-        <input id="shipCountry" />
+          <div className="shipPills">
+            <div id="shipModePill"></div>
+            <button id="shipCloseBtn" type="button">Close</button>
+          </div>
+
+          <p className="shipNote">
+            We store this on your device only (localStorage).
+          </p>
+        </div>
+
+        <div className="shipForm">
+          <label>
+            Full name
+            <input id="shipName" autoComplete="name" />
+          </label>
+
+          <label>
+            Phone number
+            <input id="shipPhone" autoComplete="tel" />
+          </label>
+
+          <label>
+            Street address
+            <input id="shipAddress1" autoComplete="address-line1" />
+          </label>
+
+          <label>
+            Apt / Unit (optional)
+            <input id="shipAddress2" autoComplete="address-line2" />
+          </label>
+
+          <div className="shipRow2">
+            <label>
+              City
+              <input id="shipCity" autoComplete="address-level2" />
+            </label>
+
+            <label>
+              State
+              <input id="shipState" autoComplete="address-level1" />
+            </label>
+          </div>
+
+          <div className="shipRow2">
+            <label>
+              ZIP
+              <input id="shipZip" autoComplete="postal-code" />
+            </label>
+
+            <label>
+              Country
+              {/* IMPORTANT: value must be ISO2 like "US" */}
+              <select id="shipCountry" defaultValue="US">
+                <option value="US">US</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div className="shipActions">
+          <button id="shipClearBtn" type="button">Clear</button>
+          <button id="shipSaveBtn" type="button">Save shipping</button>
+          <button id="shipSaveAndCheckoutBtn" type="button">Save + Continue with Cart</button>
+        </div>
       </div>
 
       <div id="lightboxBack" style={{ display: "none" }}>

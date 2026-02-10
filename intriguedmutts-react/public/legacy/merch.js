@@ -188,7 +188,7 @@ const variantNote = document.getElementById("variantNote");
 // Cart drawer DOM
 const cartBack = document.getElementById("cartBack");
 const closeCartBtn = document.getElementById("closeCartBtn");
-const cartItemsEl = document.getElementById("cartItems");
+const cartItemsEl = document.getElementById("cartList");
 const cartSubtotalEl = document.getElementById("cartSubtotal");
 const cartProdSubtotalEl = document.getElementById("cartProdSubtotal");
 const cartShipEl = document.getElementById("cartShip");
@@ -430,6 +430,9 @@ function clearShipping() {
 }
 
 function normalizeShippingForWorker(formObj) {
+  // Force ISO2 country code
+  const rawCountry = String(formObj.country_code || "US").trim();
+  const country_code = rawCountry.length === 2 ? rawCountry.toUpperCase() : "US";
   return {
     name: String(formObj.name || "").trim(),
     phone: String(formObj.phone || "").trim(),
@@ -439,7 +442,7 @@ function normalizeShippingForWorker(formObj) {
       city: String(formObj.city || "").trim(),
       state_code: String(formObj.state_code || "").trim().toUpperCase(),
       zip: String(formObj.zip || "").trim(),
-      country_code: String(formObj.country_code || "US").trim().toUpperCase(),
+      country_code,
     },
   };
 }
@@ -563,7 +566,8 @@ async function estimateCartTotals() {
 
   if (!cart.length) return;
 
-  const shipping = getShipping();
+  // Patch: sanitize shipping
+  const shipping = sanitizeShippingForWorker(getShipping());
   if (!shipping || !shipping.address) {
     cartShipEl.textContent = "Add shipping";
     cartTaxEl.textContent = "Add shipping";
@@ -620,16 +624,15 @@ async function estimateCartTotals() {
   }
 }
 
-// ===============================
-// PAYPAL CHECKOUT FOR WHOLE CART
-// ===============================
+// Patch: use sanitized shipping for worker
 async function checkoutCartWithPayPal() {
   const cart = getCart();
   if (!cart.length) return;
 
   // Ensure shipping exists; if not, open modal and stop
-  const shipping = await ensureShippingOrOpenModal();
-  if (!shipping) return;
+  const raw = await ensureShippingOrOpenModal();
+  if (!raw) return;
+  const shipping = sanitizeShippingForWorker(raw);
 
   // Validate shipping before calling backend
   const flatShipping = {
@@ -723,6 +726,62 @@ async function checkoutCartWithPayPal() {
     checkoutBtn.disabled = false;
     checkoutBtn.textContent = "Checkout (PayPal)";
   }
+}
+
+// Shipping sanitizers
+function toIso2CountryCode(v) {
+  const raw = String(v || "").trim();
+  if (!raw) return "US";
+
+  const up = raw.toUpperCase();
+
+  // already ISO2
+  if (up.length === 2) return up;
+
+  // common cases
+  const map = {
+    "UNITED STATES": "US",
+    "UNITED STATES OF AMERICA": "US",
+    "USA": "US",
+    "AMERICA": "US",
+    "CANADA": "CA",
+    "UK": "GB",
+    "UNITED KINGDOM": "GB",
+    "GREAT BRITAIN": "GB",
+    "AUSTRALIA": "AU",
+  };
+
+  return map[up] || "US";
+}
+
+function sanitizeShippingForWorker(saved) {
+  // supports both shapes:
+  // (A) { name, phone, address:{ address1, address2, city, state_code, zip, country_code } }
+  // (B) { name, phone, address1, city, state, zip, country }
+  const a = saved?.address || saved || {};
+
+  const name = String(saved?.name || saved?.fullName || "").trim();
+  const phone = String(saved?.phone || "").trim();
+
+  const address1 = String(a.address1 || a.address_line_1 || a.address1 || saved?.address1 || "").trim();
+  const address2 = String(a.address2 || a.address_line_2 || saved?.address2 || "").trim();
+  const city = String(a.city || a.admin_area_2 || saved?.city || "").trim();
+  const state = String(a.state_code || a.admin_area_1 || saved?.state || saved?.state_code || "").trim().toUpperCase();
+  const zip = String(a.zip || a.postal_code || saved?.zip || "").trim();
+  const country = toIso2CountryCode(a.country_code || a.country || saved?.country_code || saved?.country);
+
+  return {
+    name,
+    phone,
+    address: {
+      address1,
+      address2,
+      city,
+      state_code: state,
+      zip,
+      country_code: country,
+    },
+  };
 }
 
 // ===============================
