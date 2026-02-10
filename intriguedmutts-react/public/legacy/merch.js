@@ -1,3 +1,4 @@
+// ...removed duplicate and broken event handler assignments; all event binding is now handled in bindLegacyButtons() below...
 function waitFor(id) {
   return new Promise(resolve => {
     const i = setInterval(() => {
@@ -880,50 +881,71 @@ async function loadVariants() {
   }
 }
 
+
 // ===============================
-// UI EVENTS
+// UI EVENTS (now bound via helper)
 // ===============================
 
-if (closeModal) closeModal.onclick = () => modalBack.style.display = "none";
-if (refreshBtn) refreshBtn.onclick = loadProducts;
+function bindLegacyButtons() {
+  // Re-query (DON'T rely on old consts if DOM changed)
+  const refreshBtn = document.getElementById("refreshBtn");
+  const shippingBtn = document.getElementById("shippingBtn");
 
-if (modalBack) modalBack.onclick = (e) => { if (e.target === modalBack) modalBack.style.display = "none"; };
+  const cartBack = document.getElementById("cartBack");
+  const closeCartBtn = document.getElementById("closeCartBtn");
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  const editShippingFromCartBtn = document.getElementById("editShippingFromCartBtn");
 
-if (cartBack) cartBack.onclick = (e) => { if (e.target === cartBack) closeCart(); };
-if (closeCartBtn) closeCartBtn.onclick = closeCart;
-if (checkoutBtn) checkoutBtn.onclick = checkoutCartWithPayPal;
+  const shipBack = document.getElementById("shipBack");
+  const shipCloseBtn = document.getElementById("shipCloseBtn");
+  const shipClearBtn = document.getElementById("shipClearBtn");
+  const shipSaveBtn = document.getElementById("shipSaveBtn");
+  const shipSaveAndCheckoutBtn = document.getElementById("shipSaveAndCheckoutBtn");
 
-if (shippingBtn) shippingBtn.onclick = () => openShippingModal();
-if (editShippingFromCartBtn) editShippingFromCartBtn.onclick = () => openShippingModal();
+  if (refreshBtn) refreshBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); loadProducts(); };
+  if (shippingBtn) shippingBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); openShippingModal(); };
 
-if (lightboxBack) lightboxBack.onclick = () => { lightboxBack.style.display = "none"; };
+  // Backdrop click closes ONLY when you click the backdrop, not the panel/buttons
+  if (cartBack) cartBack.onclick = (e) => { if (e.target === cartBack) closeCart(); };
 
-// Shipping modal close on background click
-shipBack.onclick = (e) => { if (e.target === shipBack) closeShippingModal(); };
-shipCloseBtn.onclick = closeShippingModal;
+  if (closeCartBtn) closeCartBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); closeCart(); };
 
-shipClearBtn.onclick = () => {
-  if (confirm("Clear saved shipping info on this device?")) {
-    clearShipping();
-    fillShippingFormFromSaved();
-  }
-};
+  if (editShippingFromCartBtn) editShippingFromCartBtn.onclick = (e) => {
+    e.preventDefault(); e.stopPropagation(); openShippingModal();
+  };
 
-shipSaveBtn.onclick = () => {
-  const saved = validateAndSaveShipping(true);
-  if (saved) {
-    alert("Shipping saved.");
+  if (checkoutBtn) checkoutBtn.onclick = (e) => {
+    e.preventDefault(); e.stopPropagation(); checkoutCartWithPayPal();
+  };
+
+  // Shipping modal
+  if (shipBack) shipBack.onclick = (e) => { if (e.target === shipBack) closeShippingModal(); };
+  if (shipCloseBtn) shipCloseBtn.onclick = (e) => { e.preventDefault(); e.stopPropagation(); closeShippingModal(); };
+
+  if (shipClearBtn) shipClearBtn.onclick = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    if (confirm("Clear saved shipping info on this device?")) {
+      clearShipping();
+      fillShippingFormFromSaved();
+    }
+  };
+
+  if (shipSaveBtn) shipSaveBtn.onclick = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const saved = validateAndSaveShipping(true);
+    if (saved) { alert("Shipping saved."); closeShippingModal(); }
+  };
+
+  if (shipSaveAndCheckoutBtn) shipSaveAndCheckoutBtn.onclick = (e) => {
+    e.preventDefault(); e.stopPropagation();
+    const saved = validateAndSaveShipping(true);
+    if (!saved) return;
     closeShippingModal();
-  }
-};
+    openCart();
+  };
 
-shipSaveAndCheckoutBtn.onclick = () => {
-  const saved = validateAndSaveShipping(true);
-  if (!saved) return;
-
-  closeShippingModal();
-  openCart(); // go back to cart, NOT PayPal
-};
+  console.log("✅ Legacy merch buttons bound");
+}
 
 
 // ===============================
@@ -940,7 +962,11 @@ shipSaveAndCheckoutBtn.onclick = () => {
   console.log("✅ Merch DOM ready — starting app");
 
   ensureCartButton();
+  bindLegacyButtons();
   renderCart();
   updateShippingPills();
   loadProducts();
+
+  // Safety: bind again 1 tick later (sometimes React paints after script)
+  setTimeout(bindLegacyButtons, 0);
 })();

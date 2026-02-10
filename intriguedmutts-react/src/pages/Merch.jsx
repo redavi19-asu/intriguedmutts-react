@@ -1,110 +1,93 @@
 
 import { useEffect } from "react";
-import "./merchLegacy.css";
 
 export default function Merch() {
   useEffect(() => {
-    if (document.getElementById("legacy-merch-script")) return;
+    // 1) Inject legacy CSS once
+    if (!document.getElementById("legacy-merch-css")) {
+      const base = import.meta.env.BASE_URL;
+      const link = document.createElement("link");
+      link.id = "legacy-merch-css";
+      link.rel = "stylesheet";
+      link.href = `${base}legacy/merchLegacy.css`;
+      document.head.appendChild(link);
+    }
 
-    const base = import.meta.env.BASE_URL;
-
-    const script = document.createElement("script");
-    script.id = "legacy-merch-script";
-    script.src = `${base}legacy/merch.js`;
-    script.defer = true;
-
-    document.body.appendChild(script);
+    // 2) Inject legacy JS once
+    if (!document.getElementById("legacy-merch-script")) {
+      const base = import.meta.env.BASE_URL;
+      const script = document.createElement("script");
+      script.id = "legacy-merch-script";
+      script.src = `${base}legacy/merch.js`;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
   }, []);
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* top right actions area for cart button injection */}
-      <div className="topActions" style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "10px 16px" }}>
-        {/* Optional: script uses refreshBtn + shippingBtn if present */}
-        <button id="refreshBtn" style={{ display: "none" }} />
-        <button id="shippingBtn" style={{ display: "none" }} />
+      <div className="topActions" />
+      <div id="topBar" />
+
+      {/* page layout wrapper */}
+      <div id="merchLayout">
+        {/* LEFT column */}
+        <div id="merchMain">
+          <div id="statusText" />
+          <div id="grid" />
+        </div>
+
+        {/* RIGHT column (cart stays here) */}
+        <div id="merchSide">
+          <div id="cartBack" style={{ display: "block" }}>
+            <button id="closeCartBtn" />
+            <div id="cartItems" />
+            <div id="cartSubtotal" />
+            <div id="cartProdSubtotal" />
+            <div id="cartShip" />
+            <div id="cartTax" />
+            <div id="cartTotal" />
+            <div id="paypalTotalNote" />
+            <button id="checkoutBtn" />
+            <button id="editShippingFromCartBtn" />
+            <div id="shipStatusPill" />
+          </div>
+        </div>
       </div>
 
-      {/* Modal */}
-      <div id="modalBack">
+      {/* keep shipping + modal + lightbox EXACTLY as you already have */}
+      <div id="modalBack" style={{ display: "none" }}>
         <div id="modal">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
-            <div id="modalTitle" />
-            <button id="closeModal">Close</button>
-          </div>
-
+          <div id="modalTitle" />
           <img id="modalImg" alt="" />
-          <div id="variantNote" style={{ marginTop: 12, color: "#cfe9ff" }} />
+          <div id="enlargeLabel" />
+          <button id="modalBuyBtn" />
+          <button id="closeModal" />
           <div id="variantList" />
-
-          <button id="modalBuyBtn" style={{ marginTop: 12 }}>Add to Cart</button>
+          <div id="variantNote" />
         </div>
       </div>
 
-      {/* Cart Backdrop + Drawer */}
-      <div id="cartBack">
-        <div id="cartDrawer">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <strong>Cart</strong>
-            <button id="closeCartBtn">Close</button>
-          </div>
+      <div id="shipBack" style={{ display: "none" }}>
+        <div id="shipModePill" />
+        <button id="shipCloseBtn" />
+        <button id="shipClearBtn" />
+        <button id="shipSaveBtn" />
+        <button id="shipSaveAndCheckoutBtn" />
 
-          <div id="shipStatusPill" style={{ marginTop: 8, opacity: 0.9 }} />
-          <div id="cartItems" />
-          <hr style={{ opacity: 0.15 }} />
-
-          <div style={{ display: "grid", gap: 6 }}>
-            <div>Subtotal: <span id="cartSubtotal" /></div>
-            <div>Shipping: <span id="cartShip" /></div>
-            <div>Tax: <span id="cartTax" /></div>
-            <div style={{ fontWeight: 900 }}>Total: <span id="cartTotal" /></div>
-            <div id="paypalTotalNote" style={{ display: "none", marginTop: 6 }} />
-          </div>
-
-          <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
-            <button id="editShippingFromCartBtn">Edit shipping</button>
-            <button id="checkoutBtn">Checkout (PayPal)</button>
-          </div>
-        </div>
+        <input id="shipName" />
+        <input id="shipPhone" />
+        <input id="shipAddress1" />
+        <input id="shipAddress2" />
+        <input id="shipCity" />
+        <input id="shipState" />
+        <input id="shipZip" />
+        <input id="shipCountry" />
       </div>
 
-      {/* Shipping Modal */}
-      <div id="shipBack">
-        <div style={{ width: "min(720px, 92vw)", background: "rgba(20,20,20,.96)", border: "1px solid rgba(255,255,255,.10)", borderRadius: 16, padding: 14 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <strong>Shipping</strong>
-            <button id="shipCloseBtn">Close</button>
-          </div>
-
-          <div id="shipModePill" style={{ marginTop: 8, opacity: 0.9 }} />
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
-            <input id="shipName" placeholder="Full name" />
-            <input id="shipPhone" placeholder="Phone" />
-            <input id="shipAddress1" placeholder="Address line 1" />
-            <input id="shipAddress2" placeholder="Address line 2 (optional)" />
-            <input id="shipCity" placeholder="City" />
-            <input id="shipState" placeholder="State (e.g., MD)" />
-            <input id="shipZip" placeholder="ZIP" />
-            <input id="shipCountry" placeholder="Country (US)" />
-          </div>
-
-          <div style={{ display: "flex", gap: 10, marginTop: 12, justifyContent: "flex-end" }}>
-            <button id="shipClearBtn">Clear</button>
-            <button id="shipSaveBtn">Save</button>
-            <button id="shipSaveAndCheckoutBtn">Save & return</button>
-          </div>
-        </div>
-      </div>
-
-      {/* Lightbox */}
-      <div id="lightboxBack">
+      <div id="lightboxBack" style={{ display: "none" }}>
         <img id="lightboxImg" alt="" />
       </div>
-
-      {/* Status + Grid */}
-      <div id="statusText" />
-      <div id="grid" />
     </div>
   );
 }

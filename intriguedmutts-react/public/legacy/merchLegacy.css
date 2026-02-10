@@ -1,3 +1,75 @@
+
+/* ===============================
+   TOP ACTIONS (Cart / Refresh / Shipping)
+   Clean override so they don’t look weird
+================================= */
+
+.topActions {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(0,0,0,.92);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: blur(8px);
+}
+
+/* normalize all buttons in the header */
+.topActions button,
+.topActions .cartBtn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(16,16,16,.85);
+  color: #fff;
+  font-weight: 800;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  line-height: 1;
+  transform: translateZ(0);
+}
+
+.topActions button:hover,
+.topActions .cartBtn:hover {
+  border-color: rgba(58,160,255,.65);
+  box-shadow: 0 0 0 3px rgba(58,160,255,.18);
+}
+
+.topActions button:active,
+.topActions .cartBtn:active {
+  transform: translateY(1px);
+}
+
+.topActions button:focus-visible,
+.topActions .cartBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(58,160,255,.28);
+}
+
+/* Cart badge */
+.topActions .cartBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(58,160,255,.95);
+  color: #001018;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* If legacy CSS is forcing ugly defaults */
+.topActions button {
+  text-shadow: none;
+}
 .imMerchPage {
   min-height: 100vh;
   background: #000;

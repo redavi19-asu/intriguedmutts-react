@@ -1,0 +1,516 @@
+
+/* ===============================
+   2-COLUMN MERCH LAYOUT RESTORE
+================================= */
+
+#merchLayout{
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr 360px; /* left products, right cart */
+  gap: 18px;
+  align-items: start;
+}
+
+/* LEFT */
+#merchMain{
+  min-width: 0;
+}
+
+/* RIGHT */
+#merchSide{
+  position: sticky;
+  top: 16px;
+}
+
+/* cart column panel */
+#cartBack{
+  display: block !important;     /* keep it visible as a column */
+  position: static !important;   /* not an overlay */
+  inset: auto !important;
+  background: rgba(10,10,10,.85);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
+  padding: 12px;
+  z-index: auto !important;
+}
+
+/* grid stays left and looks like a grid again */
+#grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+  padding: 0;
+}
+
+/* status text sits above grid */
+#statusText{
+  margin: 10px 0 12px;
+}
+
+/* mobile: stack columns */
+@media (max-width: 900px){
+  #merchLayout{
+    grid-template-columns: 1fr;
+  }
+  #merchSide{
+    position: static;
+  }
+}
+
+/* ===============================
+   FIX BROKEN HEADER/TOTALS LAYOUT
+================================= */
+
+/* keep content aligned with grid padding */
+#statusText,
+#grid {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* The legacy “cart empty / totals / shipping” strip is plain text.
+   This forces it into a clean row layout. */
+#statusText {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px 16px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* If legacy prints multiple lines in statusText, keep them tidy */
+#statusText * {
+  max-width: 100%;
+}
+
+/* The dashed empty-cart callout */
+#statusText > div {
+  background: rgba(255,255,255,.03);
+  border: 1px dashed rgba(255,255,255,.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: rgba(255,255,255,.75);
+}
+
+/* KILL the random giant white bar (usually an empty block/div getting default bg) */
+#statusText div[style*="background: white"],
+#statusText div[style*="background:#fff"],
+#statusText div[style*="background: #fff"],
+#statusText div[style*="background-color: white"],
+#statusText div[style*="background-color:#fff"],
+#statusText div[style*="background-color: #fff"] {
+  display: none !important;
+}
+
+/* Mobile: stack */
+@media (max-width: 700px) {
+  #statusText {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===============================
+   Intrigued Mutts — legacy merch.css
+   (grid small + modal/cart/shipping usable)
+   =============================== */
+
+:root{
+  --bg: #000;
+  --panel: #0b0b0b;
+  --panel2: #101010;
+  --border: #2a2a2a;
+  --border2:#333;
+  --text: #fff;
+  --muted:#aaa;
+  --blue: rgba(58,160,255,.85);
+}
+
+*{ box-sizing:border-box; }
+body{ margin:0; background:var(--bg); color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+
+/* Top-right action bar (where JS injects Cart button) */
+.topActions{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:12px;
+  padding: 10px 16px;
+  background: linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,.35));
+  backdrop-filter: blur(6px);
+}
+
+/* Cart button injected by JS */
+.cartBtn{
+  appearance:none;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor:pointer;
+}
+.cartBtn:hover{ border-color:#555; }
+.cartBadge{
+  display:inline-flex;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  align-items:center;
+  justify-content:center;
+  border-radius: 999px;
+  background: rgba(58,160,255,.18);
+  border: 1px solid rgba(58,160,255,.35);
+  margin-left: 8px;
+  font-weight: 900;
+}
+
+/* Status */
+#statusText{ padding: 12px 16px; color: #cfe9ff; }
+
+/* --- GRID --- */
+#grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px;
+  cursor:pointer;
+  transition: transform .12s ease, border-color .12s ease;
+}
+.card:hover{ transform: translateY(-2px); border-color:#444; }
+
+.imgWrap{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow:hidden;
+  background:#111;
+}
+.imgWrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition: opacity .2s;
+}
+.imgWrap img.loaded{ opacity:1; }
+
+.card h3{
+  margin: 12px 0 10px;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.buyBtn{
+  width:100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border2);
+  background: var(--panel2);
+  color: var(--text);
+  font-weight: 900;
+  cursor:pointer;
+}
+.buyBtn:hover{ border-color:#555; }
+
+/* --- OVERLAYS --- */
+#modalBack, #cartBack, #shipBack, #lightboxBack{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 50;
+  display:none;
+}
+
+#modalBack{ align-items:center; justify-content:center; padding: 24px; }
+#modal{
+  width: min(820px, 95vw);
+  max-height: 90vh;
+  overflow:auto;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 22px;
+  padding: 16px;
+}
+
+/* Modal header */
+#modalTitle{
+  font-weight: 1000;
+  font-size: 18px;
+  margin: 6px 0 10px;
+}
+#closeModal{
+  position: sticky;
+  top: 0;
+  float: right;
+  margin-left: auto;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+#closeModal:hover{ border-color:#555; }
+
+#modalImg{
+  width:100%;
+  border-radius: 16px;
+  display:block;
+  background:#111;
+}
+
+/* Add to Cart button inside modal */
+#modalBuyBtn{
+  width:100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border:1px solid var(--border2);
+  background: var(--panel2);
+  color: var(--text);
+  font-weight: 1000;
+  cursor:pointer;
+}
+#modalBuyBtn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+/* Variants */
+#variantNote{
+  margin-top: 14px;
+  color: var(--muted);
+  font-weight: 800;
+}
+#variantList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top: 10px;
+}
+.variantRow{
+  border: 1px solid #2b2b2b;
+  background: rgba(255,255,255,.02);
+  border-radius: 14px;
+  padding: 12px;
+  cursor:pointer;
+}
+.variantRow:hover{ border-color:#444; }
+
+/* Lightbox */
+#lightboxBack{ align-items:center; justify-content:center; padding: 20px; }
+#lightboxImg{ max-width: 92vw; max-height: 92vh; border-radius: 16px; }
+
+/* --- CART DRAWER --- */
+#cartBack{
+  /* Full-screen backdrop + right-side drawer */
+  display:none;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+}
+#cartBack::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+#closeCartBtn{
+  position:absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color:#fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+
+#cartItems, #cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote, #checkoutBtn, #editShippingFromCartBtn, #shipStatusPill{
+  z-index: 2;
+}
+
+#cartItems{
+  width: min(520px, 92vw);
+  height: 100vh;
+  overflow:auto;
+  background: var(--panel);
+  border-left: 1px solid var(--border2);
+  padding: 70px 16px 140px; /* space for top close + bottom buttons */
+  position: relative;
+}
+
+.cartItem{
+  display:grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #252525;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,.02);
+}
+.cartItem img{
+  width:64px;
+  height:64px;
+  object-fit:cover;
+  border-radius: 12px;
+  background:#111;
+}
+.cartName{ font-weight: 1000; }
+.cartMeta{ font-size: 12px; color: var(--muted); margin-top:2px; }
+
+.cartQtyRow{ display:flex; align-items:center; gap:10px; margin-top: 10px; }
+.qtyBtn{
+  width:34px; height:34px;
+  border-radius: 10px;
+  border:1px solid var(--border2);
+  background: var(--panel2);
+  color:#fff;
+  font-weight: 1000;
+  cursor:pointer;
+}
+.qtyNum{ min-width: 22px; text-align:center; font-weight: 1000; }
+
+.removeBtn{
+  border:1px solid #444;
+  background: transparent;
+  color:#fff;
+  padding: 8px 10px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+.removeBtn:hover{ border-color:#777; }
+
+/* Cart footer */
+#cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  color:#fff;
+  font-weight: 900;
+}
+#cartSubtotal{ bottom: 112px; }
+#cartShip{ bottom: 88px; color: var(--muted); font-weight: 800; }
+#cartTax{ bottom: 66px; color: var(--muted); font-weight: 800; }
+#cartTotal{ bottom: 44px; font-weight: 1000; }
+#paypalTotalNote{ bottom: 22px; color: #cfe9ff; display:none; }
+
+#editShippingFromCartBtn{
+  position: absolute;
+  right: 16px;
+  bottom: 112px;
+  border:1px solid var(--border2);
+  background: var(--panel2);
+  color:#fff;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor:pointer;
+}
+
+#checkoutBtn{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border:1px solid var(--border2);
+  background: rgba(58,160,255,.18);
+  color:#fff;
+  font-weight: 1000;
+  cursor:pointer;
+}
+#checkoutBtn:disabled{
+  opacity: .45;
+  cursor:not-allowed;
+}
+
+#shipStatusPill{
+  position:absolute;
+  left:16px;
+  top: 16px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(58,160,255,.35);
+  background: rgba(58,160,255,.10);
+  color:#cfe9ff;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+/* --- SHIPPING MODAL --- */
+#shipBack{ align-items:center; justify-content:center; padding: 20px; }
+#shipBack > *{ z-index:2; }
+#shipBack::before{
+  content:"";
+  position:absolute; inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+#shipBack{
+  display:none;
+}
+
+#shipBack .shipPanel,
+#shipBack{
+  /* (JS uses inputs by id, so we style by ids below) */
+}
+
+#shipCloseBtn{
+  position:absolute;
+  top: 16px;
+  right: 16px;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color:#fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+
+/* Inputs */
+#shipName,#shipPhone,#shipAddress1,#shipAddress2,#shipCity,#shipState,#shipZip,#shipCountry{
+  width: min(680px, 92vw);
+  display:block;
+  margin: 8px auto;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #0f0f0f;
+  color:#fff;
+}
+
+/* Buttons in shipping */
+#shipClearBtn,#shipSaveBtn,#shipSaveAndCheckoutBtn{
+  margin: 10px 6px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: var(--panel2);
+  color:#fff;
+  font-weight: 900;
+  cursor:pointer;
+}
+#shipClearBtn{ border-color:#555; }

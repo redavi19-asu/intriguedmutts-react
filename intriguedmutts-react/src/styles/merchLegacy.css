@@ -1,0 +1,269 @@
+#cartBack {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+}
+
+#cartPanel {
+  height: 100vh !important;
+  overflow: auto !important;
+}
+/* Top buttons */
+#merchLegacy .topActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 16px;
+}
+
+#merchLegacy .topActions button,
+#merchLegacy .cartBtn {
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(20,20,20,.65);
+  color: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+/* Modal must scroll so Add to Cart is reachable */
+#merchLegacy #modal {
+  max-height: 88vh;
+  overflow: auto;
+}
+
+/* Cart drawer */
+#merchLegacy #cartBack[style*="display: flex"],
+#merchLegacy #cartBack[style*="display: block"] {
+  display: flex !important;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+#merchLegacy #cartPanel {
+  width: min(420px, 92vw);
+  height: 100vh;
+  overflow: auto;
+  background: rgba(15,15,15,.92);
+  border-left: 1px solid rgba(255,255,255,.12);
+  padding: 14px;
+}
+
+#merchLegacy .cartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#merchLegacy .cartActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+#merchLegacy .cartActions button {
+  flex: 1;
+}
+
+/* Shipping panel */
+#merchLegacy #shipBack[style*="display: flex"],
+#merchLegacy #shipBack[style*="display: block"] {
+  display: flex !important;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 7vh;
+}
+
+#merchLegacy #shipPanel {
+  width: min(720px, 92vw);
+  background: rgba(15,15,15,.92);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+#merchLegacy .shipHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#merchLegacy .shipActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+/* Scope EVERYTHING to the merch page so it doesn't fight your React styling */
+#merchLegacy {
+  position: relative;
+}
+
+/* Make sure your injected cart button area is usable */
+#merchLegacy .topActions {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+/* Status text */
+#merchLegacy #statusText {
+  max-width: 1100px;
+  margin: 18px auto 10px;
+  padding: 0 16px;
+  opacity: 0.9;
+}
+
+/* The product grid (small cards again) */
+#merchLegacy #grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px 60px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+}
+
+/* If legacy JS creates card nodes inside #grid, this keeps them contained */
+#merchLegacy #grid > * {
+  max-width: 260px;
+}
+
+/* Normalize images inside cards */
+#merchLegacy #grid img {
+  width: 100%;
+  height: auto;
+  max-height: 210px;
+  object-fit: contain;
+  display: block;
+}
+
+/* --------------------
+   OVERLAYS: modal/cart/shipping/lightbox
+   Default CLOSED (this prevents the "big viewer on page" problem)
+--------------------- */
+#merchLegacy #modalBack,
+#merchLegacy #cartBack,
+#merchLegacy #shipBack,
+#merchLegacy #lightboxBack {
+  display: none;                /* CLOSED by default */
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+/* If legacy JS sets style.display="block", keep it usable */
+#merchLegacy #modalBack[style*="display: block"],
+#merchLegacy #cartBack[style*="display: block"],
+#merchLegacy #shipBack[style*="display: block"],
+#merchLegacy #lightboxBack[style*="display: block"] {
+  display: block;
+}
+
+/* If legacy JS sets flex, we want centered */
+#merchLegacy #modalBack[style*="display: flex"],
+#merchLegacy #lightboxBack[style*="display: flex"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* MODAL PANEL */
+#merchLegacy #modal {
+  position: relative;
+  margin: 5vh auto;
+  width: min(980px, 92vw);
+  max-height: 90vh;           /* IMPORTANT: allow scrolling to Add to Cart */
+  overflow: auto;             /* IMPORTANT */
+  background: rgba(20, 20, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 18px 18px 22px;
+}
+
+#merchLegacy #modalImg {
+  width: 100%;
+  max-height: 420px;
+  object-fit: contain;
+  display: block;
+  border-radius: 14px;
+  background: #fff;
+}
+
+/* CART PANEL (right side, scrollable, not “out of space”) */
+#merchLegacy #cartBack {
+  display: none;
+  overflow: auto;
+}
+
+#merchLegacy #cartBack[style*="display: block"],
+#merchLegacy #cartBack[style*="display: flex"] {
+  display: flex;
+  justify-content: flex-end;
+}
+
+#merchLegacy #cartBack > * {
+  /* legacy injects content directly; this keeps it readable */
+}
+
+#merchLegacy #cartItems,
+#merchLegacy #cartSubtotal,
+#merchLegacy #cartProdSubtotal,
+#merchLegacy #cartShip,
+#merchLegacy #cartTax,
+#merchLegacy #cartTotal,
+#merchLegacy #paypalTotalNote {
+  color: #fff;
+}
+
+#merchLegacy #closeCartBtn,
+#merchLegacy #checkoutBtn,
+#merchLegacy #editShippingFromCartBtn {
+  cursor: pointer;
+}
+
+/* Shipping panel */
+#merchLegacy #shipBack {
+  display: none;
+  overflow: auto;
+}
+
+#merchLegacy #shipBack[style*="display: block"],
+#merchLegacy #shipBack[style*="display: flex"] {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+}
+
+#merchLegacy #shipBack input {
+  width: min(420px, 90vw);
+  display: block;
+  margin: 8px auto;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+}
+
+/* Lightbox image */
+#merchLegacy #lightboxImg {
+  width: min(980px, 92vw);
+  height: auto;
+  max-height: 92vh;
+  object-fit: contain;
+  margin: auto;
+  display: block;
+}
