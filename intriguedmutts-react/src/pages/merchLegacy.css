@@ -1,0 +1,259 @@
+.imMerchPage {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+}
+
+.topBar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(10px);
+}
+
+.topActions {
+  display: flex;
+  justify-content: flex-start; /* legacy injects Cart button here */
+  gap: 10px;
+}
+
+.imContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.imStatus {
+  color: #cfe9ff;
+  margin: 10px 0 14px;
+}
+
+.imGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+}
+
+/* overlays */
+.imOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.72);
+  z-index: 50;
+}
+
+/* modal */
+.imModal {
+  width: min(920px, calc(100vw - 24px));
+  margin: 40px auto;
+  background: rgba(15,15,15,.98);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(0,0,0,.6);
+}
+
+.imModalTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.imModalTitle {
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.imModalBody {
+  padding: 16px;
+}
+
+.imModalImgWrap {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.imModalImg {
+  width: min(520px, 92vw);
+  max-height: 55vh;
+  object-fit: contain;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.02);
+}
+
+.imHint {
+  font-size: 12px;
+  color: rgba(255,255,255,.65);
+}
+
+.imNote {
+  margin-top: 12px;
+  color: rgba(255,255,255,.75);
+}
+
+.imVariantList {
+  margin: 12px 0;
+  display: grid;
+  gap: 10px;
+}
+
+/* cart drawer */
+.imCartDrawer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: min(420px, 92vw);
+  background: rgba(14,14,14,.98);
+  border-left: 1px solid rgba(255,255,255,.10);
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+}
+
+.imCartHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.imCartTitle {
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.imBadge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(58,160,255,.20);
+  border: 1px solid rgba(58,160,255,.40);
+  font-size: 12px;
+}
+
+.imCartItems {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 0;
+}
+
+.imTotals {
+  border-top: 1px solid rgba(255,255,255,.08);
+  padding-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.imRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  color: rgba(255,255,255,.85);
+}
+
+.imRowTotal {
+  font-weight: 900;
+  color: #fff;
+}
+
+.imPill {
+  margin-top: 8px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  font-size: 12px;
+  color: rgba(255,255,255,.80);
+}
+
+.imCartActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding-top: 12px;
+}
+
+/* shipping modal */
+.imShipModal {
+  width: min(680px, calc(100vw - 24px));
+  margin: 40px auto;
+  background: rgba(15,15,15,.98);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(0,0,0,.6);
+  padding: 14px 16px 16px;
+}
+
+.imShipGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.imShipGrid input {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  outline: none;
+}
+
+.imShipGrid input::placeholder {
+  color: rgba(255,255,255,.45);
+}
+
+/* buttons */
+.imBtn {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.imBtn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.imBtnPrimary {
+  border-color: rgba(58,160,255,.55);
+  background: rgba(58,160,255,.18);
+}
+
+.imBtnSecondary {
+  border-color: rgba(255,255,255,.16);
+  background: rgba(255,255,255,.08);
+}
+
+.imBtnGhost {
+  background: transparent;
+}
+
+/* lightbox */
+.imLightboxImg {
+  display: block;
+  margin: 40px auto;
+  width: min(1000px, 95vw);
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.12);
+}

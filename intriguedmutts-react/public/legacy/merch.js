@@ -226,7 +226,7 @@ function updateCartBadge() {
 
 function openCart() {
   renderCart();
-  cartBack.style.display = "block";
+  cartBack.style.display = "flex";
   estimateCartTotals();
 }
 
