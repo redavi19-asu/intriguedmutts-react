@@ -9,11 +9,10 @@ export default function Merch() {
     const script = document.createElement("script");
     script.id = "legacy-merch-script";
     script.src = `${base}legacy/merch.js`;
-    script.async = false;
+    script.defer = true;
 
     document.body.appendChild(script);
 
-    return () => script.remove();
   }, []);
 
   return (
