@@ -10,6 +10,7 @@ import Stocks from "./pages/Stocks.jsx";
 import StocksGate from "./pages/StocksGate";
 import Society from "./pages/Society";
 import ScrollToTop from "./components/ScrollToTop";
+import Success from "./pages/Success";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="/stocks-gate" element={<StocksGate />} />
         <Route path="/stocks" element={<Stocks />} />
         <Route path="/society" element={<Society />} />
+        <Route path="/success" element={<Success />} />
         <Route path="/watchlist" element={<Navigate to="/stocks?tab=watchlist" replace />} />
       </Routes>
     </HashRouter>

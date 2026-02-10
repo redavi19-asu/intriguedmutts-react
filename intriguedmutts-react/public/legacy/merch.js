@@ -1,3 +1,101 @@
+// ===============================
+// CART UI HOTFIX (DOM-based, reliable)
+// - Hide broken "Edit shipping" button
+// - Move Shipping pill to top-right of cart
+// - Move Checkout to right + make it bigger
+// ===============================
+(function cartUiHotfixBoot(){
+  function findButtonByText(rx){
+    return [...document.querySelectorAll("button")].find(b => rx.test((b.textContent || "").trim()));
+  }
+
+  function applyHotfix(){
+    console.log("✅ CART UI HOTFIX APPLY");
+
+    const cartBack  = document.getElementById("cartBack");
+    const cartItems = document.getElementById("cartItems");
+    if (!cartBack || !cartItems) return;
+
+    // Make cart a stable positioning context
+    cartItems.style.position = "relative";
+    cartItems.style.paddingBottom = "110px"; // room for big checkout button
+
+    // 1) Hide Edit shipping button (ID OR text match)
+    const allBtns = [...document.querySelectorAll("button")];
+    const editBtn =
+      document.getElementById("editShippingFromCartBtn") ||
+      allBtns.find(b => /edit\s*shipping/i.test((b.textContent || "").trim()));
+
+    if (editBtn) editBtn.style.display = "none";
+
+    // 2) Shipping pill: pin top-right (but don't overlap Close)
+    const shipPill = document.getElementById("shipStatusPill");
+    if (shipPill) {
+      shipPill.style.position = "absolute";
+      shipPill.style.top = "10px";
+      shipPill.style.right = "120px"; // leaves room for the Close button
+      shipPill.style.left = "auto";
+      shipPill.style.zIndex = "999999";
+      shipPill.style.whiteSpace = "nowrap";
+    }
+
+    // 3) Checkout button: BIG + bottom-right, cannot run off screen
+    const checkout =
+      document.getElementById("checkoutBtn") ||
+      allBtns.find(b => /checkout/i.test((b.textContent || "").trim()));
+
+    if (checkout) {
+      checkout.style.position = "absolute";
+      checkout.style.right = "16px";
+      checkout.style.bottom = "16px";
+      checkout.style.left = "auto";
+
+      checkout.style.width = "min(420px, calc(100% - 32px))";
+      checkout.style.padding = "18px 24px";
+      checkout.style.fontSize = "19px";
+      checkout.style.fontWeight = "900";
+      checkout.style.borderRadius = "999px";
+      checkout.style.cursor = "pointer";
+    }
+
+    // 4) Add labels beside numbers (Subtotal / Shipping / Tax / Total)
+    function labelRow(el, label){
+      if (!el) return;
+      const raw = (el.textContent || "").trim();
+      if (!raw) return;
+
+      // If it already has words, don't overwrite
+      if (/[a-zA-Z]/.test(raw)) return;
+
+      el.innerHTML = `
+        <span style="opacity:.85">${label}</span>
+        <span style="font-weight:800">${raw}</span>
+      `;
+      el.style.display = "flex";
+      el.style.justifyContent = "space-between";
+      el.style.gap = "12px";
+      el.style.width = "100%";
+    }
+
+    labelRow(document.getElementById("cartProdSubtotal"), "Subtotal");
+    labelRow(document.getElementById("cartShip"), "Shipping");
+    labelRow(document.getElementById("cartTax"), "Tax");
+    labelRow(document.getElementById("cartTotal"), "Total");
+
+    // Optional: make Total stand out more
+    const total = document.getElementById("cartTotal");
+    if (total) total.style.fontSize = "18px";
+  }
+
+  // run now + after DOM changes (your cart content changes a lot)
+  applyHotfix();
+  const obs = new MutationObserver(applyHotfix);
+  obs.observe(document.body, { childList: true, subtree: true });
+
+  // also run shortly after load (covers slow renders)
+  setTimeout(applyHotfix, 250);
+  setTimeout(applyHotfix, 800);
+})();
 // Force cart header/footer nodes into drawer (authoritative)
 function forceCartNodesIntoDrawer() {
   const cartItems = document.getElementById("cartItems");

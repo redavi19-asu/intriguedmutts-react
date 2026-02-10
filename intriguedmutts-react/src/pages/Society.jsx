@@ -1,7 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
 export default function Society() {
-  const navigate = useNavigate();
+  const nav = useNavigate();
+
+  const handleBack = () => {
+    // If user entered /#/society directly (no in-site history), go Home
+    if (window.history.length <= 1) {
+      nav("/", { replace: true });
+    } else {
+      nav(-1);
+    }
+  };
+
   return (
     <div
       style={{
@@ -13,13 +23,9 @@ export default function Society() {
       }}
     >
       <button
-        onClick={() => {
-          if (window.history.length > 1) {
-            navigate(-1);
-          } else {
-            navigate("/home");
-          }
-        }}
+        type="button"
+        onClick={handleBack}
+        className="backBtn"
         style={{
           marginBottom: 40,
           padding: "10px 16px",

@@ -44,7 +44,8 @@ export default function Merch() {
         "click",
         (e) => {
           e.preventDefault();
-          shipBack.style.display = "block";
+          e.stopPropagation();
+          shipBack.style.display = "flex"; // ✅ SAME as top shipping
         },
         true
       );
@@ -63,8 +64,16 @@ export default function Merch() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      <div className="topActions" />
-      <div id="topBar" />
+      <div className="topBar" id="topBar">
+        <div className="topActions">
+          <button id="refreshBtn" className="btnGlow" type="button">
+            Refresh products
+          </button>
+          <button id="shippingBtn" className="btnGlow" type="button">
+            Shipping
+          </button>
+        </div>
+      </div>
 
       {/* page layout wrapper */}
 

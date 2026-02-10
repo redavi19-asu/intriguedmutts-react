@@ -833,6 +833,45 @@ body{ margin:0; background:var(--bg); color:var(--text); font-family: system-ui,
   padding: 16px;
 }
 
+/* --- Make Cart button match the other top buttons --- */
+.topActions #cartBtn.cartBtn{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.topActions #cartBtn.cartBtn:hover{
+  text-decoration: underline;
+}
+
+/* Keep the cart count badge, but make it lighter + consistent */
+.topActions #cartBtn .cartBadge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 22px;
+  height: 22px;
+  padding: 0 8px;
+
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.06);
+}
+
 /* Modal header */
 /* FIX: ensure cart + buttons are clickable above page */
 #cartBack {
