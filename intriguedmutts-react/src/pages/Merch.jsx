@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import "./merch-legacy.css";
 
 export default function Merch() {
   useEffect(() => {
@@ -22,21 +23,21 @@ export default function Merch() {
 
       {/* Modal Backdrop and Modal Structure */}
 
-      <div id="modalBack">
+      <div id="modalBack" style={{ display: "none" }}>
         <div id="modal">
           <div id="modalTitle" />
           <img id="modalImg" />
           <button id="modalBuyBtn" />
-          <button id="closeModal" />
+          <button id="closeModal">Close</button>
           <div id="variantList" />
-          <div id="variantNote" />
+          <div id="variantNote">Pick your size:</div>
         </div>
       </div>
 
       {/* Cart Backdrop and Cart Structure */}
 
-      <div id="cartBack">
-        <button id="closeCartBtn" />
+      <div id="cartBack" style={{ display: "none" }}>
+        <button id="closeCartBtn">Close</button>
         <div id="cartItems" />
         <div id="cartSubtotal" />
         <div id="cartProdSubtotal" />
@@ -44,15 +45,15 @@ export default function Merch() {
         <div id="cartTax" />
         <div id="cartTotal" />
         <div id="paypalTotalNote" />
-        <button id="checkoutBtn" />
-        <button id="editShippingFromCartBtn" />
+        <button id="checkoutBtn">Checkout (PayPal)</button>
+        <button id="editShippingFromCartBtn">Edit shipping</button>
         <div id="shipStatusPill" />
       </div>
 
       {/* Shipping Backdrop and Shipping Structure */}
 
-      <div id="shipBack">
-        <button id="shipCloseBtn" />
+      <div id="shipBack" style={{ display: "none" }}>
+        <button id="shipCloseBtn">Close</button>
         <button id="shipClearBtn" />
         <button id="shipSaveBtn" />
         <button id="shipSaveAndCheckoutBtn" />
@@ -68,7 +69,7 @@ export default function Merch() {
 
       {/* Lightbox Backdrop */}
 
-      <div id="lightboxBack">
+      <div id="lightboxBack" style={{ display: "none" }}>
         <img id="lightboxImg" />
       </div>
 
