@@ -1,0 +1,21 @@
+/* Make legacy cards responsive inside Tailwind grid */
+#grid .card {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+#grid .imgWrap {
+  width: 100% !important;
+}
+
+#grid .imgWrap img {
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+}
+
+/* Optional: tighten card padding if they feel too tall */
+#grid .card h3 {
+  font-size: 14px;
+  line-height: 1.2;
+}
