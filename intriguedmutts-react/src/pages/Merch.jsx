@@ -17,157 +17,94 @@ export default function Merch() {
   }, []);
 
   return (
-    <div className="merchPage">
-      {/* Top row for injected Cart button + actions */}
-      <div className="topActions">
-        <button id="refreshBtn" className="btnGhost" type="button">
-          Refresh
-        </button>
-
-        <button id="shippingBtn" className="btnGhost" type="button">
-          Shipping
-        </button>
-
-        {/* legacy script injects Cart button here */}
+    <div className="min-h-screen bg-black text-white">
+      {/* top right actions area for cart button injection */}
+      <div className="topActions" style={{ display: "flex", justifyContent: "flex-end", gap: 10, padding: "10px 16px" }}>
+        {/* Optional: script uses refreshBtn + shippingBtn if present */}
+        <button id="refreshBtn" style={{ display: "none" }} />
+        <button id="shippingBtn" style={{ display: "none" }} />
       </div>
 
-      {/* Status + Grid */}
-      <div id="statusText" className="statusText" />
-      <div id="grid" className="grid" />
-
-      {/* ===== Modal (Product + variants) ===== */}
-      <div id="modalBack" className="overlay" style={{ display: "none" }}>
-        <div id="modal" className="modal" role="dialog" aria-modal="true">
-          <div className="modalHeader">
-            <div id="modalTitle" className="modalTitle" />
-            <button id="closeModal" className="btnGhost" type="button">
-              Close
-            </button>
+      {/* Modal */}
+      <div id="modalBack">
+        <div id="modal">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+            <div id="modalTitle" />
+            <button id="closeModal">Close</button>
           </div>
 
-          <div className="modalBody">
-            <div className="imgWrapModal">
-              <img id="modalImg" alt="" />
-              <div id="enlargeLabel" className="enlargeLabel">
-                Tap image to enlarge
-              </div>
-              {/* legacy script inserts thumbnail strip after enlargeLabel */}
-            </div>
+          <img id="modalImg" alt="" />
+          <div id="variantNote" style={{ marginTop: 12, color: "#cfe9ff" }} />
+          <div id="variantList" />
 
-            <div className="variantsBlock">
-              <div id="variantNote" className="variantNote" />
-              <div id="variantList" className="variantList" />
-            </div>
+          <button id="modalBuyBtn" style={{ marginTop: 12 }}>Add to Cart</button>
+        </div>
+      </div>
+
+      {/* Cart Backdrop + Drawer */}
+      <div id="cartBack">
+        <div id="cartDrawer">
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <strong>Cart</strong>
+            <button id="closeCartBtn">Close</button>
           </div>
 
-          <div className="modalFooter">
-            <button id="modalBuyBtn" className="btnPrimary" type="button" disabled>
-              Add to Cart
-            </button>
+          <div id="shipStatusPill" style={{ marginTop: 8, opacity: 0.9 }} />
+          <div id="cartItems" />
+          <hr style={{ opacity: 0.15 }} />
+
+          <div style={{ display: "grid", gap: 6 }}>
+            <div>Subtotal: <span id="cartSubtotal" /></div>
+            <div>Shipping: <span id="cartShip" /></div>
+            <div>Tax: <span id="cartTax" /></div>
+            <div style={{ fontWeight: 900 }}>Total: <span id="cartTotal" /></div>
+            <div id="paypalTotalNote" style={{ display: "none", marginTop: 6 }} />
+          </div>
+
+          <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+            <button id="editShippingFromCartBtn">Edit shipping</button>
+            <button id="checkoutBtn">Checkout (PayPal)</button>
           </div>
         </div>
       </div>
 
-      {/* ===== Cart Drawer ===== */}
-      <div id="cartBack" className="overlay" style={{ display: "none" }}>
-        <div className="cartDrawer">
-          <div className="cartHeader">
-            <div className="cartTitle">Cart</div>
-            <button id="closeCartBtn" className="btnGhost" type="button">
-              Close
-            </button>
+      {/* Shipping Modal */}
+      <div id="shipBack">
+        <div style={{ width: "min(720px, 92vw)", background: "rgba(20,20,20,.96)", border: "1px solid rgba(255,255,255,.10)", borderRadius: 16, padding: 14 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <strong>Shipping</strong>
+            <button id="shipCloseBtn">Close</button>
           </div>
 
-          <div id="cartItems" className="cartItems" />
+          <div id="shipModePill" style={{ marginTop: 8, opacity: 0.9 }} />
 
-          <div className="cartTotals">
-            <div className="row">
-              <span>Subtotal</span>
-              <span id="cartSubtotal">$0.00</span>
-            </div>
-
-            <div className="row">
-              <span>Shipping</span>
-              <span id="cartShip">$—</span>
-            </div>
-
-            <div className="row">
-              <span>Tax</span>
-              <span id="cartTax">$—</span>
-            </div>
-
-            <div className="row total">
-              <span>Total</span>
-              <span id="cartTotal">$—</span>
-            </div>
-
-            <div id="paypalTotalNote" className="paypalNote" style={{ display: "none" }} />
-          </div>
-
-          <div className="cartActions">
-            <button id="editShippingFromCartBtn" className="btnGhost" type="button">
-              Edit shipping
-            </button>
-
-            <button id="checkoutBtn" className="btnPrimary" type="button">
-              Checkout (PayPal)
-            </button>
-
-            <div id="shipStatusPill" className="pill">
-              Shipping: Not set
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ===== Lightbox ===== */}
-      <div id="lightboxBack" className="overlay" style={{ display: "none" }}>
-        <div className="lightbox">
-          <img id="lightboxImg" alt="" />
-        </div>
-      </div>
-
-      {/* ===== Shipping Modal ===== */}
-      <div id="shipBack" className="overlay" style={{ display: "none" }}>
-        <div className="shipModal">
-          <div className="shipHeader">
-            <div className="shipTitle">Shipping</div>
-            <div id="shipModePill" className="pill">
-              Saved: No
-            </div>
-            <button id="shipCloseBtn" className="btnGhost" type="button">
-              Close
-            </button>
-          </div>
-
-          <div className="shipForm">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
             <input id="shipName" placeholder="Full name" />
             <input id="shipPhone" placeholder="Phone" />
             <input id="shipAddress1" placeholder="Address line 1" />
             <input id="shipAddress2" placeholder="Address line 2 (optional)" />
-            <div className="grid2">
-              <input id="shipCity" placeholder="City" />
-              <input id="shipState" placeholder="State (e.g. MD)" />
-            </div>
-            <div className="grid2">
-              <input id="shipZip" placeholder="ZIP" />
-              <input id="shipCountry" placeholder="Country (US)" defaultValue="US" />
-            </div>
+            <input id="shipCity" placeholder="City" />
+            <input id="shipState" placeholder="State (e.g., MD)" />
+            <input id="shipZip" placeholder="ZIP" />
+            <input id="shipCountry" placeholder="Country (US)" />
           </div>
 
-          <div className="shipActions">
-            <button id="shipClearBtn" className="btnGhost" type="button">
-              Clear
-            </button>
-            <button id="shipSaveBtn" className="btnGhost" type="button">
-              Save
-            </button>
-            <button id="shipSaveAndCheckoutBtn" className="btnPrimary" type="button">
-              Save & back to cart
-            </button>
+          <div style={{ display: "flex", gap: 10, marginTop: 12, justifyContent: "flex-end" }}>
+            <button id="shipClearBtn">Clear</button>
+            <button id="shipSaveBtn">Save</button>
+            <button id="shipSaveAndCheckoutBtn">Save & return</button>
           </div>
         </div>
       </div>
+
+      {/* Lightbox */}
+      <div id="lightboxBack">
+        <img id="lightboxImg" alt="" />
+      </div>
+
+      {/* Status + Grid */}
+      <div id="statusText" />
+      <div id="grid" />
     </div>
   );
 }
