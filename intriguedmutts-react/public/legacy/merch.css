@@ -1,4 +1,59 @@
 
+/* ===== FINAL CART DRAWER LAYOUT (authoritative) ===== */
+
+#cartBack{
+  position: fixed !important;
+  inset: 0 !important;
+  display: none;               /* JS toggles to flex */
+  align-items: stretch !important;
+  justify-content: flex-end !important;
+  background: rgba(0,0,0,.65) !important;
+  z-index: 50 !important;
+}
+
+#cartItems{
+  width: min(520px, 92vw) !important;
+  height: 100vh !important;
+  background: rgba(12,12,12,.98) !important;
+  border-left: 1px solid rgba(255,255,255,.12) !important;
+  padding: 70px 16px 16px !important;
+  overflow: auto !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+#closeCartBtn{
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 5 !important;
+}
+
+/* Header strip inside drawer */
+#cartHeaderStrip{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+/* Footer pinned INSIDE drawer (not viewport) */
+#cartFooter{
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#checkoutBtn{
+  width: 100% !important;
+}
+
 /* ===============================
    CART HOTFIX v1 (LAST RULES WIN)
    Forces: right drawer + visible buttons + footer aligned

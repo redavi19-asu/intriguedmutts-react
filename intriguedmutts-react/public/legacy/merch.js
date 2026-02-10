@@ -1,3 +1,95 @@
+// Force cart header/footer nodes into drawer (authoritative)
+function forceCartNodesIntoDrawer() {
+  const cartItems = document.getElementById("cartItems");
+  if (!cartItems) return;
+
+  // Ensure a footer + header exist INSIDE the drawer
+  let footer = document.getElementById("cartFooter");
+  if (!footer) {
+    footer = document.createElement("div");
+    footer.id = "cartFooter";
+    cartItems.appendChild(footer);
+  }
+
+  let header = document.getElementById("cartHeaderStrip");
+  if (!header) {
+    header = document.createElement("div");
+    header.id = "cartHeaderStrip";
+    cartItems.insertBefore(header, cartItems.firstChild);
+  }
+
+  const headerIds = ["shipStatusPill", "editShippingFromCartBtn"];
+  const footerIds = [
+    "cartProdSubtotal",
+    "cartSubtotal",
+    "cartShip",
+    "cartTax",
+    "cartTotal",
+    "paypalTotalNote",
+    "checkoutBtn"
+  ];
+
+  // MOVE (not clone) the actual nodes into the drawer
+  headerIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) header.appendChild(el);
+  });
+
+  footerIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) footer.appendChild(el);
+  });
+}
+// Toggle cart drawer open/close
+function toggleCart() {
+  const open = getComputedStyle(cartBack).display !== "none";
+  if (open) closeCart();
+  else openCart();
+}
+// Helper to mount cart footer and header inside drawer
+function mountCartFooterInsideDrawer() {
+  const cartItems = document.getElementById("cartItems");
+  if (!cartItems) return;
+
+  // Create a footer container at the bottom of the drawer
+  let footer = document.getElementById("cartFooter");
+  if (!footer) {
+    footer = document.createElement("div");
+    footer.id = "cartFooter";
+    cartItems.appendChild(footer);
+  }
+
+  // Create a header strip inside drawer for shipping pill + edit btn
+  let header = document.getElementById("cartHeaderStrip");
+  if (!header) {
+    header = document.createElement("div");
+    header.id = "cartHeaderStrip";
+    cartItems.insertBefore(header, cartItems.firstChild);
+  }
+
+  const headerIds = ["shipStatusPill", "editShippingFromCartBtn"];
+  const footerIds = [
+    "cartProdSubtotal",
+    "cartSubtotal",
+    "cartShip",
+    "cartTax",
+    "cartTotal",
+    "paypalTotalNote",
+    "checkoutBtn"
+  ];
+
+  // Move header bits into drawer header
+  headerIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el && el.parentElement !== header) header.appendChild(el);
+  });
+
+  // Move footer bits into drawer footer
+  footerIds.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el && el.parentElement !== footer) footer.appendChild(el);
+  });
+}
 // ✅ Close product modal with Escape
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
@@ -232,7 +324,11 @@ function ensureCartButton() {
   cartBtn.className = "cartBtn";
   cartBtn.id = "cartBtn";
   cartBtn.innerHTML = `Cart <span class="cartBadge" id="cartBadge">0</span>`;
-  cartBtn.onclick = openCart;
+  cartBtn.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleCart();
+  };
 
   headerRight.insertBefore(cartBtn, headerRight.firstChild);
   updateCartBadge();
@@ -245,6 +341,7 @@ function updateCartBadge() {
 }
 
 function openCart() {
+  forceCartNodesIntoDrawer();   // ✅ ensures totals are inside drawer every time
   renderCart();
   cartBack.style.display = "flex";
   estimateCartTotals();
@@ -966,42 +1063,6 @@ function bindLegacyButtons() {
 
   console.log("✅ Legacy merch buttons bound");
 
-  // ✅ HARD RESET: cart must be CLOSED on load + open as RIGHT drawer
-  (() => {
-    const cartBack = document.getElementById("cartBack");
-    const cartItems = document.getElementById("cartItems");
-    const cartBtn = document.querySelector(".cartBtn");
-
-    if (!cartBack || !cartItems || !cartBtn) return;
-
-    // Force the overlay to behave like a right-side drawer
-    cartBack.style.position = "fixed";
-    cartBack.style.inset = "0";
-    cartBack.style.display = "none";          // <-- KEY: closed on load
-    cartBack.style.flexDirection = "row";     // <-- prevent row-reverse surprises
-    cartBack.style.justifyContent = "flex-end";
-    cartBack.style.alignItems = "stretch";
-    cartBack.style.zIndex = "50";
-
-    // Force drawer panel to sit on the RIGHT inside the flex overlay
-    cartItems.style.marginLeft = "auto";
-
-
-    // Toggle open/close on Cart button (capture phase + stopImmediatePropagation)
-    cartBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation(); // <-- blocks the legacy "always open" handler
-
-      const open = getComputedStyle(cartBack).display !== "none";
-      cartBack.style.display = open ? "none" : "flex";
-    }, true); // <-- CAPTURE phase so we intercept first
-
-    // Click outside the drawer closes it
-    cartBack.addEventListener("click", (e) => {
-      if (e.target === cartBack) cartBack.style.display = "none";
-    });
-  })();
 }
 
 
@@ -1020,6 +1081,10 @@ function bindLegacyButtons() {
 
   ensureCartButton();
   bindLegacyButtons();
+
+  // ✅ force DOM structure before any rendering
+  forceCartNodesIntoDrawer();
+
   renderCart();
   updateShippingPills();
   loadProducts();
