@@ -1,0 +1,21 @@
+.stock-page {
+  min-height: 100vh;
+  background-image: url("/stockbackground.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stock-overlay {
+  width: 100%;
+  min-height: 100vh;
+  background: rgba(0, 0, 0, 0.6); /* dark overlay */
+  backdrop-filter: blur(2px);
+
+  padding: 4rem;
+  color: white;
+}

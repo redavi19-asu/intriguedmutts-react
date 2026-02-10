@@ -1,3 +1,10 @@
+const darkCard = {
+  background: "rgba(0,0,0,0.65)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: 18,
+  boxShadow: "0 0 22px rgba(0,0,0,0.55)",
+  backdropFilter: "blur(6px)",
+};
 
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -39,7 +46,24 @@ export default function Stocks() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 1200, margin: "0 auto" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)), url(/intriguedmutts-react/stockbackground.png)`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundAttachment: "fixed",
+        padding: 24,
+        color: "#f8f8f8",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto",
+          backdropFilter: "blur(2px)",
+        }}
+      >
       <Link
         to="/home"
         style={{
@@ -62,13 +86,10 @@ export default function Stocks() {
       {/* HERO */}
       <div
         style={{
-          borderRadius: 18,
+          ...darkCard,
           padding: 22,
-          border: "1px solid rgba(255,255,255,0.14)",
-          background:
-            "radial-gradient(circle at 15% 10%, rgba(57,255,20,0.16), rgba(255,255,255,0.03) 45%, rgba(0,0,0,0))",
-          boxShadow: "0 0 30px rgba(57,255,20,0.10)",
           marginBottom: 18,
+          color: "#f8f8f8",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
@@ -87,10 +108,10 @@ export default function Stocks() {
             <div style={{ fontSize: 12, letterSpacing: 3, opacity: 0.75 }}>
               INTRIGUED MUTTS
             </div>
-            <div style={{ fontSize: 40, fontWeight: 950, marginTop: 2 }}>
+            <div style={{ fontSize: 40, fontWeight: 950, marginTop: 2, color: "#fff" }}>
               Stocks Dashboard
             </div>
-            <div style={{ opacity: 0.8, marginTop: 6, maxWidth: 760 }}>
+            <div style={{ color: "#bdbdbd", marginTop: 6, maxWidth: 760 }}>
               Live watchlist tiles now. Heatmap + Pack Picks next (KV/D1 + scanners).
             </div>
           </div>
@@ -100,11 +121,8 @@ export default function Stocks() {
       {/* STRATEGY ACCORDION */}
       <details
         style={{
-          borderRadius: 18,
-          border: "2px solid rgba(57,255,20,0.35)", // lime border
-          background:
-            "linear-gradient(180deg, rgba(57,255,20,0.06), rgba(255,255,255,0.02))",
-          boxShadow: "0 0 26px rgba(57,255,20,0.10)",
+          ...darkCard,
+          border: "1px solid rgba(255,255,255,0.18)",
           marginBottom: 18,
           overflow: "hidden",
         }}
@@ -147,7 +165,7 @@ export default function Stocks() {
               padding: "8px 12px",
               borderRadius: 999,
               border: "1px solid rgba(255,255,255,0.18)",
-              background: "rgba(255,255,255,0.04)",
+              background: "rgba(255,255,255,0.03)",
             }}
           >
             Click to expand
@@ -270,13 +288,10 @@ export default function Stocks() {
                 padding: 16,
                 borderRadius: 16,
                 userSelect: "none",
-                border: active
-                  ? "2px solid rgba(255,105,180,0.55)"
-                  : "1px solid rgba(255,255,255,0.14)",
                 background: active
-                  ? "rgba(255,105,180,0.10)"
-                  : "rgba(255,255,255,0.03)",
-                boxShadow: active ? "0 0 22px rgba(255,105,180,0.12)" : "none",
+                  ? "rgba(255,255,255,0.08)"
+                  : "rgba(0,0,0,0.6)",
+                border: "1px solid rgba(255,255,255,0.18)",
               }}
             >
               <div style={{ fontWeight: 900, fontSize: 16 }}>{t.title}</div>
@@ -298,7 +313,7 @@ export default function Stocks() {
             borderRadius: 18,
             padding: 14,
             border: "1px solid rgba(255,255,255,0.12)",
-            background: "rgba(255,255,255,0.02)",
+            background: "rgba(0,0,0,0.55)",
           }}
         >
           <WatchlistTiles />
@@ -337,6 +352,7 @@ export default function Stocks() {
           </p>
         </div>
       )}
+      </div>
     </div>
   );
 }
