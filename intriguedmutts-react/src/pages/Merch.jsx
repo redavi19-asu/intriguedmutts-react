@@ -62,136 +62,154 @@ export default function Merch() {
     };
   }, []);
 
+  const base = import.meta.env.BASE_URL;
+  const bg = `${base}legacy/merchbackground.png`;
+
   return (
-    <div className="min-h-screen bg-black text-white">
-      <div className="topBar" id="topBar">
-        <div className="topActions">
-          <button id="refreshBtn" className="btnGlow" type="button">
-            Refresh products
-          </button>
-          <button id="shippingBtn" className="btnGlow" type="button">
-            Shipping
-          </button>
-        </div>
-      </div>
+    <div
+      className="relative min-h-screen"
+      style={{
+        minHeight: "100vh",
+        backgroundImage: `url("${bg}")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      {/* overlay tint (separate layer so it can't “erase” the background) */}
+      <div className="absolute inset-0 bg-black/60" />
 
-      {/* page layout wrapper */}
-
-      <div
-        id="merchLayout"
-        className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start"
-      >
-        <div className="min-w-0">
-          <div id="statusText" />
-          <div id="grid" />
-        </div>
-      </div>
-
-      {/* Cart Drawer (overlay) */}
-      <div id="cartBack">
-        <div id="cartItems">
-          <button id="closeCartBtn">Close</button>
-          <div id="shipStatusPill"></div>
-
-          <div id="cartList"></div>
-
-          <div id="cartProdSubtotal"></div>
-          <div id="cartSubtotal"></div>
-          <div id="cartShip"></div>
-          <div id="cartTax"></div>
-          <div id="cartTotal"></div>
-          <div id="paypalTotalNote"></div>
-
-          <button id="editShippingFromCartBtn">Edit shipping</button>
-          <button id="checkoutBtn">Checkout (PayPal)</button>
-        </div>
-      </div>
-
-      {/* keep shipping + modal + lightbox EXACTLY as you already have */}
-      <div id="modalBack" style={{ display: "none" }}>
-        <div id="modal">
-          <div id="modalTitle" />
-          <img id="modalImg" alt="" />
-          <div id="enlargeLabel" />
-          <button id="modalBuyBtn" />
-          <button id="closeModal" />
-          <div id="variantList" />
-          <div id="variantNote" />
-        </div>
-      </div>
-
-      <div id="shipBack" style={{ display: "none" }}>
-        <div className="shipTop">
-          <h2>Shipping details</h2>
-
-          <div className="shipPills">
-            <div id="shipModePill"></div>
-            <button id="shipCloseBtn" type="button">Close</button>
-          </div>
-
-          <p className="shipNote">
-            We store this on your device only (localStorage).
-          </p>
-        </div>
-
-        <div className="shipForm">
-          <label>
-            Full name
-            <input id="shipName" autoComplete="name" />
-          </label>
-
-          <label>
-            Phone number
-            <input id="shipPhone" autoComplete="tel" />
-          </label>
-
-          <label>
-            Street address
-            <input id="shipAddress1" autoComplete="address-line1" />
-          </label>
-
-          <label>
-            Apt / Unit (optional)
-            <input id="shipAddress2" autoComplete="address-line2" />
-          </label>
-
-          <div className="shipRow2">
-            <label>
-              City
-              <input id="shipCity" autoComplete="address-level2" />
-            </label>
-
-            <label>
-              State
-              <input id="shipState" autoComplete="address-level1" />
-            </label>
-          </div>
-
-          <div className="shipRow2">
-            <label>
-              ZIP
-              <input id="shipZip" autoComplete="postal-code" />
-            </label>
-
-            <label>
-              Country
-              {/* IMPORTANT: value must be ISO2 like "US" */}
-              <select id="shipCountry" defaultValue="US">
-                <option value="US">US</option>
-              </select>
-            </label>
+      {/* content (above overlay) */}
+      <div className="relative text-white w-full px-4">
+        {/* everything you already have stays the same below */}
+        <div className="topBar" id="topBar">
+          <div className="topActions">
+            <button id="refreshBtn" className="btnGlow" type="button">
+              Refresh products
+            </button>
+            <button id="shippingBtn" className="btnGlow" type="button">
+              Shipping
+            </button>
           </div>
         </div>
 
-        <div className="shipActions">
-          <button id="shipClearBtn" type="button">Clear</button>
-          <button id="shipSaveBtn" type="button">Save shipping</button>
-          <button id="shipSaveAndCheckoutBtn" type="button">Save + Continue with Cart</button>
+        <div
+          id="merchLayout"
+          className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start"
+        >
+          <div className="min-w-0">
+            <div id="statusText" />
+            <div id="grid" />
+          </div>
         </div>
-      </div>
 
-      <div id="lightboxBack" style={{ display: "none" }}>
-        <img id="lightboxImg" alt="" />
+        {/* Cart Drawer (overlay) */}
+        <div id="cartBack">
+          <div id="cartItems">
+            <button id="closeCartBtn">Close</button>
+            <div id="shipStatusPill"></div>
+
+            <div id="cartList"></div>
+
+            <div id="cartProdSubtotal"></div>
+            <div id="cartSubtotal"></div>
+            <div id="cartShip"></div>
+            <div id="cartTax"></div>
+            <div id="cartTotal"></div>
+            <div id="paypalTotalNote"></div>
+
+            <button id="editShippingFromCartBtn">Edit shipping</button>
+            <button id="checkoutBtn">Checkout (PayPal)</button>
+          </div>
+        </div>
+
+        {/* keep shipping + modal + lightbox EXACTLY as you already have */}
+        <div id="modalBack" style={{ display: "none" }}>
+          <div id="modal">
+            <div id="modalTitle" />
+            <img id="modalImg" alt="" />
+            <div id="enlargeLabel" />
+            <button id="modalBuyBtn" />
+            <button id="closeModal" />
+            <div id="variantList" />
+            <div id="variantNote" />
+          </div>
+        </div>
+
+        <div id="shipBack" style={{ display: "none" }}>
+          <div className="shipTop">
+            <h2>Shipping details</h2>
+
+            <div className="shipPills">
+              <div id="shipModePill"></div>
+              <button id="shipCloseBtn" type="button">Close</button>
+            </div>
+
+            <p className="shipNote">
+              We store this on your device only (localStorage).
+            </p>
+          </div>
+
+          <div className="shipForm">
+            <label>
+              Full name
+              <input id="shipName" autoComplete="name" />
+            </label>
+
+            <label>
+              Phone number
+              <input id="shipPhone" autoComplete="tel" />
+            </label>
+
+            <label>
+              Street address
+              <input id="shipAddress1" autoComplete="address-line1" />
+            </label>
+
+            <label>
+              Apt / Unit (optional)
+              <input id="shipAddress2" autoComplete="address-line2" />
+            </label>
+
+            <div className="shipRow2">
+              <label>
+                City
+                <input id="shipCity" autoComplete="address-level2" />
+              </label>
+
+              <label>
+                State
+                <input id="shipState" autoComplete="address-level1" />
+              </label>
+            </div>
+
+            <div className="shipRow2">
+              <label>
+                ZIP
+                <input id="shipZip" autoComplete="postal-code" />
+              </label>
+
+              <label>
+                Country
+                {/* IMPORTANT: value must be ISO2 like "US" */}
+                <select id="shipCountry" defaultValue="US">
+                  <option value="US">US</option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div className="shipActions">
+            <button id="shipClearBtn" type="button">Clear</button>
+            <button id="shipSaveBtn" type="button">Save shipping</button>
+            <button id="shipSaveAndCheckoutBtn" type="button">Save + Continue with Cart</button>
+          </div>
+        </div>
+
+        <div id="lightboxBack" style={{ display: "none" }}>
+          <img id="lightboxImg" alt="" />
+        </div>
       </div>
     </div>
   );
