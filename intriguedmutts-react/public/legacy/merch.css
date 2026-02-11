@@ -1,7 +1,36 @@
-#cartBack, #modalBack, #lightboxBack{
+#
+/* ===== Mobile usability: hide sticky top actions when shipping is open ===== */
+body.ship-open .topActions{
+  display: none !important;
+}
+
+/* make sure shipping overlay always wins */
+#shipBack{
+  z-index: 9999 !important;
+}
+#
+/* When a modal is open, hide sticky top actions (it overlays shipping on mobile) */
+body.modal-open .topActions{
+  display: none !important;
+}
+
+/* Also lock scroll when modal open (prevents weird repaint / scroll behavior) */
+body.modal-open{
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+/* Overlay block: cart, modal, lightbox, ship overlays */
+#cartBack, #modalBack, #lightboxBack, #shipBack{
   position: fixed;
   inset: 0;
-  z-index: 99999;
+  background: rgba(0,0,0,.75);
+  z-index: 50;
+  display: none;
+}
+
+/* Ensure shipping overlay always wins over sticky top actions */
+#shipBack{
+  z-index: 9999 !important;
 }
 /* ===== Top controls visible on mobile ===== */
 .topBar{

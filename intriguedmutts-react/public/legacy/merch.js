@@ -1,3 +1,15 @@
+    function lockScroll() {
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      document.body.style.touchAction = "none";
+    }
+
+    function unlockScroll() {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      document.body.style.touchAction = "";
+    }
+
 // =====================================================
 (function muttsPaypalAuthPatch(){
   // ✅ MUTTS PAYPAL AUTH PATCH (legacy merch.js)
@@ -657,10 +669,16 @@ function fillShippingFormFromSaved() {
 function openShippingModal() {
   fillShippingFormFromSaved();
   shipBack.style.display = "flex";
+  document.body.classList.add("modal-open");
+  setTimeout(() => window.scrollTo(0, 0), 0);
+  lockScroll();
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 function closeShippingModal() {
   shipBack.style.display = "none";
+  document.body.classList.remove("modal-open");
+  unlockScroll();
 }
 
 function readShippingForm() {
@@ -1209,6 +1227,28 @@ function bindLegacyButtons() {
     const shipCloseBtn = document.getElementById("shipCloseBtn");
     const shipCloseBtn2 = document.getElementById("shipCloseBtn2"); // if you ever add one
     const shippingBtn = document.getElementById("shippingBtn"); // TOP BAR button
+
+
+    // ---- keep CSS/body state in sync with Shipping modal open/close ----
+    function syncShipOpenState() {
+      const shipBack = document.getElementById("shipBack");
+      if (!shipBack) return;
+
+      const open = getComputedStyle(shipBack).display !== "none";
+      document.body.classList.toggle("ship-open", open);
+    }
+
+    // run once now
+    syncShipOpenState();
+
+    // watch for style/class changes (JS toggles display)
+    (() => {
+      const shipBack = document.getElementById("shipBack");
+      if (!shipBack) return;
+
+      const mo = new MutationObserver(() => syncShipOpenState());
+      mo.observe(shipBack, { attributes: true, attributeFilter: ["style", "class"] });
+    })();
 
     if (!shipBack) return;
 
