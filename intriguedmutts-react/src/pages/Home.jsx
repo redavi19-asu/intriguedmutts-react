@@ -92,8 +92,23 @@ export default function Home() {
                 key={i}
                 className="rounded-2xl border border-white/10 bg-white/5 p-6"
               >
-                <div className="aspect-square bg-white/10 rounded-xl mb-4" />
-                <p className="font-semibold">Vault Item #{i}</p>
+                <img
+                  src={`${import.meta.env.BASE_URL}vault/vault${i}.png`}
+                  alt={[
+                    "Society Logo Tee (Black)",
+                    "Doodle Scene Tee",
+                    "Doodle Scene Hoodie",
+                  ][i - 1] || `Vault Item #${i}`}
+                  className="aspect-square w-full rounded-xl mb-4 object-cover bg-white/10"
+                />
+                <p className="font-semibold">
+  {[
+    "Society Logo Tee (Black)",
+    "Doodle Scene Tee",
+    "Doodle Scene Hoodie",
+  ][i - 1] || `Vault Item #${i}`}
+</p>
+
                 <p className="text-sm text-white/60">Locked</p>
               </div>
             ))}
