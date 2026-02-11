@@ -132,8 +132,8 @@ export default function Home() {
       {/* NFTs section (now last) */}
       <section id="nfts" className="py-24 border-t border-white/10">
         <div className="max-w-6xl mx-auto px-6">
-          <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
-            Coming soon
+          <p className="text-xs uppercase tracking-[0.35em] text-green-400">
+            New drops weekly
           </p>
 
           <h2 className="mt-3 text-4xl md:text-5xl font-black tracking-tight">
@@ -183,6 +183,9 @@ export default function Home() {
         </div>
       </section>
 
+      <div style={{ opacity: 0.6, fontSize: 12, textAlign: 'center', marginTop: 24 }}>
+        Build: 2026-02-11 03:58
+      </div>
       <footer className="py-10 text-xs text-gray-500 border-t border-white/10">
         © {new Date().getFullYear()} Intrigued Mutts
       </footer>

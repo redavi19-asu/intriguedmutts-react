@@ -81,3 +81,39 @@
   .viewerTop{ grid-template-columns: 1fr; }
   .viewerImg{ height: 220px; }
 }
+
+@media (max-width: 480px) {
+  .merchPage {
+    padding: 10px 4px 24px;
+  }
+  .viewerCard {
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .viewerImg {
+    height: 140px;
+    border-radius: 8px;
+  }
+  .viewerTitle {
+    font-size: 18px;
+  }
+  .viewerSub {
+    font-size: 12px;
+  }
+  .productGrid {
+    gap: 8px;
+  }
+  .productCard {
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  .cardImg {
+    height: 80px;
+    border-radius: 6px;
+  }
+  .cardTitle {
+    font-size: 11px;
+    margin-top: 4px;
+  }
+}
