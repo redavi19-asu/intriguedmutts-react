@@ -30,9 +30,12 @@ export default function Enter() {
       {/* STATIC GATE */}
       {!entering && (
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
+          <link rel="preload" as="image" href="intrigued-mutts-society-transparent.png" />
           <img
             src={`intrigued-mutts-society-transparent.png`}
             alt="Intrigued Mutts Society"
+            width="320"
+            height="207"
             className="w-[320px] sm:w-[420px] md:w-[520px]"
           />
           <p className="mt-6 text-white/75 max-w-xl">
@@ -57,8 +60,12 @@ export default function Enter() {
             muted
             playsInline
             preload="auto"
+            aria-label="Entrance animation"
             onEnded={() => setIsFading(true)}
-          />
+          >
+            {/* Placeholder captions track for accessibility; replace with real captions if available */}
+            <track kind="captions" src="" label="English captions" />
+          </video>
           <FadeOverlay
             show={isFading}
             duration={600}
