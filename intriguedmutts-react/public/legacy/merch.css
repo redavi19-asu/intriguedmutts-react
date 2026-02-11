@@ -1,7 +1,36 @@
 #
 /* ===== Mobile usability: hide sticky top actions when shipping is open ===== */
-body.ship-open .topActions{
-  display: none !important;
+
+/* SHIPPING MODAL: keep header inside modal, not overlaying fields */
+#shipBack{
+  align-items: stretch !important;
+  justify-content: center !important;
+  padding: 14px !important;
+}
+
+#shipBack #shipModal{
+  width: min(720px, 95vw) !important;
+  height: min(90vh, 720px) !important;
+  max-height: 90vh !important;
+  overflow: hidden !important;   /* important: create internal scroll area */
+  border-radius: 18px !important;
+}
+
+/* The top strip inside shipping modal */
+#shipBack .topActions{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 5 !important;
+  background: rgba(0,0,0,.92) !important;
+  backdrop-filter: blur(8px) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+
+/* Make the shipping form area scroll, with space under the sticky header */
+#shipBack #shipForm{
+  height: 100% !important;
+  overflow: auto !important;
+  padding-top: 14px !important;
 }
 
 /* make sure shipping overlay always wins */
@@ -10,9 +39,6 @@ body.ship-open .topActions{
 }
 #
 /* When a modal is open, hide sticky top actions (it overlays shipping on mobile) */
-body.modal-open .topActions{
-  display: none !important;
-}
 
 /* Also lock scroll when modal open (prevents weird repaint / scroll behavior) */
 body.modal-open{
@@ -42,6 +68,10 @@ body.modal-open{
 }
 
 .topActions{
+  /* Only hide the PAGE action bar when shipping modal is open */
+  body.shipping-open #pageTopActions{
+    display: none !important;
+  }
   display: flex;
   gap: 10px;
   align-items: center;
@@ -801,6 +831,126 @@ body.modal-open{
 }
 
 /* the drawer panel itself */
+
+/* ===== SHIPPING MODAL LAYOUT (FIXED) ===== */
+
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: none;                 /* JS toggles */
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px !important;
+  background: rgba(0,0,0,.75) !important;
+}
+
+/* Panel = column: header + scroll area */
+#shipModal{
+  width: min(720px, 96vw) !important;
+  height: min(86vh, 760px) !important;
+  max-height: 86vh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+
+  border-radius: 18px !important;
+  background: rgba(10,10,10,.94) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+
+/* Header row (never blocks inputs now) */
+#shipTopActions{
+  flex: 0 0 auto !important;
+  padding: 10px 14px !important;
+  background: rgba(0,0,0,.92) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+  z-index: 2 !important;
+}
+
+/* Scroll body */
+#shipForm{
+  flex: 1 1 auto !important;
+  overflow: auto !important;
+  padding: 14px 14px 18px !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optional: give the first field some breathing room */
+#shipName{ scroll-margin-top: 80px; }
+
+/* Mobile: allow header buttons to wrap instead of disappearing */
+@media (max-width: 720px){
+  #shipTopActions{
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+}
+# ==============================
+#   SHIPPING MODAL — FIXED SCROLL
+# ==============================
+
+/* Overlay */
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: none;                 /* JS toggles */
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px !important;
+  background: rgba(0,0,0,.75) !important;
+}
+
+/* Panel */
+#shipModal{
+  width: min(720px, 96vw) !important;
+  height: min(86vh, 760px) !important;
+  max-height: 86vh !important;
+  overflow: hidden !important;     /* critical: create inner scroll */
+  border-radius: 18px !important;
+  background: rgba(10,10,10,.94) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+
+/* Top bar inside the shipping modal */
+#shipTopActions{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  padding: 10px 14px !important;
+  background: rgba(0,0,0,.92) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+
+/* Scroll area (THIS is what scrolls) */
+#shipForm{
+  height: calc(86vh - 56px) !important; /* leaves room for top bar */
+  overflow: auto !important;
+  padding: 14px 14px 18px !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Make sure first field isn't hidden under the bar */
+#shipName{
+  scroll-margin-top: 80px;
+}
+
+/* Mobile: allow top actions to wrap (no disappearing buttons) */
+@media (max-width: 720px){
+  #pageTopActions{
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+  #shipTopActions{
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+}
 #cartItems{
   margin-left: auto;            /* <-- RIGHT side */
   margin-right: 0;
@@ -841,6 +991,48 @@ body.modal-open{
 
 /* The legacy “cart empty / totals / shipping” strip is plain text.
    This forces it into a clean row layout. */
+/* ===== FIX: Shipping overlay header blocking form on mobile ===== */
+
+/* When shipping is open, hide the page top action bar so it can't overlap */
+
+/* Hide ONLY the page-level top actions while shipping modal is open */
+body.shipping-open #pageTopActions{
+  display: none !important;
+}
+
+/* Make the shipping overlay behave like a real modal with its own scroll */
+#shipBack{
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px !important;
+}
+
+/* Whatever the first panel is inside shipBack, force it to be a column layout */
+#shipBack > *{
+  width: min(560px, 96vw) !important;
+  max-height: calc(100vh - 20px) !important;
+  overflow: hidden !important;              /* header stays, body scrolls */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Force the shipping action header to take SPACE (not overlay) */
+#shipBack .topActions{
+  position: sticky !important;              /* sticky inside the modal */
+  top: 0 !important;
+  z-index: 5 !important;
+  margin: 0 !important;
+}
+
+/* The shipping form/body should scroll */
+#shipBack form,
+#shipBack .shipForm,
+#shipBack #shipForm{
+  flex: 1 1 auto !important;
+  overflow: auto !important;
+  padding: 14px 16px 22px !important;
+  -webkit-overflow-scrolling: touch;
+}
 #statusText {
   display: grid;
   grid-template-columns: 1fr auto;

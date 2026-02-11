@@ -1,4 +1,4 @@
-    function lockScroll() {
+function lockScroll() {
       document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
       document.body.style.touchAction = "none";
@@ -669,15 +669,17 @@ function fillShippingFormFromSaved() {
 function openShippingModal() {
   fillShippingFormFromSaved();
   shipBack.style.display = "flex";
-  document.body.classList.add("modal-open");
-  setTimeout(() => window.scrollTo(0, 0), 0);
+  if (typeof setShippingOpen === 'function') setShippingOpen(true);
+  requestAnimationFrame(() => {
+    shipBack.scrollTop = 0;
+  });
   lockScroll();
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 function closeShippingModal() {
   shipBack.style.display = "none";
-  document.body.classList.remove("modal-open");
+  if (typeof setShippingOpen === 'function') setShippingOpen(false);
   unlockScroll();
 }
 
@@ -1228,25 +1230,21 @@ function bindLegacyButtons() {
     const shipCloseBtn2 = document.getElementById("shipCloseBtn2"); // if you ever add one
     const shippingBtn = document.getElementById("shippingBtn"); // TOP BAR button
 
+    // Helper to toggle .shipping-open and .modal-open on body
+    const setShippingOpen = (on) => {
+      document.body.classList.toggle("shipping-open", !!on);
+      document.body.classList.toggle("modal-open", !!on);
+    };
 
-    // ---- keep CSS/body state in sync with Shipping modal open/close ----
-    function syncShipOpenState() {
-      const shipBack = document.getElementById("shipBack");
-      if (!shipBack) return;
-
-      const open = getComputedStyle(shipBack).display !== "none";
-      document.body.classList.toggle("ship-open", open);
-    }
-
-    // run once now
-    syncShipOpenState();
+    // Safety: never start stuck open
+    setShippingOpen(false);
 
     // watch for style/class changes (JS toggles display)
     (() => {
       const shipBack = document.getElementById("shipBack");
       if (!shipBack) return;
 
-      const mo = new MutationObserver(() => syncShipOpenState());
+      const mo = new MutationObserver(() => setShippingOpen(true));
       mo.observe(shipBack, { attributes: true, attributeFilter: ["style", "class"] });
     })();
 
@@ -1254,10 +1252,16 @@ function bindLegacyButtons() {
 
     const openShipping = () => {
       shipBack.style.display = "flex";
+      const shipForm = document.getElementById("shipForm");
+      (shipForm || shipBack).scrollTop = 0;
+      requestAnimationFrame(() => {
+        document.getElementById("shipName")?.focus();
+      });
     };
 
     const closeShipping = () => {
       shipBack.style.display = "none";
+      setShippingOpen(false);
     };
 
     // 1) Top bar Shipping button MUST open shipping
@@ -1278,6 +1282,7 @@ function bindLegacyButtons() {
         e.preventDefault();
         e.stopPropagation();
         closeShipping();
+        setShippingOpen(false);
       });
     };
     bindCloseBtn(shipCloseBtn);
@@ -1287,7 +1292,10 @@ function bindLegacyButtons() {
     if (shipBack.dataset.boundOutside !== "1") {
       shipBack.dataset.boundOutside = "1";
       shipBack.addEventListener("click", (e) => {
-        if (e.target === shipBack) closeShipping();
+        if (e.target === shipBack) {
+          closeShipping();
+          setShippingOpen(false);
+        }
       });
     }
 
@@ -1295,7 +1303,10 @@ function bindLegacyButtons() {
     if (!window.__shipEscBound) {
       window.__shipEscBound = true;
       window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") closeShipping();
+        if (e.key === "Escape") {
+          closeShipping();
+          setShippingOpen(false);
+        }
       });
     }
   })();
