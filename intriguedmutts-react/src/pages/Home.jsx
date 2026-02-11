@@ -38,6 +38,10 @@ export default function Home() {
     // any time Home loads, allow the intro again
     sessionStorage.removeItem("stocks_gate_passed");
   }, []);
+
+  useEffect(() => {
+    sessionStorage.setItem("entered", "1");
+  }, []);
   return (
     <div className="w-full">
       <Hero />

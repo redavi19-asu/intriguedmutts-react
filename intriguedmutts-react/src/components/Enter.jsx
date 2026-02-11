@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import FadeOverlay from "../components/FadeOverlay";
 export default function Enter() {
   const navigate = useNavigate();
+  useEffect(() => {
+    if (sessionStorage.getItem("entered") === "1") {
+      navigate("/home", { replace: true });
+    }
+  }, [navigate]);
   const enterRef = useRef(null);
   const [entering, setEntering] = useState(false);
   const [isFading, setIsFading] = useState(false);
