@@ -1,4 +1,23 @@
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
+function scrollToId(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 export default function Footer() {
+  const nav = useNavigate();
+  const loc = useLocation();
+
+  const goHomeAndScroll = (id) => {
+    if (loc.pathname !== "/") {
+      nav("/");
+      setTimeout(() => scrollToId(id), 50);
+    } else {
+      scrollToId(id);
+    }
+  };
+
   return (
     <footer className="border-t border-white/10 mt-24">
       <div className="max-w-7xl mx-auto px-6 py-10 flex flex-col sm:flex-row gap-6 items-start sm:items-center justify-between">
@@ -10,10 +29,16 @@ export default function Footer() {
         </div>
 
         <div className="flex gap-4 text-xs text-white/60">
-          <a className="hover:text-white transition" href="#society">Society</a>
-          <a className="hover:text-white transition" href="#merch">Merch</a>
-          <a className="hover:text-white transition" href="#stock">Stocks</a>
-          <a className="hover:text-white transition" href="#nfts">NFTs</a>
+          <Link className="hover:text-white transition" to="/society">Society</Link>
+          <Link className="hover:text-white transition" to="/merch">Merch</Link>
+          <Link className="hover:text-white transition" to="/stocks">Stocks</Link>
+          <button
+            className="hover:text-white transition"
+            type="button"
+            onClick={() => goHomeAndScroll("nfts")}
+          >
+            NFTs
+          </button>
         </div>
 
         <p className="text-xs text-white/50">
