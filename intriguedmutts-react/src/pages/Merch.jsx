@@ -1,6 +1,8 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Merch() {
+  const nav = useNavigate();
   useEffect(() => {
     // 1) Inject legacy CSS once
     if (!document.getElementById("legacy-merch-css")) {
@@ -85,6 +87,7 @@ export default function Merch() {
         {/* everything you already have stays the same below */}
         <div className="topBar" id="topBar">
           <div id="pageTopActions" className="topActions">
+            <button className="btnGlow" type="button" onClick={() => nav("/home")}>Back to Home</button>
             <button id="refreshBtn" className="btnGlow" type="button">
               Refresh products
             </button>

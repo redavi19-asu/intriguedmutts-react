@@ -28,6 +28,7 @@ export default function App() {
         <Route path="/society" element={<Society />} />
         <Route path="/success" element={<Success />} />
         <Route path="/watchlist" element={<Navigate to="/stocks?tab=watchlist" replace />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>
   );
