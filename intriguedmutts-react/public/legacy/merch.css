@@ -1,3 +1,159 @@
+#cartBack, #modalBack, #lightboxBack{
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+}
+/* ===== Top controls visible on mobile ===== */
+.topBar{
+  position: sticky;
+  top: 0;
+  z-index: 5000;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(6px);
+}
+
+.topActions{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 12px;
+  flex-wrap: wrap;
+}
+
+/* Make sure buttons don't get squished */
+.topActions .btnGlow{
+  white-space: nowrap;
+}
+
+@media (max-width: 720px){
+  .topActions{
+    justify-content: space-between;
+  }
+  .topActions .btnGlow{
+    flex: 1 1 auto;
+    min-width: 110px;
+  }
+}
+
+/* ===== Mobile: shipping modal fit + reliable overlay stacking ===== */
+#shipBack{
+  position: fixed;
+  inset: 0;
+  z-index: 99999; /* must beat any top bars */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(0,0,0,.75);
+}
+
+@media (max-width: 720px){
+  #shipBack{
+    align-items: flex-start;        /* start at top on phones */
+    padding: 10px;
+  }
+
+  #shipBack > *{
+    width: 100%;
+    max-height: calc(100vh - 20px);
+    overflow: auto;
+    border-radius: 14px;
+  }
+
+  /* stop giant inputs + iOS zoom */
+  .shipForm input,
+  .shipForm select{
+    width: 100%;
+    font-size: 16px;
+    max-width: 100%;
+  }
+
+  /* if your topBar is what looks like a “second pane” */
+}
+/* ================================
+   MOBILE FIXES: Shipping modal UX
+   ================================ */
+
+#shipBack {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;           /* stay above everything */
+  display: none;           /* legacy JS toggles */
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(0,0,0,0.75);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* The actual modal panel */
+#shipBack > * {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  border-radius: 16px;
+}
+
+/* If your ship container is .shipTop + .shipForm + .shipActions,
+   ensure it stacks cleanly and scrolls */
+.shipTop {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(8px);
+  padding-top: 12px;
+}
+
+/* Make actions sticky at the bottom on mobile */
+.shipActions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(8px);
+  padding: 12px 0 4px;
+}
+
+/* Make inputs fit screen */
+.shipForm input,
+.shipForm select {
+  width: 100%;
+  max-width: 100%;
+  font-size: 16px; /* prevents iOS zoom */
+}
+
+/* Stack the 2-col rows into 1-col on small screens */
+@media (max-width: 720px) {
+  .shipRow2 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Reduce big padding/margins if your CSS is huge */
+  #shipBack {
+    padding: 10px;
+  }
+
+  #shipBack > * {
+    border-radius: 14px;
+    max-height: calc(100vh - 20px);
+  }
+}
+
+/* ================================
+   FIX: double top pane feel
+   ================================ */
+
+/* If legacy top bar is duplicating what React already has,
+   hide legacy topBar on small screens ONLY */
+@media (max-width: 720px) {
+  .topBar {
+    display: block !important;   /* ✅ keep it visible */
+  }
+}
 /* ===========================
    Shipping modal: make it readable + real form UI
    =========================== */

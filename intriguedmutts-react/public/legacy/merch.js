@@ -1202,6 +1202,88 @@ function bindLegacyButtons() {
 
   const shipBack = document.getElementById("shipBack");
   const shipCloseBtn = document.getElementById("shipCloseBtn");
+
+  // ===== Shipping modal: make close reliable (mobile) =====
+  (function bindShippingModalHard() {
+    const shipBack = document.getElementById("shipBack");
+    const shipCloseBtn = document.getElementById("shipCloseBtn");
+    const shipCloseBtn2 = document.getElementById("shipCloseBtn2"); // if you ever add one
+    const shippingBtn = document.getElementById("shippingBtn"); // TOP BAR button
+
+    if (!shipBack) return;
+
+    const openShipping = () => {
+      shipBack.style.display = "flex";
+    };
+
+    const closeShipping = () => {
+      shipBack.style.display = "none";
+    };
+
+    // 1) Top bar Shipping button MUST open shipping
+    if (shippingBtn && shippingBtn.dataset.bound !== "1") {
+      shippingBtn.dataset.bound = "1";
+      shippingBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openShipping();
+      });
+    }
+
+    // 2) Close buttons MUST close (even on mobile)
+    const bindCloseBtn = (btn) => {
+      if (!btn || btn.dataset.bound === "1") return;
+      btn.dataset.bound = "1";
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeShipping();
+      });
+    };
+    bindCloseBtn(shipCloseBtn);
+    bindCloseBtn(shipCloseBtn2);
+
+    // 3) Tap outside closes
+    if (shipBack.dataset.boundOutside !== "1") {
+      shipBack.dataset.boundOutside = "1";
+      shipBack.addEventListener("click", (e) => {
+        if (e.target === shipBack) closeShipping();
+      });
+    }
+
+    // 4) ESC closes
+    if (!window.__shipEscBound) {
+      window.__shipEscBound = true;
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeShipping();
+      });
+    }
+  })();
+  (() => {
+    if (!shipBack) return;
+
+    // Tap outside closes
+    shipBack.onclick = (e) => {
+      if (e.target === shipBack) closeShippingModal();
+    };
+
+    // Close button closes
+    if (shipCloseBtn) {
+      shipCloseBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeShippingModal();
+      };
+    }
+
+    // ESC closes (desktop convenience)
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        const open = getComputedStyle(shipBack).display !== "none";
+        if (open) closeShippingModal();
+      }
+    });
+  })();
   const shipClearBtn = document.getElementById("shipClearBtn");
   const shipSaveBtn = document.getElementById("shipSaveBtn");
   const shipSaveAndCheckoutBtn = document.getElementById("shipSaveAndCheckoutBtn");

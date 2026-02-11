@@ -137,13 +137,33 @@ export default function Merch() {
           </div>
         </div>
 
-        <div id="shipBack" style={{ display: "none" }}>
+        <div
+          id="shipBack"
+          style={{ display: "none" }}
+          onClick={(e) => {
+            // click outside the modal closes
+            if (e.target && e.target.id === "shipBack") {
+              e.currentTarget.style.display = "none";
+            }
+          }}
+        >
           <div className="shipTop">
             <h2>Shipping details</h2>
 
             <div className="shipPills">
               <div id="shipModePill"></div>
-              <button id="shipCloseBtn" type="button">Close</button>
+              <button
+                id="shipCloseBtn"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const back = document.getElementById("shipBack");
+                  if (back) back.style.display = "none";
+                }}
+              >
+                Close
+              </button>
             </div>
 
             <p className="shipNote">
