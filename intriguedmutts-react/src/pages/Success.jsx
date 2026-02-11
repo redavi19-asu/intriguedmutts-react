@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
@@ -30,82 +30,107 @@ function renderAddress(addr) {
   return parts.join(", ");
 }
 
+function readQueryFromHashOrSearch(locSearch) {
+  // HashRouter success URL often looks like:
+  //   https://site/#/success?token=ORDERID&PayerID=...&st=...
+  // Some routers also put search in loc.search
+  const p1 = new URLSearchParams(locSearch || "");
+  const hash = window.location.hash || "";
+  const q = hash.includes("?") ? hash.split("?")[1] : "";
+  const p2 = new URLSearchParams(q);
+
+  // token = PayPal order id
+  const token = p1.get("token") || p2.get("token") || "";
+
+  // st = our success token we appended in return_url
+  const st = p1.get("st") || p2.get("st") || "";
+
+  return { token, st };
+}
+
+
 export default function Success() {
   const [badgeKind, setBadgeKind] = useState("loading"); // loading | ok | fail
   const [badgeText, setBadgeText] = useState("Finalizing your payment...");
-  const [data, setData] = useState(null); // { record, capture }
+  const [data, setData] = useState(null); // { record, capture } OR { record }
   const [debugOpen, setDebugOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  const loc = useLocation();
+  const { token, st } = readQueryFromHashOrSearch(loc.search);
+
   const base = import.meta.env.BASE_URL || "/";
+  const bgUrl = `${base}legacy/merchbackground.png`;
 
-
-  function getPaypalTokenFromUrl(locSearch) {
-    // 1) Works if token is in router search (HashRouter usually puts it here)
-    const p1 = new URLSearchParams(locSearch);
-    let token = p1.get("token");
-
-    // 2) Fallback: token might be inside the hash query string
-    //    e.g. #/success?token=XYZ&PayerID=ABC
-    if (!token) {
-      const hash = window.location.hash || "";
-      const q = hash.includes("?") ? hash.split("?")[1] : "";
-      token = new URLSearchParams(q).get("token");
-    }
-
-    return token || "";
+  function getCartToken() {
+    return localStorage.getItem("mutts_cart_token") || "";
   }
 
-  const loc = useLocation();
-  const token = getPaypalTokenFromUrl(loc.search);
+  async function startCartToken() {
+    const res = await fetch(`${WORKER_BASE}/cart/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({}),
+    });
+
+    const j = await res.json().catch(() => null);
+    if (!res.ok || !j?.ok || !j?.cartToken) {
+      throw new Error(j?.error || `${res.status} ${res.statusText}`);
+    }
+
+    localStorage.setItem("mutts_cart_token", j.cartToken);
+    return j.cartToken;
+  }
+
+  async function captureOrder(orderId, successToken) {
+    // ✅ Best path: success token capture (NO auth headers needed)
+    if (successToken) {
+      const res = await fetch(`${WORKER_BASE}/paypal/capture`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, token: successToken }),
+      });
+
+      const j = await res.json().catch(() => null);
+      if (!res.ok || !j?.ok) {
+        const msg = j?.error || `${res.status} ${res.statusText}`;
+        throw new Error(msg);
+      }
+      return j;
+    }
+
+    // ✅ Otherwise: try Bearer cart token (or legacy X-API-KEY fallback)
+    let cartToken = getCartToken();
+    if (!cartToken) {
+      // If you got to /success directly, you likely won't have a token.
+      // So create one now and retry.
+      cartToken = await startCartToken();
+    }
+
+    const headers = { "Content-Type": "application/json" };
+    if (cartToken) {
+      headers["Authorization"] = `Bearer ${cartToken}`;
+    } else {
+      // Legacy fallback ONLY if you still use it:
+      headers["X-API-KEY"] = import.meta.env.VITE_WORKER_API_KEY || "";
+    }
+
+    const res = await fetch(`${WORKER_BASE}/paypal/capture`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ orderId }),
+    });
+
+    const j = await res.json().catch(() => null);
+    if (!res.ok || !j?.ok) {
+      const msg = j?.error || `${res.status} ${res.statusText}`;
+      throw new Error(msg);
+    }
+    return j;
+  }
 
   useEffect(() => {
     let cancelled = false;
-
-    async function startCartToken() {
-      const res = await fetch(`${WORKER_BASE}/cart/start`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      });
-      const j = await res.json().catch(() => null);
-      if (!res.ok || !j?.ok || !j?.cartToken) {
-        throw new Error(j?.error || `${res.status} ${res.statusText}`);
-      }
-      return j.cartToken;
-    }
-
-
-    function getCartToken() {
-      return localStorage.getItem("mutts_cart_token") || "";
-    }
-
-    async function captureOrder(orderId) {
-      const cartToken = getCartToken();
-
-      const headers = {
-        "Content-Type": "application/json",
-      };
-
-      if (cartToken) {
-        headers["Authorization"] = `Bearer ${cartToken}`;
-      } else {
-        headers["X-API-KEY"] = import.meta.env.VITE_WORKER_API_KEY || "";
-      }
-
-      const res = await fetch(`${WORKER_BASE}/paypal/capture`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ orderId }),
-      });
-
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.ok) {
-        const msg = data?.error || `${res.status} ${res.statusText}`;
-        throw new Error(msg);
-      }
-      return data;
-    }
 
     async function boot() {
       if (!token) {
@@ -117,17 +142,17 @@ export default function Success() {
 
       setBadgeKind("loading");
       setBadgeText("Finalizing your payment...");
+      setErrorMsg("");
 
       try {
-        const result = await captureOrder(token);
+        // ✅ Use st if present (this is the big fix)
+        const result = await captureOrder(token, st);
         if (cancelled) return;
 
         setData(result);
 
         const recordStatus = (result.record?.status || "").toUpperCase();
-        const ok =
-          recordStatus.includes("COMPLET") ||
-          (result.capture?.status || "").toUpperCase().includes("COMPLET");
+        const ok = recordStatus.includes("COMPLET") || recordStatus.includes("APPROVED");
 
         setBadgeKind(ok ? "ok" : "fail");
         setBadgeText(ok ? "Payment completed" : `Payment status: ${result.record?.status || "UNKNOWN"}`);
@@ -141,14 +166,14 @@ export default function Success() {
     }
 
     boot();
-
     return () => {
       cancelled = true;
     };
-  }, [token]);
+  }, [token, st]);
 
   const record = data?.record || {};
   const capture = data?.capture || {};
+
   const currency =
     record.currency ||
     safe(capture, "purchase_units.0.payments.captures.0.amount.currency_code", "USD") ||
@@ -164,7 +189,7 @@ export default function Success() {
 
   const buyerEmail =
     safe(record, "payer.email", null) ||
-    safe(capture, "payer.email_address", null) ||
+    safe(capture, "payer_email_address", null) ||
     safe(capture, "payment_source.paypal.email_address", null) ||
     "—";
 
@@ -178,9 +203,7 @@ export default function Success() {
     safe(record, "paypalShipping.address", null) ||
     safe(capture, "purchase_units.0.shipping.address", null);
 
-  const shipTo = shipName
-    ? `${shipName}\n${renderAddress(shipAddr)}`
-    : renderAddress(shipAddr);
+  const shipTo = shipName ? `${shipName}\n${renderAddress(shipAddr)}` : renderAddress(shipAddr);
 
   const items = Array.isArray(record.items) ? record.items : [];
 
@@ -209,8 +232,6 @@ export default function Success() {
   }
 
   const badgeIcon = badgeKind === "ok" ? "✅" : badgeKind === "fail" ? "⚠️" : "⏳";
-
-  const bgUrl = `${base}legacy/merchbackground.png`;
 
   return (
     <div
@@ -393,7 +414,7 @@ export default function Success() {
 
           {debugOpen && (
             <pre>
-              {JSON.stringify({ record, capture }, null, 2)}
+              {JSON.stringify({ record, capture, token, st }, null, 2)}
             </pre>
           )}
 

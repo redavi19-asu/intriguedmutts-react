@@ -1,3 +1,67 @@
+// =====================================================
+(function muttsPaypalAuthPatch(){
+  // ✅ MUTTS PAYPAL AUTH PATCH (legacy merch.js)
+  // - gets short-lived cart token from /cart/start
+  // - sends Authorization: Bearer <token> for protected routes
+  // =====================================================
+
+  const API_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
+  let __cartToken = null;
+
+  async function ensureCartToken() {
+    if (__cartToken) return __cartToken;
+
+    const res = await fetch(`${API_BASE}/cart/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: "{}",
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!data.ok || !data.cartToken) {
+      console.error("cart/start failed:", data);
+      throw new Error(data.error || "cart/start failed");
+    }
+
+    __cartToken = data.cartToken;
+    return __cartToken;
+  }
+
+  async function apiPost(path, body) {
+    const token = await ensureCartToken();
+
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body || {}),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data?.ok === false) {
+      console.error(`POST ${path} failed:`, data);
+      throw new Error(data?.error || `POST ${path} failed`);
+    }
+    return data;
+  }
+
+  async function apiGet(path) {
+    const res = await fetch(`${API_BASE}${path}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data?.ok === false) {
+      console.error(`GET ${path} failed:`, data);
+      throw new Error(data?.error || `GET ${path} failed`);
+    }
+    return data;
+  }
+
+  // ✅ IMPORTANT: expose globally so the rest of merch.js can use them
+  window.ensureCartToken = ensureCartToken;
+  window.apiPost = apiPost;
+  window.apiGet = apiGet;
+})();
 // ===============================
 // CART UI HOTFIX (DOM-based, reliable)
 // - Hide broken "Edit shipping" button
@@ -673,38 +737,22 @@ async function estimateCartTotals() {
   }
 
   try {
-    // call Worker for Printful estimate
-    const url = `${PAYPAL_WORKER_BASE}/paypal/estimate`;
-    const options = {
-      method: "POST",
-      headers: await authHeaders(),
-      body: JSON.stringify({
-        currency: "USD",
-        shipping,
-        items: cart.map(it => ({
-          syncVariantId: it.syncVariantId,
-          qty: Number(it.qty || 1),
-          unitPrice: String(Number(it.unitPrice || 0).toFixed(2)),
-          productName: it.productName,
-          variantName: it.variantName,
-          imageUrl: it.imageUrl,
-          productId: it.productId,
-          catalogVariantId: it.catalogVariantId,
-        })),
-      }),
-    };
-    let res = await fetchWithTimeout(url, options, 12000);
-    let data = await res.json();
-
-    // Auto-refresh token if expired
-    if (res.status === 401) {
-      await getCartToken();
-      res = await fetchWithTimeout(url, { ...options, headers: await authHeaders() }, 12000);
-      data = await res.json();
-    }
-    if (!data.ok) throw new Error(data.error || "Estimate failed");
-
-    const pf = data.totals;
+    // call Worker for Printful estimate using new apiPost
+    const est = await apiPost("/paypal/estimate", {
+      currency: "USD",
+      shipping,
+      items: cart.map(it => ({
+        syncVariantId: it.syncVariantId,
+        qty: Number(it.qty || 1),
+        unitPrice: String(Number(it.unitPrice || 0).toFixed(2)),
+        productName: it.productName,
+        variantName: it.variantName,
+        imageUrl: it.imageUrl,
+        productId: it.productId,
+        catalogVariantId: it.catalogVariantId,
+      })),
+    });
+    const pf = est.totals;
 
     cartShipEl.textContent = money(Number(pf.shipping));
     cartTaxEl.textContent = money(Number(pf.tax));
@@ -756,61 +804,34 @@ async function checkoutCartWithPayPal() {
 
   // ✅ only runs if shipping is valid
   try {
-    const url = `${PAYPAL_WORKER_BASE}/paypal/order`;
-    const options = {
-      method: "POST",
-      headers: await authHeaders(),
-      body: JSON.stringify({
-        currency: "USD",
-        shipping,
-        items: cart.map(it => ({
-          productId: it.productId,
-          productName: it.productName,
-          variantName: it.variantName,
-          imageUrl: it.imageUrl,
-          unitPrice: String(Number(it.unitPrice).toFixed(2)),
-          qty: Number(it.qty),
+    const ord = await apiPost("/paypal/order", {
+      currency: "USD",
+      shipping,
+      items: cart.map(it => ({
+        productId: it.productId,
+        productName: it.productName,
+        variantName: it.variantName,
+        imageUrl: it.imageUrl,
+        unitPrice: String(Number(it.unitPrice).toFixed(2)),
+        qty: Number(it.qty),
+        syncVariantId: it.syncVariantId,
+        catalogVariantId: it.catalogVariantId,
+      })),
+    });
 
-          // required by your Worker for Printful estimate + fulfillment
-          syncVariantId: it.syncVariantId,
-          catalogVariantId: it.catalogVariantId,
-        })),
-      }),
-    };
-    let res = await fetchWithTimeout(url, options, 15000);
-
-    // Auto-refresh token if expired
-    if (res.status === 401) {
-      await getCartToken();
-      res = await fetchWithTimeout(url, { ...options, headers: await authHeaders() }, 15000);
-    }
-
-    const data = await res.json().catch(() => ({}));
-
-    // ✅ If shipping is incomplete, Worker returns 400 with missingFields
-    if (!res.ok) {
-      if (res.status === 400 && data?.missingFields?.length) {
-        alert("Please complete shipping: " + data.missingFields.join(", "));
-        return; // stop checkout
-      }
-      alert(data?.error || "Checkout failed. Please try again.");
-      return;
-    }
-
-    // success - ensure we have approveUrl
-    if (!data.ok || !data.approveUrl) {
-      console.error("❌ PayPal order failed:", data);
+    if (!ord.ok || !ord.approveUrl) {
+      console.error("❌ PayPal order failed:", ord);
       alert("PayPal order failed. Please try again.");
       return;
     }
 
-    if (paypalTotalNote && data.totals && data.totals.total != null) {
-      paypalTotalNote.textContent = `PayPal total: ${money(Number(data.totals.total))}`;
+    if (paypalTotalNote && ord.totals && ord.totals.total != null) {
+      paypalTotalNote.textContent = `PayPal total: ${money(Number(ord.totals.total))}`;
       paypalTotalNote.style.display = "block";
     }
 
     // straight to PayPal
-    window.location.href = data.approveUrl;
+    window.location.href = ord.approveUrl;
   } catch (err) {
     console.error("❌ checkout error:", err);
     if (err.message === "Request timeout") {
