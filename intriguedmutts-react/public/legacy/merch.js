@@ -1043,6 +1043,16 @@ async function openModal(prod){
   modalImg.onclick = () => {
     lightboxImg.src = modalImg.src;
     lightboxBack.style.display = "flex";
+    // ✅ lightbox: click outside (or image) closes
+    if (lightboxBack && !lightboxBack.dataset.bound) {
+      lightboxBack.dataset.bound = "1";
+      lightboxBack.addEventListener("click", (e) => {
+        // click the backdrop OR the image to close
+        if (e.target === lightboxBack || e.target.id === "lightboxImg") {
+          lightboxBack.style.display = "none";
+        }
+      });
+    }
   };
 
   // thumbnails strip
