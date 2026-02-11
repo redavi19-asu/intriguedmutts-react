@@ -26,14 +26,17 @@ export default function Enter() {
   }, [entering]);
 
   return (
-    <div className="min-h-screen w-full bg-black text-white overflow-hidden relative">
+    <>
+      {/* SEO meta description for Enter page */}
+      <meta name="description" content="Step into the Intrigued Mutts Society clubhouse. Chaos, culture, curiosity, and more await!" />
+      <div className="min-h-screen w-full bg-black text-white overflow-hidden relative">
       {/* STATIC GATE */}
       {!entering && (
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
           <link rel="preload" as="image" href="intrigued-mutts-society-transparent.png" />
           <img
             src={`intrigued-mutts-society-transparent.png`}
-            alt="Intrigued Mutts Society"
+            alt="Intrigued Mutts Society logo"
             width="320"
             height="207"
             className="w-[320px] sm:w-[420px] md:w-[520px]"
@@ -73,6 +76,7 @@ export default function Enter() {
           />
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }
