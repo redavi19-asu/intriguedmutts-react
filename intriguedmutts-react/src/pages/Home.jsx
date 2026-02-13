@@ -43,7 +43,17 @@ export default function Home() {
     sessionStorage.setItem("entered", "1");
   }, []);
   return (
-    <div className="w-full">
+    <div
+      className="w-full min-h-screen"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.60), rgba(0,0,0,0.90)), url(${import.meta.env.BASE_URL}bg-home.png)`,
+        backgroundAttachment: "fixed",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center bottom",
+        backgroundSize: "cover",
+        backgroundColor: "black",
+      }}
+    >
       <Hero />
 
       {/* Society section */}
