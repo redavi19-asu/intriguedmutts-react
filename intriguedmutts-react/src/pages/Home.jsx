@@ -192,6 +192,9 @@ export default function Home() {
           <p className="mt-2 text-sm uppercase tracking-[0.35em] text-white/50">
             Coming soon
           </p>
+          <p className="mt-3 text-base font-bold uppercase tracking-[0.35em] text-red-500">
+            Coming soon
+          </p>
 
           <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
