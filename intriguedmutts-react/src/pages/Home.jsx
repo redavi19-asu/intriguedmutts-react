@@ -42,6 +42,22 @@ export default function Home() {
   useEffect(() => {
     sessionStorage.setItem("entered", "1");
   }, []);
+
+  // Scroll-based background shift effect
+  useEffect(() => {
+    const el = document.querySelector(".homeBg");
+    if (!el) return;
+
+    const onScroll = () => {
+      // small negative shift makes bg feel more "fixed"
+      const shift = Math.round(window.scrollY * -0.25);
+      el.style.setProperty("--bgShift", `${shift}px`);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
   return (
     <div
       className="w-full min-h-screen"
