@@ -1,55 +1,46 @@
-/* Full-screen fixed background behind the Home page */
-.homeBg {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: cover;
-}
-
-/* Dark overlay that stays with the background (NOT the content) */
-.homeBg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-
-  /* tune these if you want darker/lighter */
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.70),
-    rgba(0, 0, 0, 0.45),
-    rgba(0, 0, 0, 0.80)
-  );
-}
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  min-height: 100%;
-  background: black;
-}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
-html,
-body,
-#root {
+html, body {
   width: 100%;
   min-height: 100%;
   margin: 0;
+  padding: 0;
 }
 
-.homeBg {
+body { background: #000; }
+
+/* keep app content above the bg */
+#root{
+  position: relative;
+  z-index: 1;
+  min-height: 100%;
+}
+
+/* Home fixed background */
+.homeBg{
   position: fixed;
   inset: 0;
-  z-index: -1;
-  background: url("/bg-home.png") center/cover no-repeat;
+  z-index: 0;            /* NOT negative (iOS bug) */
+  pointer-events: none;  /* never blocks clicks */
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
   transform: translateZ(0);
+}
+
+/* dark overlay stays with background */
+.homeBg::before{
+  content:"";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.55),
+    rgba(0,0,0,0.30),
+    rgba(0,0,0,0.70)
+  );
 }
