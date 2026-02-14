@@ -165,7 +165,7 @@ export default function Home() {
           </h2>
           <p className="mt-4 text-white/70 max-w-2xl">
             This section will become our “market board” later — watchlist, 52-week lows,
-            and pack picks. For now, we’re finishing the world first.
+            and options picks. For now, we’re finishing the world first.
           </p>
 
           <div className="mt-10">
@@ -188,6 +188,9 @@ export default function Home() {
           <p className="mt-4 text-white/70 max-w-2xl">
             The collection will live here — supply, traits, drop schedule, and mint access.
             We’re finishing the world first, then we open the vault.
+          </p>
+          <p className="mt-2 text-sm uppercase tracking-[0.35em] text-white/50">
+            Coming soon
           </p>
 
           <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

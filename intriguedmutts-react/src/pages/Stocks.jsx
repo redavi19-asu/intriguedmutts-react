@@ -117,7 +117,7 @@ export default function Stocks() {
               Stocks Dashboard
             </div>
             <div style={{ color: "#bdbdbd", marginTop: 6, maxWidth: 760 }}>
-              Live watchlist tiles now. Heatmap + Pack Picks next (KV/D1 + scanners).
+              Live watchlist tiles now. Heatmap + Options Picks next (KV/D1 + scanners).
             </div>
           </div>
         </div>
@@ -348,7 +348,7 @@ export default function Stocks() {
             background: "rgba(0,0,0,0.55)",
           }}
         >
-          <h2 style={{ marginTop: 0 }}>Pack picks</h2>
+          <h2 style={{ marginTop: 0 }}>Options Picks</h2>
           <p style={{ opacity: 0.8, marginBottom: 0 }}>
             Next step: store picks + notes in KV/D1 and show them here (members later).
           </p>
