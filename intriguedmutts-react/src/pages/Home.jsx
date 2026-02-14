@@ -44,19 +44,13 @@ export default function Home() {
   }, []);
   return (
     <>
-      <div className="homeBg" aria-hidden="true" />
       <div
-        style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.60), rgba(0,0,0,0.90))`,
-          backgroundAttachment: "fixed",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center bottom",
-          backgroundSize: "cover",
-          backgroundColor: "black",
-        }}
-      >
+        className="homeBg"
+        aria-hidden="true"
+        style={{ backgroundImage: `url(${import.meta.env.BASE_URL}bg-home.png)` }}
+      />
+      <div className="relative z-10">
         <Hero />
-
         {/* Society section */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
