@@ -1,0 +1,1639 @@
+#
+/* ===== Mobile usability: hide sticky top actions when shipping is open ===== */
+
+/* SHIPPING MODAL: keep header inside modal, not overlaying fields */
+#shipBack{
+  align-items: stretch !important;
+  justify-content: center !important;
+  padding: 14px !important;
+}
+
+#shipBack #shipModal{
+  width: min(720px, 95vw) !important;
+  height: min(90vh, 720px) !important;
+  max-height: 90vh !important;
+  overflow: hidden !important;   /* important: create internal scroll area */
+  border-radius: 18px !important;
+}
+
+/* The top strip inside shipping modal */
+#shipBack .topActions{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 5 !important;
+  background: rgba(0,0,0,.92) !important;
+  backdrop-filter: blur(8px) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+
+/* Make the shipping form area scroll, with space under the sticky header */
+#shipBack #shipForm{
+  height: 100% !important;
+  overflow: auto !important;
+  padding-top: 14px !important;
+}
+
+/* make sure shipping overlay always wins */
+#shipBack{
+  z-index: 9999 !important;
+}
+#
+/* When a modal is open, hide sticky top actions (it overlays shipping on mobile) */
+
+/* Also lock scroll when modal open (prevents weird repaint / scroll behavior) */
+body.modal-open{
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+/* Overlay block: cart, modal, lightbox, ship overlays */
+#cartBack, #modalBack, #lightboxBack, #shipBack{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 50;
+  display: none;
+}
+
+/* Ensure shipping overlay always wins over sticky top actions */
+#shipBack{
+  z-index: 9999 !important;
+}
+/* ===== Top controls visible on mobile ===== */
+.topBar{
+  position: sticky;
+  top: 0;
+  z-index: 5000;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(6px);
+}
+
+.topActions{
+  /* Only hide the PAGE action bar when shipping modal is open */
+  body.shipping-open #pageTopActions{
+    display: none !important;
+  }
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 12px;
+  flex-wrap: wrap;
+}
+
+/* Make sure buttons don't get squished */
+.topActions .btnGlow{
+  white-space: nowrap;
+}
+
+@media (max-width: 720px){
+  .topActions{
+    justify-content: space-between;
+  }
+  .topActions .btnGlow{
+    flex: 1 1 auto;
+    min-width: 110px;
+  }
+}
+
+/* ===== Mobile: shipping modal fit + reliable overlay stacking ===== */
+#shipBack{
+  position: fixed;
+  inset: 0;
+  z-index: 99999; /* must beat any top bars */
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(0,0,0,.75);
+}
+
+@media (max-width: 720px){
+  #shipBack{
+    align-items: flex-start;        /* start at top on phones */
+    padding: 10px;
+  }
+
+  #shipBack > *{
+    width: 100%;
+    max-height: calc(100vh - 20px);
+    overflow: auto;
+    border-radius: 14px;
+  }
+
+  /* stop giant inputs + iOS zoom */
+  .shipForm input,
+  .shipForm select{
+    width: 100%;
+    font-size: 16px;
+    max-width: 100%;
+  }
+
+  /* if your topBar is what looks like a “second pane” */
+}
+/* ================================
+   MOBILE FIXES: Shipping modal UX
+   ================================ */
+
+#shipBack {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;           /* stay above everything */
+  display: none;           /* legacy JS toggles */
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(0,0,0,0.75);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* The actual modal panel */
+#shipBack > * {
+  width: min(720px, 100%);
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  border-radius: 16px;
+}
+
+/* If your ship container is .shipTop + .shipForm + .shipActions,
+   ensure it stacks cleanly and scrolls */
+.shipTop {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(8px);
+  padding-top: 12px;
+}
+
+/* Make actions sticky at the bottom on mobile */
+.shipActions {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: rgba(0,0,0,0.92);
+  backdrop-filter: blur(8px);
+  padding: 12px 0 4px;
+}
+
+/* Make inputs fit screen */
+.shipForm input,
+.shipForm select {
+  width: 100%;
+  max-width: 100%;
+  font-size: 16px; /* prevents iOS zoom */
+}
+
+/* Stack the 2-col rows into 1-col on small screens */
+@media (max-width: 720px) {
+  .shipRow2 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  /* Reduce big padding/margins if your CSS is huge */
+  #shipBack {
+    padding: 10px;
+  }
+
+  #shipBack > * {
+    border-radius: 14px;
+    max-height: calc(100vh - 20px);
+  }
+}
+
+/* ================================
+   FIX: double top pane feel
+   ================================ */
+
+/* If legacy top bar is duplicating what React already has,
+   hide legacy topBar on small screens ONLY */
+@media (max-width: 720px) {
+  .topBar {
+    display: block !important;   /* ✅ keep it visible */
+  }
+}
+/* ===========================
+   Shipping modal: make it readable + real form UI
+   =========================== */
+
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999 !important;
+  background: rgba(0,0,0,.72) !important;
+
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+}
+
+#shipBack[style*="display: block"],
+#shipBack[style*="display:block"],
+#shipBack[style*="display: flex"],
+#shipBack[style*="display:flex"]{
+  display: flex !important;
+}
+
+/* panel wrapper look (shipBack is the panel in your markup) */
+#shipBack{
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+/* Make the pill + buttons visible */
+#shipModePill{
+  width: min(560px, 92vw) !important;
+  color: #cfe9ff !important;
+  font-weight: 900 !important;
+  margin-bottom: 6px !important;
+}
+
+#shipCloseBtn, #shipClearBtn, #shipSaveBtn, #shipSaveAndCheckoutBtn{
+  width: min(560px, 92vw) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  background: rgba(16,16,16,.9) !important;
+  color: #fff !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  font-weight: 900 !important;
+}
+
+/* THIS is the big fix: force inputs to be real inputs, not “blank bars” */
+#shipBack input{
+  width: min(560px, 92vw) !important;
+  height: auto !important;
+  padding: 12px 12px !important;
+
+  background: #0f0f0f !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 12px !important;
+
+  font-size: 14px !important;
+  font-weight: 700 !important;
+
+  opacity: 1 !important;
+  filter: none !important;
+  box-shadow: none !important;
+}
+
+/* Placeholder color if any */
+#shipBack input::placeholder{
+  color: rgba(255,255,255,.45) !important;
+}
+
+/* ===========================
+   FIX: Shipping modal layering + layout
+   =========================== */
+
+/* cart overlay stays below modals */
+#cartBack { z-index: 100 !important; }
+
+/* shipping editor must sit ABOVE cart and cover the screen */
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 250 !important;
+  background: rgba(0,0,0,.72) !important;
+
+  /* force a clean centered modal layout (not a horizontal strip) */
+  display: none;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 24px !important;
+
+  flex-direction: column !important;
+  gap: 10px !important;
+}
+
+/* if legacy JS flips display:block or display:flex inline, keep it modal */
+#shipBack[style*="display: block"],
+#shipBack[style*="display:block"],
+#shipBack[style*="display: flex"],
+#shipBack[style*="display:flex"]{
+  display: flex !important;
+}
+
+/* inputs stack nicely */
+#shipBack input{
+  width: min(520px, 92vw) !important;
+  display: block !important;
+}
+
+/* keep ship pills from doing weird fixed overlap behavior */
+#shipStatusPill{
+  position: absolute !important;
+  top: 14px !important;
+  left: 14px !important;
+  right: auto !important;
+}
+
+#paypalTotalNote{
+  position: absolute !important;
+  top: auto !important;
+  bottom: 70px !important;
+  left: 14px !important;
+  right: 14px !important;
+}
+
+/* ===== FINAL CART DRAWER LAYOUT (authoritative) ===== */
+
+#cartBack{
+  position: fixed !important;
+  inset: 0 !important;
+  display: none;               /* JS toggles to flex */
+  align-items: stretch !important;
+  justify-content: flex-end !important;
+  background: rgba(0,0,0,.65) !important;
+  z-index: 50 !important;
+}
+
+#cartItems{
+  width: min(520px, 92vw) !important;
+  height: 100vh !important;
+  background: rgba(12,12,12,.98) !important;
+  border-left: 1px solid rgba(255,255,255,.12) !important;
+  padding: 70px 16px 16px !important;
+  overflow: auto !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+#closeCartBtn{
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  z-index: 5 !important;
+}
+
+/* Header strip inside drawer */
+#cartHeaderStrip{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+/* Footer pinned INSIDE drawer (not viewport) */
+#cartFooter{
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#checkoutBtn{
+  width: 100% !important;
+}
+
+/* ===============================
+   CART HOTFIX v1 (LAST RULES WIN)
+   Forces: right drawer + visible buttons + footer aligned
+================================= */
+
+/* Overlay */
+#cartBack{
+  position: fixed !important;
+  inset: 0 !important;
+  display: none;                 /* JS toggles to flex */
+  justify-content: flex-end !important;
+  align-items: stretch !important;
+  background: rgba(0,0,0,.70) !important;
+  z-index: 9999 !important;
+}
+#cartBack::before{
+  content: none !important;
+  display: none !important;
+}
+
+/* Drawer */
+#cartItems{
+  position: relative !important;
+  margin-left: auto !important;
+  width: min(460px, 94vw) !important;
+  height: 100vh !important;
+  overflow: auto !important;
+  background: rgba(12,12,12,.98) !important;
+  border-left: 1px solid rgba(255,255,255,.12) !important;
+  padding: 70px 14px 220px !important; /* room for top + pinned footer */
+  box-sizing: border-box !important;
+}
+
+/* Close button always visible */
+#closeCartBtn{
+  position: fixed !important;
+  top: 14px !important;
+  right: 14px !important;
+  z-index: 10002 !important;
+  display: inline-block !important;
+}
+
+/* Footer + shipping UI pinned to drawer width (fixes “too far left”) */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote,
+#checkoutBtn,
+#editShippingFromCartBtn,
+#shipStatusPill{
+  position: fixed !important;
+  left: auto !important;
+  right: 14px !important;
+  width: min(460px, 94vw) !important;
+  z-index: 10001 !important;
+  box-sizing: border-box !important;
+}
+
+/* top pills */
+#shipStatusPill{ top: 54px !important; bottom: auto !important; }
+#editShippingFromCartBtn{ top: 50px !important; bottom: auto !important; width: auto !important; right: 14px !important; }
+
+/* bottom stack */
+#checkoutBtn{ bottom: 14px !important; }
+#paypalTotalNote{ bottom: 54px !important; }
+#cartTotal{ bottom: 78px !important; padding-top: 10px !important; border-top: 1px solid rgba(255,255,255,.12) !important; }
+#cartTax{ bottom: 106px !important; }
+#cartShip{ bottom: 130px !important; }
+#cartSubtotal{ bottom: 154px !important; }
+#cartProdSubtotal{ bottom: 178px !important; }
+/* ===============================
+   FORCE "OLD CART" LOOK (drawer)
+   Matches screenshot: header, pill+edit, pinned totals, full-width checkout
+================================= */
+
+/* Backdrop + drawer stays on RIGHT */
+#cartBack{
+  display:none;                 /* JS controls open/close */
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 50;
+  align-items: stretch;
+  justify-content: flex-end;    /* RIGHT side */
+}
+#cartBack::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+/* Drawer panel */
+#cartItems{
+  position: relative;
+  z-index: 2;
+  width: min(460px, 94vw);
+  height: 100vh;
+  overflow: auto;
+  background: rgba(12,12,12,.98);
+  border-left: 1px solid rgba(255,255,255,.10);
+  padding: 76px 16px 190px;     /* top space for header + bottom space for totals */
+}
+
+/* Close button in top-right like screenshot */
+#closeCartBtn{
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 3;
+  border: 1px solid rgba(58,160,255,.55);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+/* "Cart" title area (if your JS injects it, this helps) */
+#cartItems h2,
+#cartItems h1{
+  margin: 0 0 12px;
+  font-size: 30px;
+  font-weight: 1000;
+}
+
+/* Shipping pill at top-left */
+#shipStatusPill{
+  position: absolute;
+  left: 16px;
+  top: 56px;
+  z-index: 3;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(58,160,255,.45);
+  background: rgba(58,160,255,.14);
+  color: #cfe9ff;
+  font-weight: 900;
+  font-size: 13px;
+}
+
+/* Edit button near pill like screenshot */
+#editShippingFromCartBtn{
+  position: absolute;
+  left: 170px;                  /* sits next to pill */
+  top: 52px;
+  z-index: 3;
+  border: 1px solid rgba(58,160,255,.45);
+  background: rgba(0,0,0,.35);
+  color:#fff;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+/* Cart item card: matches old sizing */
+.cartItem{
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.03);
+  margin-bottom: 14px;
+}
+.cartItem img{
+  width:64px;
+  height:64px;
+  border-radius: 14px;
+  object-fit: cover;
+  background:#111;
+}
+.cartName{ font-weight: 1000; font-size: 16px; }
+.cartMeta{ font-size: 12px; color: rgba(255,255,255,.65); }
+
+/* Qty controls */
+ qtyBtn{
+  width:34px; height:34px;
+  border-radius: 12px;
+  border:1px solid rgba(58,160,255,.55);
+  background: rgba(0,0,0,.25);
+  color:#fff;
+  font-weight: 1000;
+}
+ qtyNum{ min-width: 22px; text-align:center; font-weight: 1000; }
+
+/* Remove button pill */
+.removeBtn{
+  border: 1px solid rgba(255,60,60,.55);
+  background: rgba(0,0,0,.20);
+  color:#fff;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+}
+
+/* ===== Pinned totals block (bottom) ===== */
+#cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  z-index: 3;
+  font-weight: 900;
+}
+
+/* Spacing stack like screenshot */
+#cartSubtotal{ bottom: 128px; font-size: 14px; opacity: .95; }
+#cartProdSubtotal{ bottom: 106px; font-size: 14px; opacity: .85; }
+#cartShip{ bottom: 84px; font-size: 14px; opacity: .85; }
+#cartTax{ bottom: 62px; font-size: 14px; opacity: .85; }
+#cartTotal{
+  bottom: 38px;
+  font-size: 18px;
+  font-weight: 1000;
+  border-top: 1px solid rgba(255,255,255,.12);
+  padding-top: 10px;
+}
+#paypalTotalNote{
+  bottom: 16px;
+  font-size: 12px;
+  color: rgba(255,255,255,.70);
+  display: block !important;
+}
+
+/* Checkout button full-width at very bottom */
+#checkoutBtn{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0px;
+  margin-bottom: 8px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(58,160,255,.55);
+  background: rgba(0,0,0,.22);
+  color:#fff;
+  font-weight: 1000;
+}
+#checkoutBtn:disabled{ opacity:.45; }
+
+/* Prevent any old "blue bar"/random input from stretching outside */
+#cartItems input, #cartItems select, #cartItems textarea{
+  max-width: 100%;
+}
+/* ===============================
+   SHRINK CART UI ~25% (SAFE)
+   (does NOT change overlay behavior)
+================================= */
+
+/* Drawer panel: narrower + tighter padding */
+#cartItems{
+  width: min(390px, 92vw) !important;      /* was ~520px */
+  padding: 62px 12px 120px !important;     /* tighter */
+}
+
+/* Cart item cards: smaller */
+.cartItem{
+  grid-template-columns: 52px 1fr auto !important; /* was 64px */
+  gap: 10px !important;
+  padding: 10px !important;
+  border-radius: 14px !important;
+  margin-bottom: 10px !important;
+}
+.cartItem img{
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 10px !important;
+}
+
+/* Text sizing */
+.cartName{ font-size: 13px !important; }
+.cartMeta{ font-size: 11px !important; }
+
+/* Qty buttons smaller */
+ qtyBtn{
+  width: 30px !important;
+  height: 30px !important;
+  border-radius: 9px !important;
+  font-size: 14px !important;
+}
+ qtyNum{ font-size: 13px !important; }
+
+/* Remove button smaller */
+.removeBtn{
+  padding: 7px 9px !important;
+  border-radius: 10px !important;
+  font-size: 12px !important;
+}
+
+/* Totals footer: smaller + nudged up a bit */
+#cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote{
+  left: 12px !important;
+  right: 12px !important;
+  font-size: 13px !important;
+}
+#cartSubtotal{ bottom: 104px !important; }
+#cartShip{ bottom: 82px !important; }
+#cartTax{ bottom: 62px !important; }
+#cartTotal{ bottom: 42px !important; font-size: 14px !important; }
+#paypalTotalNote{ bottom: 24px !important; font-size: 12px !important; }
+
+/* Footer buttons: smaller */
+#editShippingFromCartBtn{
+  right: 12px !important;
+  bottom: 104px !important;
+  padding: 8px 10px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+}
+#checkoutBtn{
+  left: 12px !important;
+  right: 12px !important;
+  bottom: 10px !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+  font-size: 13px !important;
+}
+/* ===== FIX: cart ghost overlay + footer escaping drawer ===== */
+
+/* 1) Kill any backdrop/ghost coming from cartBack */
+#cartBack{
+  background: transparent !important;  /* no full-screen wash */
+}
+#cartBack::before{
+  content: none !important;            /* remove legacy overlay layer */
+  display: none !important;
+}
+
+/* 2) Make the cart drawer a real column so footer stays inside */
+#cartItems{
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  padding: 70px 16px 16px !important;  /* remove giant bottom padding */
+  overflow: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* 3) STOP legacy absolute footer positioning (this is why text/blue bar escape) */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote,
+#checkoutBtn,
+#editShippingFromCartBtn{
+  position: static !important;         /* <-- key fix */
+  left: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  top: auto !important;
+  margin: 8px 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  text-align: left !important;
+  z-index: auto !important;
+}
+
+/* 4) Keep checkout + edit button neatly stacked inside the drawer */
+#editShippingFromCartBtn{
+  align-self: flex-end !important;
+  margin-top: 6px !important;
+}
+#checkoutBtn{
+  margin-top: 10px !important;
+}
+/* CLEANUP 1: kill the faint left “ghost rail” (cart backdrop) */
+#cartBack::before{
+  display: none !important;   /* removes the leftover shaded overlay */
+}
+
+/* CLEANUP 2: align totals/shipping block nicely inside the drawer */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote{
+  text-align: left !important;
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  box-sizing: border-box !important;
+}
+/* ONE FIX: move the CART FOOTER (totals/shipping/checkout) into the right drawer */
+#cartSubtotal,
+#cartProdSubtotal,
+#cartShip,
+#cartTax,
+#cartTotal,
+#paypalTotalNote,
+#editShippingFromCartBtn,
+#checkoutBtn,
+#shipStatusPill{
+  position: fixed !important;
+  right: 16px !important;
+  left: auto !important;
+  width: min(520px, 92vw) !important;
+  margin: 0 !important;
+  z-index: 60 !important;
+}
+
+/* stack them from bottom up INSIDE the drawer */
+#checkoutBtn{ bottom: 12px !important; }
+#paypalTotalNote{ bottom: 56px !important; }
+#cartTotal{ bottom: 80px !important; }
+#cartTax{ bottom: 104px !important; }
+#cartShip{ bottom: 128px !important; }
+#cartSubtotal{ bottom: 152px !important; }
+#cartProdSubtotal{ bottom: 176px !important; }
+#editShippingFromCartBtn{ bottom: 152px !important; right: 20px !important; width: auto !important; }
+#shipStatusPill{ top: 16px !important; bottom: auto !important; right: 16px !important; }
+/* ONE FIX: pin the drawer to the RIGHT */
+#cartItems{
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  margin: 0 !important;
+  height: 100vh !important;
+  width: min(520px, 92vw) !important;
+}
+/* FORCE CART DRAWER TO THE RIGHT */
+#cartBack{
+  display: none;                 /* JS toggles to flex */
+  position: fixed;
+  inset: 0;
+  justify-content: flex-end;     /* <-- RIGHT side */
+  align-items: stretch;
+  padding: 0;
+  z-index: 50;
+}
+
+/* the drawer panel itself */
+
+/* ===== SHIPPING MODAL LAYOUT (FIXED) ===== */
+
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: none;                 /* JS toggles */
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px !important;
+  background: rgba(0,0,0,.75) !important;
+}
+
+/* Panel = column: header + scroll area */
+#shipModal{
+  width: min(720px, 96vw) !important;
+  height: min(86vh, 760px) !important;
+  max-height: 86vh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+
+  border-radius: 18px !important;
+  background: rgba(10,10,10,.94) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+
+/* Header row (never blocks inputs now) */
+#shipTopActions{
+  flex: 0 0 auto !important;
+  padding: 10px 14px !important;
+  background: rgba(0,0,0,.92) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+  z-index: 2 !important;
+}
+
+/* Scroll body */
+#shipForm{
+  flex: 1 1 auto !important;
+  overflow: auto !important;
+  padding: 14px 14px 18px !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optional: give the first field some breathing room */
+#shipName{ scroll-margin-top: 80px; }
+
+/* Mobile: allow header buttons to wrap instead of disappearing */
+@media (max-width: 720px){
+  #shipTopActions{
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+}
+# ==============================
+#   SHIPPING MODAL — FIXED SCROLL
+# ==============================
+
+/* Overlay */
+#shipBack{
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: none;                 /* JS toggles */
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 12px !important;
+  background: rgba(0,0,0,.75) !important;
+}
+
+/* Panel */
+#shipModal{
+  width: min(720px, 96vw) !important;
+  height: min(86vh, 760px) !important;
+  max-height: 86vh !important;
+  overflow: hidden !important;     /* critical: create inner scroll */
+  border-radius: 18px !important;
+  background: rgba(10,10,10,.94) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+}
+
+/* Top bar inside the shipping modal */
+#shipTopActions{
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 10 !important;
+  padding: 10px 14px !important;
+  background: rgba(0,0,0,.92) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+
+/* Scroll area (THIS is what scrolls) */
+#shipForm{
+  height: calc(86vh - 56px) !important; /* leaves room for top bar */
+  overflow: auto !important;
+  padding: 14px 14px 18px !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Make sure first field isn't hidden under the bar */
+#shipName{
+  scroll-margin-top: 80px;
+}
+
+/* Mobile: allow top actions to wrap (no disappearing buttons) */
+@media (max-width: 720px){
+  #pageTopActions{
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+  #shipTopActions{
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+}
+#cartItems{
+  margin-left: auto;            /* <-- RIGHT side */
+  margin-right: 0;
+  width: min(520px, 92vw);
+  height: 100vh;
+}
+/* STEP 1: Force cart drawer to the RIGHT side */
+#cartBack{
+  justify-content: flex-end !important; /* backdrop flex aligns drawer right */
+}
+
+#cartItems{
+  margin-left: auto !important;  /* shove drawer to the right */
+  left: auto !important;
+  right: 0 !important;
+}
+
+
+/* If JS opens the cart with display:block, force it into flex so drawer goes right */
+#cartBack[style*="display: block"]{
+  display: flex !important;
+}
+#grid { outline: 6px solid magenta !important; }
+
+
+
+/* ===============================
+   FIX BROKEN HEADER/TOTALS LAYOUT
+================================= */
+
+/* keep content aligned with grid padding */
+#statusText,
+#grid {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* The legacy “cart empty / totals / shipping” strip is plain text.
+   This forces it into a clean row layout. */
+/* ===== FIX: Shipping overlay header blocking form on mobile ===== */
+
+/* When shipping is open, hide the page top action bar so it can't overlap */
+
+/* Hide ONLY the page-level top actions while shipping modal is open */
+body.shipping-open #pageTopActions{
+  display: none !important;
+}
+
+/* Make the shipping overlay behave like a real modal with its own scroll */
+#shipBack{
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px !important;
+}
+
+/* Whatever the first panel is inside shipBack, force it to be a column layout */
+#shipBack > *{
+  width: min(560px, 96vw) !important;
+  max-height: calc(100vh - 20px) !important;
+  overflow: hidden !important;              /* header stays, body scrolls */
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Force the shipping action header to take SPACE (not overlay) */
+#shipBack .topActions{
+  position: sticky !important;              /* sticky inside the modal */
+  top: 0 !important;
+  z-index: 5 !important;
+  margin: 0 !important;
+}
+
+/* The shipping form/body should scroll */
+#shipBack form,
+#shipBack .shipForm,
+#shipBack #shipForm{
+  flex: 1 1 auto !important;
+  overflow: auto !important;
+  padding: 14px 16px 22px !important;
+  -webkit-overflow-scrolling: touch;
+}
+#statusText {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px 16px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* If legacy prints multiple lines in statusText, keep them tidy */
+#statusText * {
+  max-width: 100%;
+}
+
+/* The dashed empty-cart callout */
+#statusText > div {
+  background: rgba(255,255,255,.03);
+  border: 1px dashed rgba(255,255,255,.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  color: rgba(255,255,255,.75);
+}
+
+/* KILL the random giant white bar (usually an empty block/div getting default bg) */
+#statusText div[style*="background: white"],
+#statusText div[style*="background:#fff"],
+#statusText div[style*="background: #fff"],
+#statusText div[style*="background-color: white"],
+#statusText div[style*="background-color:#fff"],
+#statusText div[style*="background-color: #fff"] {
+  display: none !important;
+}
+
+/* Mobile: stack */
+@media (max-width: 700px) {
+  #statusText {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===============================
+   Intrigued Mutts — legacy merch.css
+   (grid small + modal/cart/shipping usable)
+   =============================== */
+
+:root{
+  --bg: url("./merchbackground.png") center/cover no-repeat fixed;
+  --panel: #0b0b0b;
+  --panel2: #101010;
+  --border: #2a2a2a;
+  --border2:#333;
+  --text: #fff;
+  --muted:#aaa;
+  --blue: rgba(58,160,255,.85);
+}
+
+*{ box-sizing:border-box; }
+body{ margin:0; background:var(--bg); color:var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
+
+/* Top-right action bar (where JS injects Cart button) */
+.topActions{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:12px;
+  padding: 10px 16px;
+  background: linear-gradient(to bottom, rgba(0,0,0,.9), rgba(0,0,0,.35));
+  backdrop-filter: blur(6px);
+}
+
+/* Cart button injected by JS */
+.cartBtn{
+  appearance:none;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor:pointer;
+}
+.cartBtn:hover{ border-color:#555; }
+.cartBadge{
+  display:inline-flex;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  align-items:center;
+  justify-content:center;
+  border-radius: 999px;
+  background: rgba(58,160,255,.18);
+  border: 1px solid rgba(58,160,255,.35);
+  margin-left: 8px;
+  font-weight: 900;
+}
+
+/* Status */
+#statusText{ padding: 12px 16px; color: #cfe9ff; }
+
+/* --- GRID --- */
+#grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card{
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px;
+  cursor:pointer;
+  transition: transform .12s ease, border-color .12s ease;
+}
+.card:hover{ transform: translateY(-2px); border-color:#444; }
+
+.imgWrap{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  overflow:hidden;
+  background:#111;
+}
+.imgWrap img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition: opacity .2s;
+}
+.imgWrap img.loaded{ opacity:1; }
+
+.card h3{
+  margin: 12px 0 10px;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.buyBtn{
+  width:100%;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border2);
+  background: var(--panel2);
+  color: var(--text);
+  font-weight: 900;
+  cursor:pointer;
+}
+.buyBtn:hover{ border-color:#555; }
+
+/* --- OVERLAYS --- */
+#modalBack, #cartBack, #shipBack, #lightboxBack{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  z-index: 50;
+  display:none;
+}
+
+#modalBack{ align-items:center; justify-content:center; padding: 24px; }
+#modal{
+  width: min(820px, 95vw);
+  max-height: 90vh;
+  overflow:auto;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: 22px;
+  padding: 16px;
+}
+
+/* --- Make Cart button match the other top buttons --- */
+.topActions #cartBtn.cartBtn{
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.topActions #cartBtn.cartBtn:hover{
+  text-decoration: underline;
+}
+
+/* Keep the cart count badge, but make it lighter + consistent */
+.topActions #cartBtn .cartBadge{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 22px;
+  height: 22px;
+  padding: 0 8px;
+
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+
+  border: 1px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.06);
+}
+
+/* Modal header */
+/* FIX: ensure cart + buttons are clickable above page */
+#cartBack {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+#cartItems {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  bottom: 16px;
+  width: min(420px, calc(100vw - 32px));
+  overflow: auto;
+  pointer-events: auto;
+}
+
+/* FIX: shipping modal must be above cart when opened */
+#shipBack {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: auto;
+}
+.shipCard { max-width: 860px; margin: 40px auto; padding: 22px; border-radius: 18px; }
+.shipHeader { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.shipTitle { font-size: 34px; font-weight: 800; }
+.shipSubRow { display:flex; align-items:center; gap:12px; margin: 10px 0 18px; }
+.shipSubText { opacity:.85; }
+.shipForm { display:flex; flex-direction:column; gap:10px; }
+.shipLabel { font-size: 14px; opacity:.9; margin-top:6px; }
+.shipGrid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 6px; }
+.shipNote { margin-top: 10px; opacity:.8; font-size: 13px; }
+.shipFooter { display:flex; justify-content:flex-end; gap:12px; margin-top: 18px; flex-wrap:wrap; }
+#modalTitle{
+  font-weight: 1000;
+  font-size: 18px;
+  margin: 6px 0 10px;
+}
+#closeModal{
+  position: sticky;
+  top: 0;
+  float: right;
+  margin-left: auto;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+#closeModal:hover{ border-color:#555; }
+
+#modalImg{
+  width:100%;
+  border-radius: 16px;
+  display:block;
+  background:#111;
+}
+
+/* Add to Cart button inside modal */
+#modalBuyBtn{
+  width:100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border:1px solid var(--border2);
+  background: var(--panel2);
+  color: var(--text);
+  font-weight: 1000;
+  cursor:pointer;
+}
+#modalBuyBtn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+/* Variants */
+#variantNote{
+  margin-top: 14px;
+  color: var(--muted);
+  font-weight: 800;
+}
+#variantList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-top: 10px;
+}
+.variantRow{
+  border: 1px solid #2b2b2b;
+  background: rgba(255,255,255,.02);
+  border-radius: 14px;
+  padding: 12px;
+  cursor:pointer;
+}
+.variantRow:hover{ border-color:#444; }
+
+/* Lightbox */
+#lightboxBack{ align-items:center; justify-content:center; padding: 20px; }
+#lightboxImg{ max-width: 92vw; max-height: 92vh; border-radius: 16px; }
+
+/* --- CART DRAWER --- */
+#cartBack{
+  /* Full-screen backdrop + right-side drawer */
+  display:none;
+  align-items: stretch;
+  justify-content: flex-end;
+  padding: 0;
+}
+
+/*
+#cartBack{
+  display: block !important;
+  position: static !important;
+  inset: auto !important;
+  background: rgba(10,10,10,.85);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
+  padding: 12px;
+  z-index: auto !important;
+}
+*/
+#cartBack::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+#closeCartBtn{
+  position:absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color:#fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+
+#cartItems, #cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote, #checkoutBtn, #editShippingFromCartBtn, #shipStatusPill{
+  z-index: 2;
+}
+
+#cartItems{
+  width: min(520px, 92vw);
+  height: 100vh;
+  overflow:auto;
+  background: var(--panel);
+  border-left: 1px solid var(--border2);
+  padding: 70px 16px 140px; /* space for top close + bottom buttons */
+  position: relative;
+}
+
+.cartItem{
+  display:grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #252525;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  background: rgba(255,255,255,.02);
+}
+.cartItem img{
+  width:64px;
+  height:64px;
+  object-fit:cover;
+  border-radius: 12px;
+  background:#111;
+}
+.cartName{ font-weight: 1000; }
+.cartMeta{ font-size: 12px; color: var(--muted); margin-top:2px; }
+
+.cartQtyRow{ display:flex; align-items:center; gap:10px; margin-top: 10px; }
+ qtyBtn{
+  width:34px; height:34px;
+  border-radius: 10px;
+  border:1px solid var(--border2);
+  background: var(--panel2);
+  color:#fff;
+  font-weight: 1000;
+  cursor:pointer;
+}
+ qtyNum{ min-width: 22px; text-align:center; font-weight: 1000; }
+
+.removeBtn{
+  border:1px solid #444;
+  background: transparent;
+  color:#fff;
+  padding: 8px 10px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+.removeBtn:hover{ border-color:#777; }
+
+/* Cart footer */
+#cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  color:#fff;
+  font-weight: 900;
+}
+#cartSubtotal{ bottom: 112px; }
+#cartShip{ bottom: 88px; color: var(--muted); font-weight: 800; }
+#cartTax{ bottom: 66px; color: var(--muted); font-weight: 800; }
+#cartTotal{ bottom: 44px; font-weight: 1000; }
+#paypalTotalNote{ bottom: 22px; color: #cfe9ff; display:none; }
+
+#editShippingFromCartBtn{
+  position: absolute;
+  right: 16px;
+  bottom: 112px;
+  border:1px solid var(--border2);
+  background: var(--panel2);
+  color:#fff;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 900;
+  cursor:pointer;
+}
+
+#checkoutBtn{
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border:1px solid var(--border2);
+  background: rgba(58,160,255,.18);
+  color:#fff;
+  font-weight: 1000;
+  cursor:pointer;
+}
+#checkoutBtn:disabled{
+  opacity: .45;
+  cursor:not-allowed;
+}
+
+#shipStatusPill{
+  position:absolute;
+  left:16px;
+  top: 16px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(58,160,255,.35);
+  background: rgba(58,160,255,.10);
+  color:#cfe9ff;
+  font-weight: 900;
+  font-size: 12px;
+}
+
+/* --- SHIPPING MODAL --- */
+#shipBack{ align-items:center; justify-content:center; padding: 20px; }
+#shipBack > *{ z-index:2; }
+#shipBack::before{
+  content:"";
+  position:absolute; inset:0;
+  background: rgba(0,0,0,.55);
+}
+
+#shipBack{
+  display:none;
+}
+
+#shipBack .shipPanel,
+#shipBack{
+  /* (JS uses inputs by id, so we style by ids below) */
+}
+
+#shipCloseBtn{
+  position:absolute;
+  top: 16px;
+  right: 16px;
+  border:1px solid var(--border2);
+  background: rgba(16,16,16,.9);
+  color:#fff;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor:pointer;
+}
+
+/* Inputs */
+#shipName,#shipPhone,#shipAddress1,#shipAddress2,#shipCity,#shipState,#shipZip,#shipCountry{
+  width: min(680px, 92vw);
+  display:block;
+  margin: 8px auto;
+  padding: 12px 12px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  background: #0f0f0f;
+  color:#fff;
+}
+
+/* Buttons in shipping */
+#shipClearBtn,#shipSaveBtn,#shipSaveAndCheckoutBtn{
+  margin: 10px 6px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border2);
+  background: var(--panel2);
+  color:#fff;
+  font-weight: 900;
+  cursor:pointer;
+}
+#shipClearBtn{ border-color:#555; }
+
+/* === WIDEN MERCH LAYOUT (full width) === */
+#merchLayout {
+  width: 100%;
+  max-width: none !important;
+}
+
+/* make the product area stretch across */
+#grid {
+  width: 100%;
+  max-width: none !important;
+}
+
+/* If #grid is a CSS grid in your legacy css, force columns wider */
+#grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  #grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1024px) {
+  #grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  #grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1536px) {
+  #grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+/* remove debug magenta borders/outlines */
+#merchLayout, #grid, #grid * {
+  outline: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* normal card sizing */
+#grid{
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* tablet */
+@media (min-width: 768px){
+  #grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* desktop */
+@media (min-width: 1024px){
+  #grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* keep cards from getting huge on ultra-wide screens */
+#grid > *{
+  max-width: 320px;
+}
+
+/* === Overlay click friendliness === */
+#modalBack, #cartBack, #shipBack, #lightboxBack {
+  position: fixed;           /* in case any got overridden */
+  inset: 0;
+  z-index: 9999;             /* make sure it's on top */
+  pointer-events: auto;
+}
+
+#modal, #cartItems, #shipBack .shipTop, #shipBack .shipForm {
+  pointer-events: auto;
+}
