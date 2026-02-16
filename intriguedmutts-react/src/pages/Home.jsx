@@ -171,7 +171,7 @@ export default function Home() {
           <div className="mt-16">
             <button
               onClick={() => navigate("/merch-gate")}
-              className="group relative px-10 py-4 rounded-xl border border-white/30 hover:border-white/70 transition text-sm tracking-[0.3em]"
+              className="group relative px-10 py-4 rounded-xl border border-white/30 hover:border-white/70 transition text-sm tracking-[0.3em] ctaPulse"
             >
               <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition bg-white/5" />
               <span className="relative">ENTER MERCH VAULT</span>
