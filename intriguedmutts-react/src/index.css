@@ -1,3 +1,8 @@
+
+/* ===== FORCE menu arrow to point toward the menu (LEFT) ===== */
+.menuArrow svg{
+  transform: rotate(90deg) !important;
+}
 #
 /* Hide menu arrow globally */
 .menuArrow{ display: none !important; }
