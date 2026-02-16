@@ -237,3 +237,10 @@ body { background: #000; }
 @media (prefers-reduced-motion: reduce){
   .merchVaultPulse{ animation: none !important; }
 }
+
+/* FIX: menuArrow direction */
+.menuArrow svg {
+  transform: rotate(90deg) !important; /* down-chevron -> LEFT (toward menu) */
+}
+/* END FIX: menuArrow direction */
+
