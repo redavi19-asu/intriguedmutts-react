@@ -3,7 +3,6 @@
 .menuArrow svg{
   transform: rotate(90deg) !important;
 }
-#
 /* Hide menu arrow globally */
 .menuArrow{ display: none !important; }
 /* HERO (Welcome to the Society) arrow color */
@@ -244,3 +243,7 @@ body { background: #000; }
 }
 /* END FIX: menuArrow direction */
 
+/* ===== FINAL OVERRIDES (menu arrow) ===== */
+.menuArrow{ display:block !important; }
+.menuArrow svg{ transform: rotate(90deg) !important; } /* down chevron -> LEFT */
+/* ===== END FINAL OVERRIDES (menu arrow) ===== */
