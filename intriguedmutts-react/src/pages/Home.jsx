@@ -72,6 +72,30 @@ export default function Home() {
     >
       <Hero />
 
+      {/* Intro summary + arrows */}
+      <section className="introWrap">
+        {/* Arrow pointing to menu (top-right, fixed, no label) */}
+        <div className="menuArrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
+
+        <div className="introCopy">
+          <p className="introLead introLeadBig">Intrigued Mutts Society is a finance + fashion lifestyle lab — a place to learn the game and stay fresh doing it.</p>
+          <p className="introLead introLeadBig">Track dividend stocks, watchlist moves, and simple ideas that help you build steady cash flow over time.</p>
+          <p className="introLead introLeadBig">Then step into the merch vault: clean streetwear inspired by the pack and the mindset.</p>
+          <p className="introLead introLeadBig">Use the menu to choose your path, or scroll down to enter the world.</p>
+        </div>
+
+      {/* Arrow pointing down under the intro */}
+      <div className="scrollArrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      </section>
+
       {/* Society section */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}

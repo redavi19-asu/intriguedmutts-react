@@ -1,3 +1,17 @@
+/* HERO (Welcome to the Society) arrow color */
+.heroScrollArrow{
+  color: rgba(255, 138, 0, 0.95) !important; /* orange */
+}
+/* Ensure scroll/menu arrows are not rotated */
+.scrollArrow svg,
+.menuArrow svg {
+  transform: rotate(0deg) !important;
+}
+/* Make the hero scroll arrow hug the heading and sit above the MP4 */
+.heroScrollArrow{
+  margin-top: 14px;
+  margin-bottom: 0;
+}
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -43,4 +57,146 @@ body { background: #000; }
     rgba(0,0,0,0.30),
     rgba(0,0,0,0.70)
   );
+}
+
+/* ===== Intro arrows (mobile friendly, don't block clicks) ===== */
+.introWrap{
+  position: relative;
+}
+
+/* keep intro readable but not boxed-in */
+.introCopy{
+  max-width: 70rem;
+  margin: 0 auto;
+  padding: 22px 22px 6px;
+  text-align: center;
+}
+
+.introLead{
+  font-size: clamp(16px, 2.1vw, 22px);
+  line-height: 1.6;
+  color: rgba(255,255,255,0.88);
+  margin: 12px 0;
+  text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+}
+
+/* Menu arrow: fixed top-right pointing at menu area */
+.menuArrow{
+  position: fixed;
+  /* safe on iPhone notch + consistent on desktop */
+  top: calc(env(safe-area-inset-top, 0px) + 14px);
+  right: calc(env(safe-area-inset-right, 0px) + 14px);
+  width: clamp(22px, 4vw, 34px);
+  height: clamp(22px, 4vw, 34px);
+  color: rgba(255,255,255,0.75);
+  z-index: 50;
+  pointer-events: none;
+
+  /* rotate so the chevron "points" toward the menu button */
+  transform: rotate(90deg);
+  animation: nudgePulse 1.2s ease-in-out infinite;
+}
+
+/* Down arrow under intro */
+.scrollArrow{
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+  margin-bottom: 10px;
+
+  width: 100%;
+  pointer-events: none;
+  color: rgba(255,255,255,0.75);
+}
+
+.scrollArrow svg{
+  width: clamp(26px, 5vw, 42px);
+  height: clamp(26px, 5vw, 42px);
+  animation: downBob 1.2s ease-in-out infinite;
+}
+
+.menuArrow svg{
+  width: 100%;
+  height: 100%;
+}
+
+/* animations */
+@keyframes downBob{
+  0%,100%{ transform: translateY(0); opacity: 0.55; }
+  50%{ transform: translateY(8px); opacity: 0.95; }
+}
+@keyframes nudgePulse{
+  0%,100%{ transform: rotate(90deg) translateX(0); opacity: 0.55; }
+  50%{ transform: rotate(90deg) translateX(-6px); opacity: 0.95; }
+}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .menuArrow, .scrollArrow svg{ animation: none !important; }
+}
+
+/* optional: hide menu arrow on very tiny screens if it ever overlaps */
+@media (max-width: 360px){
+  .menuArrow{ display: none; }
+}
+
+
+/* Arrow orientation:
+   - scrollArrow stays DOWN
+   - menuArrow points LEFT toward the top menu
+*/
+.scrollArrow svg{
+  transform: none !important;
+}
+.menuArrow svg{
+  transform: rotate(90deg) !important; /* down chevron -> left */
+}
+
+/* Nudge the menu arrow closer to the menu area (works across sizes) */
+.menuArrow{
+  right: clamp(36px, 6vw, 72px) !important;
+}
+
+/* ===== Section accent colors (fonts + callouts) ===== */
+
+/* 1) Intro (3–4 sentence summary + arrows) = ORANGE */
+.introWrap{
+  color: rgba(255, 166, 74, 0.92);
+}
+.introWrap .menuArrow,
+.introWrap .scrollArrow{
+  color: rgba(255, 138, 0, 0.95);
+}
+
+/* 2) Society section = ICY BLUE */
+#society p.text-gray-400,
+#society .learns,
+#society h2{
+  color: rgba(125, 211, 252, 0.95) !important;
+}
+/* make the Society button feel "icy" without ruining the rest */
+#society a{
+  border-color: rgba(125, 211, 252, 0.35) !important;
+}
+
+/* 3) Merch section = YELLOW */
+#merch p.text-gray-400,
+#merch h2{
+  color: rgba(250, 204, 21, 0.95) !important;
+}
+#merch button{
+  border-color: rgba(250, 204, 21, 0.30) !important;
+}
+
+/* 4) Stocks section = MONEY GREEN */
+#stock p.text-gray-400,
+#stock h2{
+  color: rgba(74, 222, 128, 0.95) !important;
+}
+
+/* Bigger intro text (Option B) */
+.introLeadBig{
+  font-size: clamp(1.05rem, 1.2vw + 0.85rem, 1.45rem);
+  line-height: 1.55;
+  font-weight: 650;
 }

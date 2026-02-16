@@ -23,6 +23,11 @@ export default function Hero() {
         <p className="mt-6 text-white/75 max-w-xl">
           Welcome to the Society.
         </p>
+        <div className="scrollArrow heroScrollArrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </div>
       </div>
     </section>
   );
