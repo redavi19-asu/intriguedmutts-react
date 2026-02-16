@@ -74,13 +74,6 @@ export default function Home() {
 
       {/* Intro summary + arrows */}
       <section className="introWrap">
-        {/* Arrow pointing to menu (top-right, fixed, no label) */}
-        <div className="menuArrow" aria-hidden="true">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-
         <div className="introCopy">
           <p className="introLead introLeadBig">Intrigued Mutts Society is a finance + fashion lifestyle lab — a place to learn the game and stay fresh doing it.</p>
           <p className="introLead introLeadBig">Track dividend stocks, watchlist moves, and simple ideas that help you build steady cash flow over time.</p>
