@@ -18,8 +18,8 @@ const TABS = [
   { key: "heatmap", title: "52-week heatmap", desc: "Closest to the lows (next)" },
   {
     key: "packs",
-    title: "Options Dashboard",
-    desc: "Watchlist + Today/52W range",
+    title: "Options Watch List",
+    desc: "Watchlist only",
   },
   {
     key: "optionsHeatmap",
@@ -130,7 +130,7 @@ export default function Stocks() {
         </div>
       </div>
 
-      {/* STRATEGY ACCORDION */}
+      {/* STRATEGY ACCORDION: DIVIDENDS */}
       <details
         style={{
           ...darkCard,
@@ -275,6 +275,168 @@ export default function Stocks() {
         </div>
       </details>
 
+      {/* STRATEGY ACCORDION: OPTIONS */}
+      <details
+        style={{
+          ...darkCard,
+          border: "1px solid rgba(255,255,255,0.18)",
+          marginBottom: 18,
+          overflow: "hidden",
+        }}
+      >
+        <summary
+          style={{
+            cursor: "pointer",
+            listStyle: "none",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 14,
+            padding: "18px 18px",
+            fontWeight: 950,
+            fontSize: 18, // bigger
+            userSelect: "none",
+            letterSpacing: 0.2,
+          }}
+        >
+          <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 999,
+                background: "#35ff6a",
+                boxShadow: "0 0 16px rgba(53,255,106,0.55)",
+              }}
+            />
+            Why I track these options tickers
+          </span>
+
+          <span
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              fontSize: 13,
+              opacity: 0.85,
+              padding: "8px 12px",
+              borderRadius: 999,
+              border: "1px solid rgba(255,255,255,0.18)",
+              background: "rgba(255,255,255,0.03)",
+            }}
+          >
+            Click to expand
+            <span style={{ fontSize: 16, lineHeight: 1 }}>▾</span>
+          </span>
+        </summary>
+
+        <div
+          style={{
+            padding: "0 18px 18px",
+            borderTop: "1px solid rgba(255,255,255,0.10)",
+            lineHeight: 1.55,
+            opacity: 0.92,
+          }}
+        >
+          <div style={{ marginBottom: 18 }}>
+            <div style={{ fontWeight: 900, fontSize: 20, marginBottom: 6 }}>
+              Why I watch these options tickers
+            </div>
+            <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+              <li>Liquidity (more volume/open interest) → easier fills, tighter spreads</li>
+              <li>Cleaner chart structure → support/resistance actually matters</li>
+              <li>Reliable options chains → strikes + expirations that make sense</li>
+              <li>Enough movement (beta/volatility) to actually pay for the premium</li>
+            </ul>
+            <div style={{ marginTop: 8 }}>
+              This list is built to help me practice: entry timing, risk control, and execution — not hype.
+            </div>
+          </div>
+          <div
+            style={{
+              padding: 14,
+              borderRadius: 14,
+              border: "1px solid rgba(53,255,106,0.22)",
+              background: "rgba(53,255,106,0.06)",
+              marginBottom: 14,
+              fontWeight: 800,
+            }}
+          >
+            Strategy (Options): Structure-first. Defined risk. Planned exits. The best time to buy an option contract is when 3 things line up
+          </div>
+          <ol style={{ marginTop: 0, paddingLeft: 18 }}>
+            <li>
+              <strong>Price is at a real level</strong>
+              <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+                <li>You want the underlying at:
+                  <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+                    <li>a major support (for calls) or major resistance (for puts), or</li>
+                    <li>a breakout/breakdown level with confirmation.</li>
+                  </ul>
+                </li>
+                <li>Translation: don’t buy just because it’s “cheap.” Buy because it’s at a decision point on the chart.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>You have confirmation (so you’re not early)</strong>
+              <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+                <li>Pick one simple confirmation:
+                  <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+                    <li>Break + retest of a level</li>
+                    <li>A clear reversal candle at support (hammer/engulfing)</li>
+                    <li>Higher low forming (bullish) / lower high forming (bearish)</li>
+                    <li>Volume pickup on the move</li>
+                  </ul>
+                </li>
+                <li>If you don’t get confirmation, you’re paying premium while the stock can keep chopping.</li>
+              </ul>
+            </li>
+            <li>
+              <strong>The option isn’t overpriced for the move</strong>
+              <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+                <li>This is the volatility part:</li>
+                <li>If IV is high, options are expensive. You need a faster / bigger move to win.</li>
+                <li>If IV is moderate/low, buying is easier because premium is cheaper.</li>
+                <li>Rule of thumb: avoid buying right before scheduled chaos (earnings) unless you want that gamble.</li>
+              </ul>
+            </li>
+          </ol>
+          <div style={{ marginTop: 18, fontWeight: 700 }}>A simple “green trigger → buy option?” checklist (10 seconds)</div>
+          <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+            <li>Trend: is the stock trending or chopping sideways?</li>
+            <li>Level: is it at support/resistance or just drifting?</li>
+            <li>Setup: do you see a bounce/break + confirmation?</li>
+            <li>Event risk: earnings soon? big news?</li>
+            <li>Time: do I have enough days for the move (not getting killed by Theta)?</li>
+          </ul>
+          <div style={{ marginTop: 0 }}>
+            If any of those are “no,” you don’t force a trade — you just “watch.”
+          </div>
+          <div style={{ marginTop: 18, fontWeight: 700 }}>Expiration + strike (basic but effective)</div>
+          <div style={{ marginTop: 6 }}>
+            <strong>Expiration:</strong>
+            <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+              <li>For directional buys: 2–6 weeks out is a sweet spot (less Theta pain than weeklies).</li>
+              <li>Same-week options = only for very fast moves (high risk).</li>
+            </ul>
+            <strong>Strike:</strong>
+            <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+              <li>Don’t go super far OTM at first. Stick closer to the money so it moves with price.</li>
+              <li>Plain English: closer strikes cost more but actually move; far OTM is cheap but often dies.</li>
+            </ul>
+          </div>
+          <div style={{ marginTop: 18, fontWeight: 700 }}>How this ties into my trigger structure</div>
+          <div style={{ marginTop: 6 }}>
+            My “near 52-week low” trigger is good as an alert, but the actual buy should happen when:
+            <ul style={{ marginTop: 6, paddingLeft: 18 }}>
+              <li>price hits support and shows reversal, or</li>
+              <li>it breaks structure and confirms a new move.</li>
+            </ul>
+            So if you notice triggers firing but charts look messy, that’s your signal to adjust the trigger rules (ex: require “near low + reclaim a level” or “near low + bounce confirmation”).
+          </div>
+        </div>
+      </details>
+
       {/* CLICKABLE CARDS */}
       <div
         style={{
@@ -355,7 +517,7 @@ export default function Stocks() {
             background: "rgba(0,0,0,0.55)",
           }}
         >
-           <h2 style={{ marginTop: 0 }}>Options Dashboard</h2>
+           <h2 style={{ marginTop: 0 }}>Options Watch List</h2>
           <OptionsWatchlistTiles />
         </div>
       )}

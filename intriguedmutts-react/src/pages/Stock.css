@@ -1,3 +1,7 @@
+/* WatchlistTiles change row color classes for consistency */
+.wlChangeRow.pos{ color: #35ff6a; }
+.wlChangeRow.neg{ color: #ff3b3b; }
+.wlChangeRow.flat{ color: #4aa3ff; }
 .stock-page {
   min-height: 100vh;
   background-image: url("/stockbackground.png");

@@ -23,8 +23,6 @@ export default function OptionsWatchlistTiles() {
               current: q?.current,
               change: q?.change,
               changePercent: q?.changePercent,
-              high: q?.high,
-              low: q?.low,
               open: q?.open,
               prevClose: q?.prevClose,
               time: q?.time,
@@ -45,7 +43,6 @@ export default function OptionsWatchlistTiles() {
 
   return (
     <div>
-      <h2>Options Watchlist</h2>
       <div
         style={{
           display: "grid",
