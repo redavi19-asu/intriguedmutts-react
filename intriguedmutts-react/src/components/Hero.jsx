@@ -16,7 +16,7 @@ export default function Hero() {
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
         <img
-          src={`intrigued-mutts-society-transparent.png`}
+          src="/intrigued-mutts-society-transparent.png"
           alt="Intrigued Mutts Society"
           className="w-[320px] sm:w-[420px] md:w-[520px]"
         />

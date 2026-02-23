@@ -61,7 +61,7 @@ export default function Stocks() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)), url(${import.meta.env.BASE_URL}stockbackground.png)`,
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)), url(/stockbackground.png)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
