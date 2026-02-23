@@ -9,6 +9,8 @@ const darkCard = {
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import WatchlistTiles from "../components/WatchlistTiles";
+import OptionsWatchlistTiles from "../components/OptionsWatchlistTiles";
+import Options52WeekHeatmap from "../components/Options52WeekHeatmap";
 import HeatmapGrid from "../components/HeatmapGrid";
 
 const TABS = [
@@ -16,8 +18,13 @@ const TABS = [
   { key: "heatmap", title: "52-week heatmap", desc: "Closest to the lows (next)" },
   {
     key: "packs",
-    title: "Options Picks",
-    desc: "Income + directional contracts (next)",
+    title: "Options Dashboard",
+    desc: "Watchlist + Today/52W range",
+  },
+  {
+    key: "optionsHeatmap",
+    title: "Options 52-week heatmap",
+    desc: "Options watchlist low proximity (green trigger)",
   },
 ];
 
@@ -117,7 +124,7 @@ export default function Stocks() {
               Stocks Dashboard
             </div>
             <div style={{ color: "#bdbdbd", marginTop: 6, maxWidth: 760 }}>
-              Live watchlist tiles now. Heatmap + Options Picks next (KV/D1 + scanners).
+              Live watchlist tiles now. Heatmap + Options Dashboard next (KV/D1 + scanners).
             </div>
           </div>
         </div>
@@ -348,10 +355,21 @@ export default function Stocks() {
             background: "rgba(0,0,0,0.55)",
           }}
         >
-          <h2 style={{ marginTop: 0 }}>Options Picks</h2>
-          <p style={{ opacity: 0.8, marginBottom: 0 }}>
-            Next step: store picks + notes in KV/D1 and show them here (members later).
-          </p>
+           <h2 style={{ marginTop: 0 }}>Options Dashboard</h2>
+          <OptionsWatchlistTiles />
+        </div>
+      )}
+
+      {tab === "optionsHeatmap" && (
+        <div
+          style={{
+            borderRadius: 18,
+            padding: 18,
+            border: "1px solid rgba(255,255,255,0.12)",
+            background: "rgba(0,0,0,0.55)",
+          }}
+        >
+          <Options52WeekHeatmap />
         </div>
       )}
       </div>
