@@ -5,7 +5,7 @@ const SYMBOLS = [
   "F","T","CMCSA","UBER","PFE","NVO","PYPL","CCL","ZM","HIMS","HOOD"
 ];
 
-export default function OptionsWatchlistTiles() {
+export default function OptionsWatchlistTiles({ setSelectedSymbol }) {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -63,7 +63,12 @@ export default function OptionsWatchlistTiles() {
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
+              cursor: "pointer",
             }}
+            onClick={() => setSelectedSymbol(symbol)}
+            tabIndex={0}
+            role="button"
+            aria-label={`Open chart for ${symbol}`}
           >
             <div style={{ fontWeight: 600, fontSize: 22 }}>{symbol}</div>
             {quote ? (

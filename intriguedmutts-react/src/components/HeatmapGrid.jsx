@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchHeatmap } from "../lib/stocksApi";
 
-export default function HeatmapGrid() {
+export default function HeatmapGrid({ setSelectedSymbol }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,6 +22,7 @@ export default function HeatmapGrid() {
       }}
     >
       {rows.map((r) => {
+        // ...existing code...
         const pctFromLow52 = ((r.current - r.low52) / (r.high52 - r.low52)) * 100;
         const nearLow52 = r.nearLow52 !== undefined ? r.nearLow52 : pctFromLow52 <= 3;
         const dollars = (val) => Number(val).toFixed(2);
@@ -43,7 +44,12 @@ export default function HeatmapGrid() {
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
+              cursor: "pointer",
             }}
+            onClick={() => setSelectedSymbol(r.symbol)}
+            tabIndex={0}
+            role="button"
+            aria-label={`Open chart for ${r.symbol}`}
           >
             <div style={{ fontWeight: 600, fontSize: 22 }}>{r.symbol}</div>
             <div style={{ fontSize: 18 }}>${dollars(r.current)}</div>

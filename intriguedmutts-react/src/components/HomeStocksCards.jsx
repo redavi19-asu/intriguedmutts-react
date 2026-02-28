@@ -57,9 +57,7 @@ export default function HomeStocksCards() {
           <div style={{ opacity: 0.8, marginTop: 6, fontSize: 13 }}>
             Live soon: closest-to-low ranking
           </div>
-          <div style={{ opacity: 0.6, marginTop: 10, fontSize: 12 }}>
-            (Next step adds /basic endpoint)
-          </div>
+          {/* Removed helper text in parentheses */}
         </div>
       </Link>
 
@@ -69,9 +67,7 @@ export default function HomeStocksCards() {
           <div style={{ opacity: 0.8, marginTop: 6, fontSize: 13 }}>
             Income + directional contracts (educational)
           </div>
-          <div style={{ opacity: 0.6, marginTop: 10, fontSize: 12 }}>
-            (Next step stores picks in KV/D1)
-          </div>
+          {/* Removed helper text in parentheses */}
         </div>
       </Link>
     </div>

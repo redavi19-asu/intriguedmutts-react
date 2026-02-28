@@ -11,7 +11,7 @@ const fmtSigned = (n, digits = 2) => {
   return `${s}${v.toFixed(digits)}`;
 };
 
-export default function WatchlistTiles() {
+export default function WatchlistTiles({ setSelectedSymbol }) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");
 
@@ -40,7 +40,7 @@ export default function WatchlistTiles() {
         }}
       >
         {entries.map(([symbol, q]) => {
-          // Compute price, change, percent, and color class
+          // ...existing code...
           const price = Number(q?.current ?? q?.price ?? q?.last ?? 0);
           const prevClose = Number(q?.prevClose ?? q?.pc ?? 0);
           const change =
@@ -62,7 +62,12 @@ export default function WatchlistTiles() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "flex-start",
+                cursor: "pointer",
               }}
+              onClick={() => setSelectedSymbol(symbol)}
+              tabIndex={0}
+              role="button"
+              aria-label={`Open chart for ${symbol}`}
             >
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                 <strong style={{ fontWeight: 600, fontSize: 22 }}>{symbol}</strong>

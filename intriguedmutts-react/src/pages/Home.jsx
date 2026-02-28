@@ -7,26 +7,28 @@ import Hero from "../components/Hero";
 function Section({ title, kicker, children, ctaTo, ctaText, id }) {
   return (
     <section id={id} className="py-24 border-t border-white/10">
-      <div className="grid md:grid-cols-2 gap-10 items-start">
-        <div>
-          <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
-            {kicker}
-          </p>
-          <h2 className="mt-3 text-4xl md:text-5xl learns font-black tracking-tight">
-            {title}
-          </h2>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid md:grid-cols-2 gap-10 items-start">
+          <div>
+            <p className="text-xs uppercase tracking-[0.35em] text-gray-400">
+              {kicker}
+            </p>
+            <h2 className="mt-3 text-4xl md:text-5xl learns font-black tracking-tight">
+              {title}
+            </h2>
 
-          {ctaTo && (
-            <Link
-              to={ctaTo}
-              className="inline-block mt-8 px-6 py-3 border border-white/30 hover:border-white hover:bg-white hover:text-black transition uppercase tracking-widest text-sm"
-            >
-              {ctaText}
-            </Link>
-          )}
+            {ctaTo && (
+              <Link
+                to={ctaTo}
+                className="inline-block mt-8 px-6 py-3 border border-white/30 hover:border-white hover:bg-white hover:text-black transition uppercase tracking-widest text-sm"
+              >
+                {ctaText}
+              </Link>
+            )}
+          </div>
+
+          <div className="text-gray-300 leading-relaxed">{children}</div>
         </div>
-
-        <div className="text-gray-300 leading-relaxed">{children}</div>
       </div>
     </section>
   );
@@ -206,9 +208,7 @@ export default function Home() {
             The collection will live here — supply, traits, drop schedule, and mint access.
             We’re finishing the world first, then we open the vault.
           </p>
-          <p className="mt-2 text-sm uppercase tracking-[0.35em] text-white/50">
-            Coming soon
-          </p>
+          {/* Removed smaller white COMING SOON text */}
           <p className="mt-3 text-base font-bold uppercase tracking-[0.35em] text-red-500">
             Coming soon
           </p>
@@ -236,18 +236,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6 flex items-center justify-between gap-4 flex-wrap">
-            <p className="text-white/70 text-sm">
-              Want a “notify me” box here later? We can add email capture when you’re ready.
-            </p>
-
-            <button
-              type="button"
-              className="px-5 py-3 rounded-xl border border-white/25 text-white hover:border-white/60 transition"
-            >
-              Notify Me (Soon)
-            </button>
-          </div>
+          {/* Removed Notify Me bar/card at bottom of NFT Vault section */}
         </div>
       </section>
 

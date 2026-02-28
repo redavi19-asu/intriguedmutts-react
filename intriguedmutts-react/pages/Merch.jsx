@@ -23,7 +23,11 @@ export default function Merch() {
         {selected ? (
           <div className="viewerCard">
             <div className="viewerTop">
-              <img className="viewerImg" src={selected.thumbnail_url} alt="" />
+              <img
+                className={`viewerImg cardImg${selected.name === 'Society Logo Tee (Black)' ? ' firstCardImg' : ''}`}
+                src={selected.thumbnail_url}
+                alt=""
+              />
               <div className="viewerInfo">
                 <h2 className="viewerTitle">{selected.name}</h2>
                 <div className="viewerSub">Pick a size below</div>
@@ -42,14 +46,18 @@ export default function Merch() {
 
       <section className="gridWrap">
         <div className="productGrid">
-          {products.map((p) => (
+          {products.map((p, i) => (
             <button
               key={p.id}
               className="productCard"
               onClick={() => setSelected(p)}
               type="button"
             >
-              <img className="cardImg" src={p.thumbnail_url} alt="" />
+              <img
+                className={`cardImg${i === 0 && p.name === 'Society Logo Tee (Black)' ? ' firstThumbImg' : ''}`}
+                src={p.thumbnail_url}
+                alt=""
+              />
               <div className="cardTitle">{p.name}</div>
             </button>
           ))}

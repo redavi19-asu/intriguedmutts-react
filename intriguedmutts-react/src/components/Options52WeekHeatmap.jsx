@@ -3,12 +3,10 @@ import React, { useEffect, useState } from "react";
 import { getOptionsHeatmap } from "../lib/stocksApi";
 import TradingViewPanel from "./TradingViewPanel";
 
-
-export default function Options52WeekHeatmap() {
+export default function Options52WeekHeatmap({ setSelectedSymbol, selectedSymbol }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSymbol, setSelectedSymbol] = useState(null);
 
 
   // Pass raw ticker to TradingView (no exchange prefix)
@@ -44,7 +42,7 @@ export default function Options52WeekHeatmap() {
           }}
         >
           {data.map((item) => {
-            const isReady = !!item.nearLow52;
+            // ...existing code...
             return (
               <div
                 key={item.symbol}
@@ -52,24 +50,22 @@ export default function Options52WeekHeatmap() {
                   borderRadius: 18,
                   background: "rgba(0,0,0,0.55)",
                   padding: 18,
-                  border: isReady
+                  border: item.nearLow52
                     ? "2px solid #4f0"
                     : "1px solid rgba(255,255,255,0.12)",
-                  boxShadow: isReady
+                  boxShadow: item.nearLow52
                     ? "0 0 16px 2px #4f0"
                     : "none",
                   minHeight: 120,
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "flex-start",
-                  cursor: isReady ? "pointer" : "default",
-                  opacity: isReady ? 1 : 0.7,
-                  pointerEvents: isReady ? "auto" : "none",
+                  cursor: "pointer",
                 }}
-                onClick={isReady ? () => setSelectedSymbol(item.symbol) : undefined}
-                tabIndex={isReady ? 0 : -1}
-                role={isReady ? "button" : undefined}
-                aria-label={isReady ? `Open chart for ${item.symbol}` : undefined}
+                onClick={() => setSelectedSymbol(item.symbol)}
+                tabIndex={0}
+                role="button"
+                aria-label={`Open chart for ${item.symbol}`}
               >
                 <div style={{ fontWeight: 600, fontSize: 22 }}>{item.symbol}</div>
                 <div style={{ fontSize: 18 }}>${item.current}</div>

@@ -12,6 +12,7 @@ import WatchlistTiles from "../components/WatchlistTiles";
 import OptionsWatchlistTiles from "../components/OptionsWatchlistTiles";
 import Options52WeekHeatmap from "../components/Options52WeekHeatmap";
 import HeatmapGrid from "../components/HeatmapGrid";
+import TradingViewPanel from "../components/TradingViewPanel";
 
 const TABS = [
   { key: "watchlist", title: "Watchlist", desc: "Saved tickers + quick pulse" },
@@ -29,6 +30,7 @@ const TABS = [
 ];
 
 export default function Stocks() {
+  const [selectedSymbol, setSelectedSymbol] = useState(null);
   const loc = useLocation();
   const nav = useNavigate();
 
@@ -164,7 +166,7 @@ export default function Stocks() {
                 boxShadow: "0 0 16px rgba(255,105,180,0.55)",
               }}
             />
-            Why I track these 8 dividend stocks
+            Why I track this expanded dividend watchlist
           </span>
 
           <span
@@ -208,22 +210,24 @@ export default function Stocks() {
             </span>
           </div>
 
-          <h3 style={{ margin: "12px 0 6px" }}>Why I watch these 8</h3>
+          <h3 style={{ margin: "12px 0 6px" }}>Why I watch this expanded list</h3>
           <p style={{ marginTop: 0 }}>
-            I track these eight holdings because they fit a simple goal:
-            <strong> steady cash flow (dividends) + long-term compounding</strong>, without having to guess short-term price moves.
+            I track this expanded dividend watchlist because it fits a simple goal: <strong>steady cash flow (dividends) + long-term compounding</strong>, without having to guess short-term price moves.
             This watchlist is built around income and consistency, not hype.
             I’m not watching these because they’re “guaranteed” or because they always go up —
             I’m watching them because they help me practice an income-first approach and understand how cash flow behaves over time.
           </p>
 
-          <h3 style={{ margin: "14px 0 6px" }}>The watchlist (8 tickers)</h3>
+          <h3 style={{ margin: "14px 0 6px" }}>The watchlist (expanded tickers)</h3>
           <ul style={{ marginTop: 6, paddingLeft: 18 }}>
             <li><strong>JEPQ</strong> and <strong>QYLD</strong> — income tools that aim to generate higher distributions.</li>
             <li><strong>O</strong> and <strong>EPR</strong> — real-estate style cash-flow businesses (income-oriented).</li>
             <li><strong>MO</strong> — a high-yield payer (income focused, higher risk).</li>
             <li><strong>AGNC</strong> — mortgage REIT style income (rate-sensitive, can be volatile).</li>
             <li><strong>GLAD</strong> and <strong>GAIN</strong> — BDCs that are often income-focused.</li>
+            <li><strong>STAG</strong> and <strong>ADC</strong> — industrial and retail REITs with monthly dividends.</li>
+            <li><strong>MAIN</strong> and <strong>MFAD</strong> — business development companies (BDCs) focused on income.</li>
+            <li><strong>SDIV</strong> — global dividend ETF for diversified income.</li>
           </ul>
 
           <h3 style={{ margin: "14px 0 6px" }}>What dividend stocks are (plain English)</h3>
@@ -364,43 +368,7 @@ export default function Stocks() {
           >
             Strategy (Options): Structure-first. Defined risk. Planned exits. The best time to buy an option contract is when 3 things line up
           </div>
-          <ol style={{ marginTop: 0, paddingLeft: 18 }}>
-            <li>
-              <strong>Price is at a real level</strong>
-              <ul style={{ marginTop: 6, paddingLeft: 18 }}>
-                <li>You want the underlying at:
-                  <ul style={{ marginTop: 6, paddingLeft: 18 }}>
-                    <li>a major support (for calls) or major resistance (for puts), or</li>
-                    <li>a breakout/breakdown level with confirmation.</li>
-                  </ul>
-                </li>
-                <li>Translation: don’t buy just because it’s “cheap.” Buy because it’s at a decision point on the chart.</li>
-              </ul>
-            </li>
-            <li>
-              <strong>You have confirmation (so you’re not early)</strong>
-              <ul style={{ marginTop: 6, paddingLeft: 18 }}>
-                <li>Pick one simple confirmation:
-                  <ul style={{ marginTop: 6, paddingLeft: 18 }}>
-                    <li>Break + retest of a level</li>
-                    <li>A clear reversal candle at support (hammer/engulfing)</li>
-                    <li>Higher low forming (bullish) / lower high forming (bearish)</li>
-                    <li>Volume pickup on the move</li>
-                  </ul>
-                </li>
-                <li>If you don’t get confirmation, you’re paying premium while the stock can keep chopping.</li>
-              </ul>
-            </li>
-            <li>
-              <strong>The option isn’t overpriced for the move</strong>
-              <ul style={{ marginTop: 6, paddingLeft: 18 }}>
-                <li>This is the volatility part:</li>
-                <li>If IV is high, options are expensive. You need a faster / bigger move to win.</li>
-                <li>If IV is moderate/low, buying is easier because premium is cheaper.</li>
-                <li>Rule of thumb: avoid buying right before scheduled chaos (earnings) unless you want that gamble.</li>
-              </ul>
-            </li>
-          </ol>
+          {/* Options tickers list should not include dividend/income tickers. Replace with actual options tickers if needed, or remove this list if not relevant. */}
           <div style={{ marginTop: 18, fontWeight: 700 }}>A simple “green trigger → buy option?” checklist (10 seconds)</div>
           <ul style={{ marginTop: 6, paddingLeft: 18 }}>
             <li>Trend: is the stock trending or chopping sideways?</li>
@@ -446,38 +414,74 @@ export default function Stocks() {
           marginBottom: 18,
         }}
       >
-        {TABS.map((t) => {
-          const active = tab === t.key;
-          return (
-            <div
-              key={t.key}
-              role="button"
-              tabIndex={0}
-              onClick={() => setTab(t.key)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") setTab(t.key);
-              }}
-              style={{
-                cursor: "pointer",
-                padding: 16,
-                borderRadius: 16,
-                userSelect: "none",
-                background: active
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(0,0,0,0.6)",
-                border: "1px solid rgba(255,255,255,0.18)",
-              }}
-            >
-              <div style={{ fontWeight: 900, fontSize: 16 }}>{t.title}</div>
-              <div style={{ opacity: 0.8, marginTop: 6, fontSize: 13 }}>
-                {t.desc}
+        {(() => {
+          const dashboardCards = [
+            {
+              title: "Dividend Watchlist",
+              subtitle: "Click any tile to open chart",
+              status: "INCOME RESEARCH"
+            },
+            {
+              title: "Dividend 52-week heatmap",
+              subtitle: "Green = closer to value zone",
+              status: "CLICK TILE = OPEN CHART"
+            },
+            {
+              title: "Options Watch List",
+              subtitle: "Click any tile to open chart",
+              status: "OPTIONS RESEARCH"
+            },
+            {
+              title: "Options 52-week heatmap",
+              subtitle: "Green = closer to trigger zone",
+              status: "CLICK TILE = OPEN CHART"
+            }
+          ];
+          return dashboardCards.map((card, i) => {
+            const active = tab === TABS[i].key;
+            const handleCardClick = () => {
+              setTab(TABS[i].key);
+              if (TABS[i].key === "optionsHeatmap") {
+                setTimeout(() => {
+                  const el = document.getElementById("options-heatmap-section");
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                }, 0);
+              }
+            };
+            return (
+              <div
+                key={TABS[i].key}
+                role="button"
+                tabIndex={0}
+                onClick={i === 3 ? handleCardClick : () => setTab(TABS[i].key)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    if (i === 3) handleCardClick();
+                    else setTab(TABS[i].key);
+                  }
+                }}
+                style={{
+                  cursor: "pointer",
+                  padding: 16,
+                  borderRadius: 16,
+                  userSelect: "none",
+                  background: active
+                    ? "rgba(255,255,255,0.08)"
+                    : "rgba(0,0,0,0.6)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                }}
+              >
+                <div style={{ fontWeight: 900, fontSize: 16 }}>{card.title}</div>
+                <div style={{ opacity: 0.8, marginTop: 6, fontSize: 13 }}>
+                  {card.subtitle}
+                </div>
+                <div style={{ opacity: 0.55, marginTop: 10, fontSize: 12 }}>
+                  {card.status}
+                </div>
               </div>
-              <div style={{ opacity: 0.55, marginTop: 10, fontSize: 12 }}>
-                {active ? "ACTIVE" : "CLICK TO OPEN"}
-              </div>
-            </div>
-          );
-        })}
+            );
+          });
+        })()}
       </div>
 
       {/* CONTENT */}
@@ -490,7 +494,7 @@ export default function Stocks() {
             background: "rgba(0,0,0,0.55)",
           }}
         >
-          <WatchlistTiles />
+          <WatchlistTiles setSelectedSymbol={setSelectedSymbol} />
         </div>
       )}
 
@@ -504,7 +508,7 @@ export default function Stocks() {
           }}
         >
           <h2 style={{ marginTop: 0 }}>52-week heatmap</h2>
-          <HeatmapGrid />
+          <HeatmapGrid setSelectedSymbol={setSelectedSymbol} />
         </div>
       )}
 
@@ -518,12 +522,13 @@ export default function Stocks() {
           }}
         >
            <h2 style={{ marginTop: 0 }}>Options Watch List</h2>
-          <OptionsWatchlistTiles />
+          <OptionsWatchlistTiles setSelectedSymbol={setSelectedSymbol} />
         </div>
       )}
 
       {tab === "optionsHeatmap" && (
         <div
+          id="options-heatmap-section"
           style={{
             borderRadius: 18,
             padding: 18,
@@ -531,9 +536,15 @@ export default function Stocks() {
             background: "rgba(0,0,0,0.55)",
           }}
         >
-          <Options52WeekHeatmap />
+          <Options52WeekHeatmap setSelectedSymbol={setSelectedSymbol} />
         </div>
       )}
+
+      {/* Bottom-docked TradingView panel */}
+      <TradingViewPanel
+        symbol={selectedSymbol}
+        onClose={() => setSelectedSymbol(null)}
+      />
       </div>
     </div>
   );
