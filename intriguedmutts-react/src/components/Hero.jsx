@@ -25,7 +25,7 @@ export default function Hero() {
         </p>
         <div className="scrollArrow heroScrollArrow" aria-hidden="true">
           <svg viewBox="0 0 24 24">
-            <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M12 2 L12 16 M6 10 L12 18 L18 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </div>
       </div>

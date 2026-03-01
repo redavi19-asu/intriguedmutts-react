@@ -86,7 +86,7 @@ export default function Home() {
       {/* Arrow pointing down under the intro */}
       <div className="scrollArrow" aria-hidden="true">
         <svg viewBox="0 0 24 24">
-          <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="M12 2 L12 16 M6 10 L12 18 L18 10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
       </section>
@@ -139,7 +139,7 @@ export default function Home() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-white/10 bg-white/5 p-6"
+                className="rounded-2xl border border-white/10 bg-white/5 p-6 merch-card"
               >
                 <img
                   src={`${import.meta.env.BASE_URL}vault/vault${i}.png`}
@@ -214,21 +214,21 @@ export default function Home() {
           </p>
 
           <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 nft-card">
               <p className="font-semibold">Collection overview</p>
               <p className="mt-2 text-white/70 text-sm">
                 Supply, tiers, and how the Society ties in.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 nft-card">
               <p className="font-semibold">Traits + rarity</p>
               <p className="mt-2 text-white/70 text-sm">
                 Visual traits, rarity distribution, and filters.
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 nft-card">
               <p className="font-semibold">Mint & access</p>
               <p className="mt-2 text-white/70 text-sm">
                 Wallet connect, allowlist, and mint mechanics.

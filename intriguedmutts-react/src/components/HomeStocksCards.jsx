@@ -26,9 +26,10 @@ export default function HomeStocksCards() {
   const cardStyle = {
     padding: 16,
     borderRadius: 14,
-    border: "1px solid rgba(255,255,255,0.18)",
+    border: "1px solid rgba(74, 222, 128, 0.25)",
     background: "rgba(255,255,255,0.04)",
     cursor: "pointer",
+    boxShadow: "0 0 20px rgba(74, 222, 128, 0.08), inset 0 0 1px rgba(74, 222, 128, 0.12)",
   };
 
   return (
