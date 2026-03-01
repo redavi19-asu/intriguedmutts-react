@@ -539,7 +539,7 @@ body.modal-open{
 /* Edit button near pill like screenshot */
 #editShippingFromCartBtn{
   position: absolute;
-  left: 170px;                  /* sits next to pill */
+  right: 16px;                  /* position on the right to avoid overlap */
   top: 52px;
   z-index: 3;
   border: 1px solid rgba(58,160,255,.45);
@@ -596,25 +596,26 @@ body.modal-open{
 #cartSubtotal, #cartProdSubtotal, #cartShip, #cartTax, #cartTotal, #paypalTotalNote{
   position: absolute;
   left: 16px;
-  right: 16px;
+  right: auto;
   z-index: 3;
   font-weight: 900;
+  width: auto;
 }
 
 /* Spacing stack like screenshot */
-#cartSubtotal{ bottom: 128px; font-size: 14px; opacity: .95; }
-#cartProdSubtotal{ bottom: 106px; font-size: 14px; opacity: .85; }
-#cartShip{ bottom: 84px; font-size: 14px; opacity: .85; }
-#cartTax{ bottom: 62px; font-size: 14px; opacity: .85; }
+#cartSubtotal{ bottom: 150px; font-size: 14px; opacity: .95; }
+#cartProdSubtotal{ bottom: 127px; font-size: 14px; opacity: .85; }
+#cartShip{ bottom: 104px; font-size: 14px; opacity: .85; }
+#cartTax{ bottom: 81px; font-size: 14px; opacity: .85; }
 #cartTotal{
-  bottom: 38px;
+  bottom: 58px;
   font-size: 18px;
   font-weight: 1000;
   border-top: 1px solid rgba(255,255,255,.12);
   padding-top: 10px;
 }
 #paypalTotalNote{
-  bottom: 16px;
+  bottom: 35px;
   font-size: 12px;
   color: rgba(255,255,255,.70);
   display: block !important;
@@ -625,8 +626,7 @@ body.modal-open{
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: 0px;
-  margin-bottom: 8px;
+  bottom: 8px;
   padding: 14px 14px;
   border-radius: 14px;
   border: 1px solid rgba(58,160,255,.55);
