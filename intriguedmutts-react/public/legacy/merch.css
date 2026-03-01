@@ -318,7 +318,7 @@ body.modal-open{
 
 /* inputs stack nicely */
 #shipBack input{
-  width: min(520px, 92vw) !important;
+  width: min(620px, 95vw) !important;
   display: block !important;
 }
 
@@ -351,7 +351,7 @@ body.modal-open{
 }
 
 #cartItems{
-  width: min(520px, 92vw) !important;
+  width: min(620px, 95vw) !important;
   height: 100vh !important;
   background: rgba(12,12,12,.98) !important;
   border-left: 1px solid rgba(255,255,255,.12) !important;
@@ -417,7 +417,7 @@ body.modal-open{
 #cartItems{
   position: relative !important;
   margin-left: auto !important;
-  width: min(460px, 94vw) !important;
+  width: min(620px, 95vw) !important;
   height: 100vh !important;
   overflow: auto !important;
   background: rgba(12,12,12,.98) !important;
@@ -448,7 +448,7 @@ body.modal-open{
   position: fixed !important;
   left: auto !important;
   right: 14px !important;
-  width: min(460px, 94vw) !important;
+  width: min(620px, 95vw) !important;
   z-index: 10001 !important;
   box-sizing: border-box !important;
 }
@@ -491,7 +491,7 @@ body.modal-open{
 #cartItems{
   position: relative;
   z-index: 2;
-  width: min(460px, 94vw);
+  width: min(620px, 95vw);
   height: 100vh;
   overflow: auto;
   background: rgba(12,12,12,.98);
@@ -647,7 +647,7 @@ body.modal-open{
 
 /* Drawer panel: narrower + tighter padding */
 #cartItems{
-  width: min(390px, 92vw) !important;      /* was ~520px */
+  width: min(620px, 95vw) !important;      /* increased to show more of cart */
   padding: 62px 12px 120px !important;     /* tighter */
 }
 
@@ -743,7 +743,8 @@ body.modal-open{
 #cartTotal,
 #paypalTotalNote,
 #checkoutBtn,
-#editShippingFromCartBtn{
+#editShippingFromCartBtn,
+#shipStatusPill{
   position: static !important;         /* <-- key fix */
   left: auto !important;
   right: auto !important;
@@ -782,33 +783,10 @@ body.modal-open{
   box-sizing: border-box !important;
 }
 /* ONE FIX: move the CART FOOTER (totals/shipping/checkout) into the right drawer */
-#cartSubtotal,
-#cartProdSubtotal,
-#cartShip,
-#cartTax,
-#cartTotal,
-#paypalTotalNote,
-#editShippingFromCartBtn,
-#checkoutBtn,
-#shipStatusPill{
-  position: fixed !important;
-  right: 16px !important;
-  left: auto !important;
-  width: min(520px, 92vw) !important;
-  margin: 0 !important;
-  z-index: 60 !important;
-}
 
-/* stack them from bottom up INSIDE the drawer */
-#checkoutBtn{ bottom: 12px !important; }
-#paypalTotalNote{ bottom: 56px !important; }
-#cartTotal{ bottom: 80px !important; }
-#cartTax{ bottom: 104px !important; }
-#cartShip{ bottom: 128px !important; }
-#cartSubtotal{ bottom: 152px !important; }
-#cartProdSubtotal{ bottom: 176px !important; }
-#editShippingFromCartBtn{ bottom: 152px !important; right: 20px !important; width: auto !important; }
-#shipStatusPill{ top: 16px !important; bottom: auto !important; right: 16px !important; }
+/* Footer elements positioned statically inside the drawer (see line 738) */
+/* These are handled by the position: static rules above */
+
 /* ONE FIX: pin the drawer to the RIGHT */
 #cartItems{
   position: fixed !important;
@@ -817,7 +795,7 @@ body.modal-open{
   left: auto !important;
   margin: 0 !important;
   height: 100vh !important;
-  width: min(520px, 92vw) !important;
+  width: min(620px, 95vw) !important;
 }
 /* FORCE CART DRAWER TO THE RIGHT */
 #cartBack{
@@ -954,7 +932,7 @@ body.modal-open{
 #cartItems{
   margin-left: auto;            /* <-- RIGHT side */
   margin-right: 0;
-  width: min(520px, 92vw);
+  width: min(620px, 95vw);
   height: 100vh;
 }
 /* STEP 1: Force cart drawer to the RIGHT side */
@@ -1398,7 +1376,7 @@ body{ margin:0; background:var(--bg); color:var(--text); font-family: system-ui,
 }
 
 #cartItems{
-  width: min(520px, 92vw);
+  width: min(620px, 95vw);
   height: 100vh;
   overflow:auto;
   background: var(--panel);
