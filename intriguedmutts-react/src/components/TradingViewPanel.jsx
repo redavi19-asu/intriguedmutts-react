@@ -11,35 +11,52 @@ export default function TradingViewPanel({ symbol, onClose }) {
         position: "fixed",
         left: 0,
         right: 0,
-        bottom: 0,
-        height: "40vh",
-        background: "#181818",
+        top: 0,
+        height: "100vh",
+        background: "rgba(0, 0, 0, 0.8)",
         zIndex: 1000,
-        borderTop: "2px solid #222",
-        boxShadow: "0 -2px 24px rgba(0,0,0,0.45)",
         display: "flex",
         flexDirection: "column",
         alignItems: "stretch",
+        backdropFilter: "blur(2px)",
+        overflow: "hidden",
       }}
     >
-      <div style={{ display: "flex", justifyContent: "flex-end", padding: 8 }}>
+      <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: 16,
+        background: "linear-gradient(to bottom, rgba(24, 24, 24, 0.95), rgba(24, 24, 24, 0.7))",
+        borderBottom: "1px solid rgba(255,255,255,0.1)",
+      }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: "#fff" }}>
+          {symbol} Chart
+        </div>
         <button
           onClick={onClose}
           style={{
-            background: "#222",
+            background: "rgba(255,255,255,0.12)",
             color: "#fff",
-            border: "none",
+            border: "1px solid rgba(255,255,255,0.2)",
             borderRadius: 6,
-            padding: "6px 14px",
+            padding: "8px 16px",
             fontWeight: 700,
             cursor: "pointer",
-            fontSize: 15,
+            fontSize: 14,
+            transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.background = "rgba(255,255,255,0.22)";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.background = "rgba(255,255,255,0.12)";
           }}
         >
-          Close
+          ✕ Close
         </button>
       </div>
-      <div style={{ flex: 1, minHeight: 0 }}>
+      <div style={{ flex: 1, minHeight: 0, overflow: "auto", background: "#181818" }}>
         <TradingViewAdvancedChart symbol={symbol} />
       </div>
     </div>
