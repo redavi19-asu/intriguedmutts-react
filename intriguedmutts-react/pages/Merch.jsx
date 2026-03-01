@@ -63,6 +63,26 @@ export default function Merch() {
           ))}
         </div>
       </section>
+
+      {/* Support & Info Panel */}
+      <section className="supportPanel">
+        <div className="supportContent">
+          <div className="supportBlock">
+            <h3 className="supportHeading">Customer Support</h3>
+            <p>For order questions, shipping issues, or refund requests, please contact:</p>
+            <p className="supportEmail">
+              <a href="mailto:redavi19@asu.edu">redavi19@asu.edu</a>
+            </p>
+            <p className="supportNote">Please include your PayPal Order ID in your message so we can help you faster.</p>
+          </div>
+
+          <div className="supportBlock">
+            <h3 className="supportHeading">Refunds & Order Issues</h3>
+            <p>Payments are processed securely through PayPal. If you need to request a refund or report an issue with your order, contact us by email first.</p>
+            <p>Approved refunds are issued back to the original PayPal payment method. Orders that have already entered production may not be eligible for cancellation.</p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -295,6 +295,108 @@ body { background: #000; }
   box-shadow: 0 0 20px rgba(74, 222, 128, 0.08), inset 0 0 1px rgba(74, 222, 128, 0.12);
 }
 
+/* ===== MERCH SUPPORT PANEL ===== */
+.supportPanel {
+  max-width: 1100px;
+  margin: 48px auto 24px;
+  padding: 0 14px;
+}
+
+.supportContent {
+  border: 1px solid rgba(236, 72, 153, 0.22);
+  border-radius: 18px;
+  padding: 28px 24px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 32px rgba(236, 72, 153, 0.08), inset 0 0 1px rgba(236, 72, 153, 0.08);
+}
+
+.supportBlock {
+  margin-bottom: 28px;
+}
+
+.supportBlock:last-child {
+  margin-bottom: 0;
+}
+
+.supportHeading {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(236, 72, 153, 0.95);
+  letter-spacing: 0.5px;
+}
+
+.supportPanel p {
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.supportEmail {
+  margin: 12px 0;
+  font-weight: 600;
+}
+
+.supportEmail a {
+  color: rgba(236, 72, 153, 0.9);
+  text-decoration: none;
+  transition: color 0.2s;
+  border-bottom: 1px solid rgba(236, 72, 153, 0.4);
+}
+
+.supportEmail a:hover {
+  color: rgba(236, 72, 153, 1);
+  border-bottom-color: rgba(236, 72, 153, 0.8);
+}
+
+.supportNote {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  margin-top: 10px;
+}
+
+@media (max-width: 720px) {
+  .supportContent {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  .supportHeading {
+    font-size: 16px;
+  }
+
+  .supportPanel p {
+    font-size: 13px;
+  }
+
+  .supportBlock {
+    margin-bottom: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .supportPanel {
+    margin-top: 36px;
+    margin-bottom: 18px;
+    padding: 0 10px;
+  }
+
+  .supportContent {
+    padding: 16px 12px;
+  }
+
+  .supportHeading {
+    font-size: 15px;
+  }
+
+  .supportPanel p {
+    font-size: 12px;
+  }
+}
+
 /* NFTs section - red accent frame */
 #nfts {
   border-color: rgba(239, 68, 68, 0.12) !important;
