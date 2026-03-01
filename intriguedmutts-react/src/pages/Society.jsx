@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 
 export default function Society() {
   const nav = useNavigate();
@@ -18,8 +19,12 @@ export default function Society() {
         minHeight: "100vh",
         padding: "80px 24px",
         color: "#f8f8f8",
-        background:
-          "linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.92))",
+        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.85), rgba(0,0,0,0.60), rgba(0,0,0,0.90)), url(${import.meta.env.BASE_URL}bg-home.png)`,
+        backgroundAttachment: "fixed",
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: "center bottom",
+        backgroundSize: "cover",
+        backgroundColor: "black",
       }}
     >
       <button
@@ -232,6 +237,7 @@ export default function Society() {
           </h2>
         </section>
       </div>
+      <Footer />
     </div>
   );
 }

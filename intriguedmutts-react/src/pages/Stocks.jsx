@@ -8,6 +8,7 @@ const darkCard = {
 
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import Footer from "../components/Footer";
 import WatchlistTiles from "../components/WatchlistTiles";
 import OptionsWatchlistTiles from "../components/OptionsWatchlistTiles";
 import Options52WeekHeatmap from "../components/Options52WeekHeatmap";
@@ -545,6 +546,7 @@ export default function Stocks() {
         symbol={selectedSymbol}
         onClose={() => setSelectedSymbol(null)}
       />
+      <Footer />
       </div>
     </div>
   );
