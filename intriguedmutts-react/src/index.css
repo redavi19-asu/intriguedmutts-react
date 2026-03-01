@@ -279,20 +279,20 @@ body { background: #000; }
 
 /* Society cards - blue accent */
 .society-card {
-  border-color: rgba(125, 211, 252, 0.25) !important;
-  box-shadow: 0 0 20px rgba(125, 211, 252, 0.08), inset 0 0 1px rgba(125, 211, 252, 0.12);
+  border: 2px solid rgba(125, 211, 252, 0.75) !important;
+  box-shadow: 0 0 36px rgba(125, 211, 252, 0.4), inset 0 0 16px rgba(125, 211, 252, 0.25);
 }
 
 /* Merch cards - gold/yellow accent */
 .merch-card {
-  border-color: rgba(250, 204, 21, 0.28) !important;
-  box-shadow: 0 0 20px rgba(250, 204, 21, 0.1), inset 0 0 1px rgba(250, 204, 21, 0.15);
+  border: 2px solid rgba(250, 204, 21, 0.75) !important;
+  box-shadow: 0 0 36px rgba(250, 204, 21, 0.4), inset 0 0 16px rgba(250, 204, 21, 0.25);
 }
 
 /* Stocks cards - green accent */
 .stocks-card {
-  border-color: rgba(74, 222, 128, 0.25) !important;
-  box-shadow: 0 0 20px rgba(74, 222, 128, 0.08), inset 0 0 1px rgba(74, 222, 128, 0.12);
+  border: 3px solid rgba(74, 222, 128, 1) !important;
+  box-shadow: 0 0 56px rgba(74, 222, 128, 0.7), inset 0 0 24px rgba(74, 222, 128, 0.45);
 }
 
 /* ===== MERCH SUPPORT PANEL ===== */
@@ -405,6 +405,62 @@ body { background: #000; }
 
 /* NFT cards - red accent */
 .nft-card {
-  border-color: rgba(239, 68, 68, 0.28) !important;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.1), inset 0 0 1px rgba(239, 68, 68, 0.15);
+  border: 2px solid rgba(239, 68, 68, 0.75) !important;
+  box-shadow: 0 0 36px rgba(239, 68, 68, 0.4), inset 0 0 16px rgba(239, 68, 68, 0.25);
+}
+
+/* ===== SOCIETY CARDS - INDIVIDUAL ACCENT COLORS ===== */
+
+/* 0: Cyan */
+.society-accent-0 {
+  border: 2px solid rgba(34, 211, 238, 0.75) !important;
+  box-shadow: 0 0 36px rgba(34, 211, 238, 0.4), inset 0 0 16px rgba(34, 211, 238, 0.25);
+}
+
+/* 1: Purple */
+.society-accent-1 {
+  border: 2px solid rgba(168, 85, 247, 0.75) !important;
+  box-shadow: 0 0 36px rgba(168, 85, 247, 0.4), inset 0 0 16px rgba(168, 85, 247, 0.25);
+}
+
+/* 2: Rose */
+.society-accent-2 {
+  border: 2px solid rgba(244, 114, 182, 0.75) !important;
+  box-shadow: 0 0 36px rgba(244, 114, 182, 0.4), inset 0 0 16px rgba(244, 114, 182, 0.25);
+}
+
+/* 3: Amber */
+.society-accent-3 {
+  border: 2px solid rgba(251, 191, 36, 0.75) !important;
+  box-shadow: 0 0 36px rgba(251, 191, 36, 0.4), inset 0 0 16px rgba(251, 191, 36, 0.25);
+}
+
+/* 4: Lime */
+.society-accent-4 {
+  border: 2px solid rgba(132, 204, 22, 0.75) !important;
+  box-shadow: 0 0 36px rgba(132, 204, 22, 0.4), inset 0 0 16px rgba(132, 204, 22, 0.25);
+}
+
+/* 5: Indigo */
+.society-accent-5 {
+  border: 2px solid rgba(99, 102, 241, 0.75) !important;
+  box-shadow: 0 0 36px rgba(99, 102, 241, 0.4), inset 0 0 16px rgba(99, 102, 241, 0.25);
+}
+
+/* 6: Red */
+.society-accent-6 {
+  border: 2px solid rgba(239, 68, 68, 0.75) !important;
+  box-shadow: 0 0 36px rgba(239, 68, 68, 0.4), inset 0 0 16px rgba(239, 68, 68, 0.25);
+}
+
+/* 7: Teal */
+.society-accent-7 {
+  border: 2px solid rgba(20, 184, 166, 0.75) !important;
+  box-shadow: 0 0 36px rgba(20, 184, 166, 0.4), inset 0 0 16px rgba(20, 184, 166, 0.25);
+}
+
+/* 8: Fuchsia */
+.society-accent-8 {
+  border: 2px solid rgba(232, 121, 249, 0.75) !important;
+  box-shadow: 0 0 36px rgba(232, 121, 249, 0.4), inset 0 0 16px rgba(232, 121, 249, 0.25);
 }

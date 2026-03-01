@@ -139,14 +139,14 @@ export default function Society() {
               "Data beats hype",
               "Curiosity never goes out of style",
               "Stay intrigued",
-            ].map((rule) => (
+            ].map((rule, index) => (
               <li
                 key={rule}
+                className={`society-accent-${index}`}
                 style={{
                   padding: 18,
                   borderRadius: 16,
                   background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.14)",
                 }}
               >
                 {rule}
