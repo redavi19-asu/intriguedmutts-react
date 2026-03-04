@@ -26,10 +26,11 @@ export default function HomeStocksCards() {
   const cardStyle = {
     padding: 16,
     borderRadius: 14,
-    border: "1px solid rgba(74, 222, 128, 0.25)",
+    border: "1px solid rgba(74, 222, 128, 0.9)",
     background: "rgba(255,255,255,0.04)",
     cursor: "pointer",
-    boxShadow: "0 0 20px rgba(74, 222, 128, 0.08), inset 0 0 1px rgba(74, 222, 128, 0.12)",
+    boxShadow:
+      "0 0 0 2px rgba(74, 222, 128, 0.75), 0 0 36px rgba(74, 222, 128, 0.4), inset 0 0 16px rgba(74, 222, 128, 0.25)",
   };
 
   return (
