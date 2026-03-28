@@ -126,8 +126,17 @@ export default function Stocks() {
             <div style={{ fontSize: 40, fontWeight: 950, marginTop: 2, color: "#fff" }}>
               Stocks Dashboard
             </div>
-            <div style={{ color: "#bdbdbd", marginTop: 6, maxWidth: 760 }}>
-              Live watchlist tiles now. Heatmap + Options Dashboard next (KV/D1 + scanners).
+            <div style={{
+              color: "#ffe082",
+              marginTop: 18,
+              fontSize: 28,
+              fontWeight: 800,
+              letterSpacing: 1.2,
+              textShadow: "0 2px 18px rgba(250,204,21,0.18)",
+              lineHeight: 1.2,
+              maxWidth: 900,
+            }}>
+              Click a stock and the chart opens.
             </div>
           </div>
         </div>

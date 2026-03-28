@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { getWatchlist } from "../lib/stocksApi";
+import dividendInfo from "../lib/dividendInfo";
 
 // Helper functions for sign and formatting
 const signClass = (n) => (n > 0 ? "pos" : n < 0 ? "neg" : "flat");
@@ -26,7 +27,8 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
   if (err) return <pre style={{ padding: 16 }}>{err}</pre>;
   if (!data) return <p style={{ padding: 16 }}>Loading watchlist…</p>;
 
-  const entries = Object.entries(data.watchlist || {});
+  // Remove MFAD from the watchlist
+  const entries = Object.entries(data.watchlist || {}).filter(([symbol]) => symbol !== "MFAD");
 
   return (
     <div style={{ padding: 16 }}>
@@ -40,7 +42,6 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
         }}
       >
         {entries.map(([symbol, q]) => {
-          // ...existing code...
           const price = Number(q?.current ?? q?.price ?? q?.last ?? 0);
           const prevClose = Number(q?.prevClose ?? q?.pc ?? 0);
           const change =
@@ -50,6 +51,7 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
             q?.changePercent !== undefined ? Number(q.changePercent) :
             (prevClose ? (change / prevClose) * 100 : 0);
           const cls = signClass(change);
+          const divInfo = dividendInfo[symbol];
           return (
             <div
               key={symbol}
@@ -63,6 +65,7 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
                 flexDirection: "column",
                 alignItems: "flex-start",
                 cursor: "pointer",
+                marginBottom: 4,
               }}
               onClick={() => setSelectedSymbol(symbol)}
               tabIndex={0}
@@ -89,6 +92,30 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
               <div style={{ marginTop: 10, fontSize: 12, opacity: 0.85 }}>
                 H: {q.high} • L: {q.low} • O: {q.open} • PC: {q.prevClose}
               </div>
+
+              {/* Dividend info if available */}
+              {divInfo && (
+                <div style={{
+                  marginTop: 10,
+                  fontSize: 13,
+                  color: "#ffe082",
+                  background: "rgba(250,204,21,0.08)",
+                  borderRadius: 8,
+                  padding: "6px 10px 5px 10px",
+                  fontWeight: 500,
+                  lineHeight: 1.5,
+                  letterSpacing: 0.1,
+                  boxShadow: "0 0 8px 0 rgba(250,204,21,0.10)",
+                  border: "1px solid rgba(250,204,21,0.18)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}>
+                  <span>Dividend: <b>${divInfo.annualDividend}</b> / yr</span>
+                  <span>Yield: <b>{divInfo.yield}%</b></span>
+                  <span>Frequency: <b>{divInfo.frequency}</b></span>
+                </div>
+              )}
             </div>
           );
         })}

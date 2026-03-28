@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { fetchHeatmap } from "../lib/stocksApi";
+import dividendInfo from "../lib/dividendInfo";
 
 export default function HeatmapGrid({ setSelectedSymbol }) {
   const [rows, setRows] = useState([]);
@@ -21,12 +22,12 @@ export default function HeatmapGrid({ setSelectedSymbol }) {
         gap: 18,
       }}
     >
-      {rows.map((r) => {
-        // ...existing code...
+      {rows.filter(r => r.symbol !== "MFAD").map((r) => {
         const pctFromLow52 = ((r.current - r.low52) / (r.high52 - r.low52)) * 100;
         const nearLow52 = r.nearLow52 !== undefined ? r.nearLow52 : pctFromLow52 <= 3;
         const dollars = (val) => Number(val).toFixed(2);
         const percent = (val) => Number(val).toFixed(2);
+        const divInfo = dividendInfo[r.symbol];
         return (
           <div
             key={r.symbol}
@@ -62,6 +63,29 @@ export default function HeatmapGrid({ setSelectedSymbol }) {
             <div style={{ fontSize: 13, opacity: 0.8, marginTop: 2 }}>
               52w: {dollars(r.low52)}–{dollars(r.high52)}
             </div>
+            {/* Dividend info if available */}
+            {divInfo && (
+              <div style={{
+                marginTop: 10,
+                fontSize: 13,
+                color: "#ffe082",
+                background: "rgba(250,204,21,0.08)",
+                borderRadius: 8,
+                padding: "6px 10px 5px 10px",
+                fontWeight: 500,
+                lineHeight: 1.5,
+                letterSpacing: 0.1,
+                boxShadow: "0 0 8px 0 rgba(250,204,21,0.10)",
+                border: "1px solid rgba(250,204,21,0.18)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}>
+                <span>Dividend: <b>${divInfo.annualDividend}</b> / yr</span>
+                <span>Yield: <b>{divInfo.yield}%</b></span>
+                <span>Frequency: <b>{divInfo.frequency}</b></span>
+              </div>
+            )}
           </div>
         );
       })}

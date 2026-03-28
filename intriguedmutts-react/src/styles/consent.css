@@ -1,0 +1,310 @@
+.consentBanner {
+  position: fixed;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 1000;
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(145deg, rgba(17, 17, 17, 0.93), rgba(25, 25, 25, 0.87));
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  animation: consentBannerIn 340ms ease-out;
+  overflow: hidden;
+}
+
+.consentBannerGlow {
+  position: absolute;
+  inset: -40% auto auto -25%;
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, rgba(255, 122, 24, 0.3), rgba(255, 122, 24, 0));
+  pointer-events: none;
+}
+
+.consentBannerContent,
+.consentBannerActions {
+  position: relative;
+  z-index: 1;
+}
+
+.consentBannerTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 200, 155, 0.96);
+  font-weight: 800;
+}
+
+.consentBannerText {
+  margin: 8px 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: rgba(245, 245, 245, 0.9);
+}
+
+.consentBannerActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.consentBtn {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  height: 42px;
+  padding: 0 14px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.consentBtn:hover {
+  transform: translateY(-1px);
+}
+
+.consentBtnPrimary {
+  background: linear-gradient(120deg, #ff7a18, #ff972f);
+  color: #121212;
+  box-shadow: 0 12px 24px rgba(255, 122, 24, 0.35);
+}
+
+.consentBtnSecondary {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.consentBtnGhost {
+  background: transparent;
+  border-color: rgba(255, 255, 255, 0.24);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.consentModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(0, 0, 0, 0.64);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: consentFadeIn 220ms ease-out;
+}
+
+.consentModal {
+  width: min(680px, 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(145deg, rgba(16, 16, 16, 0.97), rgba(23, 23, 23, 0.95));
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  animation: consentModalIn 240ms ease-out;
+}
+
+.consentModalHeader {
+  padding: 22px 22px 10px;
+}
+
+.consentModalHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: rgba(255, 232, 214, 0.98);
+}
+
+.consentModalHeader p {
+  margin: 9px 0 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.consentModalBody {
+  padding: 8px 22px 4px;
+  display: grid;
+  gap: 10px;
+}
+
+.consentToggleRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.consentToggleRow.isDisabled {
+  opacity: 0.82;
+}
+
+.consentToggleCopy {
+  display: grid;
+  gap: 4px;
+}
+
+.consentToggleTitle {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.consentToggleDescription {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.67);
+}
+
+.consentToggleControl {
+  position: relative;
+}
+
+.consentToggleInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.consentToggleTrack {
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  transition: background 0.18s ease;
+}
+
+.consentToggleThumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #f7f7f7;
+  transition: transform 0.18s ease;
+}
+
+.consentToggleInput:checked + .consentToggleTrack {
+  background: rgba(255, 122, 24, 0.86);
+}
+
+.consentToggleInput:checked + .consentToggleTrack .consentToggleThumb {
+  transform: translateX(20px);
+  background: #191919;
+}
+
+.consentModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 22px 22px;
+}
+
+@media (min-width: 900px) {
+  .consentBanner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 20px;
+    left: 24px;
+    right: 24px;
+    bottom: 24px;
+    padding: 20px 20px 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .consentBanner {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .consentBannerActions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .consentBtn {
+    width: 100%;
+    height: 40px;
+    font-size: 0.82rem;
+  }
+
+  .consentModalBackdrop {
+    padding: 10px;
+  }
+
+  .consentModal {
+    border-radius: 16px;
+  }
+
+  .consentModalHeader,
+  .consentModalBody,
+  .consentModalFooter {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .consentModalFooter {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes consentBannerIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes consentFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes consentModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consentBanner,
+  .consentModalBackdrop,
+  .consentModal {
+    animation: none !important;
+  }
+
+  .consentBtn,
+  .consentToggleTrack,
+  .consentToggleThumb {
+    transition: none !important;
+  }
+}

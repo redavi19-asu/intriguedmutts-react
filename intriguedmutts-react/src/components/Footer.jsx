@@ -1,5 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
+import { useConsent } from "../context/ConsentContext";
 
 function scrollToId(id) {
   const el = document.getElementById(id);
@@ -9,6 +10,7 @@ function scrollToId(id) {
 export default function Footer() {
   const nav = useNavigate();
   const loc = useLocation();
+  const { openPreferences } = useConsent();
 
   // queue scroll across route changes
   const pendingScrollId = useRef(null);
@@ -58,7 +60,15 @@ export default function Footer() {
           </button>
         </div>
 
-        <p className="text-xs text-white/50">© {new Date().getFullYear()} Intrigued Mutts</p>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] text-white/55 max-w-md sm:justify-end">
+          <Link className="hover:text-white transition" to="/privacy-policy">Privacy Policy</Link>
+          <Link className="hover:text-white transition" to="/cookie-policy">Cookie Policy</Link>
+          <Link className="hover:text-white transition" to="/do-not-sell">Do Not Sell or Share</Link>
+          <button className="hover:text-white transition" type="button" onClick={openPreferences}>
+            Manage Preferences
+          </button>
+          <span className="text-white/45 w-full sm:text-right">© {new Date().getFullYear()} Intrigued Mutts</span>
+        </div>
       </div>
     </footer>
   );

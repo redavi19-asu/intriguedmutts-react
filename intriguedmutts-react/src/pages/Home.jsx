@@ -3,6 +3,7 @@ import HomeStocksCards from "../components/HomeStocksCards";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import Hero from "../components/Hero";
+import { useConsent } from "../context/ConsentContext";
 
 function Section({ title, kicker, children, ctaTo, ctaText, id }) {
   return (
@@ -20,7 +21,11 @@ function Section({ title, kicker, children, ctaTo, ctaText, id }) {
             {ctaTo && (
               <Link
                 to={ctaTo}
-                className="inline-block mt-8 px-6 py-3 border border-white/30 hover:border-white hover:bg-white hover:text-black transition uppercase tracking-widest text-sm"
+                className="inline-block mt-8 px-6 py-3 border-4 border-blue-300 hover:border-blue-400 hover:bg-white hover:text-black transition uppercase tracking-widest text-sm"
+                style={{
+                  borderColor: 'rgba(125, 211, 252, 0.95)',
+                  boxShadow: '0 0 36px 8px rgba(125, 211, 252, 0.45), 0 0 0 2px rgba(125, 211, 252, 0.25)'
+                }}
               >
                 {ctaText}
               </Link>
@@ -36,6 +41,7 @@ function Section({ title, kicker, children, ctaTo, ctaText, id }) {
 
 export default function Home() {
   const navigate = useNavigate();
+  const { openPreferences } = useConsent();
   useEffect(() => {
     // any time Home loads, allow the intro again
     sessionStorage.removeItem("stocks_gate_passed");
@@ -166,7 +172,7 @@ export default function Home() {
           <div className="mt-16">
             <button
               onClick={() => navigate("/merch-gate")}
-              className="group relative px-10 py-4 rounded-xl border border-white/30 hover:border-white/70 transition text-sm tracking-[0.3em] ctaPulse"
+              className="group relative px-10 py-4 rounded-xl merchVaultPulse transition text-sm tracking-[0.3em]"
             >
               <span className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition bg-white/5" />
               <span className="relative">ENTER MERCH VAULT</span>
@@ -243,8 +249,16 @@ export default function Home() {
       <div style={{ opacity: 0.6, fontSize: 12, textAlign: 'center', marginTop: 24 }}>
         Build: 2026-02-11 03:58
       </div>
-      <footer className="py-10 text-xs text-gray-500 border-t border-white/10">
-        © {new Date().getFullYear()} Intrigued Mutts
+      <footer className="py-10 text-xs text-gray-500 border-t border-white/10 flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] text-white/60">
+          <Link className="hover:text-white transition" to="/privacy-policy">Privacy Policy</Link>
+          <Link className="hover:text-white transition" to="/cookie-policy">Cookie Policy</Link>
+          <Link className="hover:text-white transition" to="/do-not-sell">Do Not Sell or Share</Link>
+          <button className="hover:text-white transition" type="button" onClick={openPreferences}>
+            Manage Preferences
+          </button>
+        </div>
+        <span>© {new Date().getFullYear()} Intrigued Mutts</span>
       </footer>
     </div>
   );
