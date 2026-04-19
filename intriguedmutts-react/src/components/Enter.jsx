@@ -5,6 +5,7 @@ import VideoGate from "./VideoGate";
 
 export default function Enter() {
   const navigate = useNavigate();
+  const base = import.meta.env.BASE_URL || "/";
 
   useEffect(() => {
     if (sessionStorage.getItem("entered") === "1") {
@@ -14,8 +15,7 @@ export default function Enter() {
 
   const [entering, setEntering] = useState(false);
   const [isFading, setIsFading] = useState(false);
-  // IMPORTANT: use absolute path so it works from any route
-  const enterClip = `/videos/thewalktodoor.mp4`;
+  const enterClip = `${base}videos/thewalktodoor.mp4`;
 
   function handleEnter() {
     setEntering(true);
@@ -53,9 +53,9 @@ export default function Enter() {
           </>
         ) : (
           <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
-            <link rel="preload" as="image" href="/intrigued-mutts-society-transparent.png" />
+            <link rel="preload" as="image" href={`${base}intrigued-mutts-society-transparent.png`} />
             <img
-              src="/intrigued-mutts-society-transparent.png"
+              src={`${base}intrigued-mutts-society-transparent.png`}
               alt="Intrigued Mutts Society logo"
               width="320"
               height="207"

@@ -5,13 +5,14 @@ const linkActive = "text-white";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const base = import.meta.env.BASE_URL || "/";
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <button onClick={() => navigate("/home")}
           className="hover:opacity-80 transition"
         >
-          <img src="/intrigued-mutts-society-transparent.png" className="h-10" />
+          <img src={`${base}intrigued-mutts-society-transparent.png`} className="h-10" />
         </button>
 
         <div className="flex items-center gap-2">

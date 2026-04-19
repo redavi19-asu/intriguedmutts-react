@@ -31,6 +31,7 @@ const TABS = [
 ];
 
 export default function Stocks() {
+  const base = import.meta.env.BASE_URL || "/";
   const [selectedSymbol, setSelectedSymbol] = useState(null);
   const [mobileSymbol, setMobileSymbol] = useState(null);
   const [isMobile, setIsMobile] = useState(() =>
@@ -89,7 +90,7 @@ export default function Stocks() {
     <div
       style={{
         minHeight: "100vh",
-        backgroundImage: `linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)), url(/stockbackground.png)`,
+        backgroundImage: `linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.9)), url(${base}stockbackground.png)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
@@ -134,7 +135,7 @@ export default function Stocks() {
       >
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <img
-            src={`intrigued-mutts-society-transparent.png`}
+            src={`${base}intrigued-mutts-society-transparent.png`}
             alt="Intrigued Mutts Society"
             style={{
               width: 64,
