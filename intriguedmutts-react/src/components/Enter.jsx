@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import FadeOverlay from "../components/FadeOverlay";
+import VideoGate from "./VideoGate";
 
 export default function Enter() {
   const navigate = useNavigate();
@@ -11,42 +12,19 @@ export default function Enter() {
     }
   }, [navigate]);
 
-  const enterRef = useRef(null);
   const [entering, setEntering] = useState(false);
   const [isFading, setIsFading] = useState(false);
-  const [playFailed, setPlayFailed] = useState(false);
-
   // IMPORTANT: use absolute path so it works from any route
   const enterClip = `/videos/thewalktodoor.mp4`;
 
-  async function handleEnter() {
-    setPlayFailed(false);
+  function handleEnter() {
     setEntering(true);
-
-    // MUST attempt play during the tap/gesture
-    const v = enterRef.current;
-    if (!v) return;
-
-    try {
-      v.currentTime = 0;
-      v.muted = true;
-      v.playsInline = true;
-      v.setAttribute("playsinline", "");
-      await v.play();
-    } catch (e) {
-      setPlayFailed(true);
-    }
   }
 
-  async function handleTapToPlay() {
-    const v = enterRef.current;
-    if (!v) return;
-    try {
-      await v.play();
-      setPlayFailed(false);
-    } catch (e) {
-      // still blocked
-    }
+  function handleSkip() {
+    setEntering(false);
+    sessionStorage.setItem("entered", "1");
+    navigate("/home", { replace: true });
   }
 
   return (
@@ -57,38 +35,23 @@ export default function Enter() {
       />
 
       <div className="min-h-screen w-full bg-black text-white overflow-hidden relative">
-        {/* Keep video mounted (ref exists), just hidden until entering */}
-        <div className={entering ? "absolute inset-0 z-50 bg-black" : "hidden"}>
-          <video
-            ref={enterRef}
-            className="h-full w-full object-contain bg-black"
-            src={enterClip}
-            muted
-            playsInline
-            preload="auto"
-            aria-label="Entrance animation"
-            onEnded={() => setIsFading(true)}
-          />
-          {playFailed && (
-            <button
-              onClick={handleTapToPlay}
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-24 px-6 py-3 rounded-xl bg-white text-black font-semibold"
-            >
-              Tap to play
-            </button>
-          )}
-          <FadeOverlay
-            show={isFading}
-            duration={600}
-            onFadeEnd={() => {
-              sessionStorage.setItem("entered", "1");
-              navigate("/home", { replace: true });
-            }}
-          />
-        </div>
-
-        {/* STATIC GATE */}
-        {!entering && (
+        {entering ? (
+          <>
+            <VideoGate
+              src={enterClip}
+              onEnd={() => setIsFading(true)}
+              onError={() => setIsFading(true)}
+              onSkip={handleSkip}
+              skipLabel="Skip"
+              videoClass="h-full w-full object-contain bg-black"
+            />
+            <FadeOverlay
+              show={isFading}
+              duration={600}
+              onFadeEnd={handleSkip}
+            />
+          </>
+        ) : (
           <div className="min-h-screen flex flex-col items-center justify-center text-center px-6">
             <link rel="preload" as="image" href="/intrigued-mutts-society-transparent.png" />
             <img

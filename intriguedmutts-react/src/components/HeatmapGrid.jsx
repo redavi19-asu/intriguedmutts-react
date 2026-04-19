@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { fetchHeatmap } from "../lib/stocksApi";
 import dividendInfo from "../lib/dividendInfo";
+import TradingViewAdvancedChart from "./TradingViewAdvancedChart";
 
-export default function HeatmapGrid({ setSelectedSymbol }) {
+export default function HeatmapGrid({ setSelectedSymbol, activeSymbol, isMobile = false }) {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,9 +17,9 @@ export default function HeatmapGrid({ setSelectedSymbol }) {
 
   return (
     <div
+      className="stockTileScroller"
       style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+        "--stock-card-min": "180px",
         gap: 18,
       }}
     >
@@ -31,6 +32,7 @@ export default function HeatmapGrid({ setSelectedSymbol }) {
         return (
           <div
             key={r.symbol}
+            className="stockTileCard"
             style={{
               borderRadius: 18,
               background: "rgba(0,0,0,0.55)",
@@ -46,11 +48,20 @@ export default function HeatmapGrid({ setSelectedSymbol }) {
               flexDirection: "column",
               alignItems: "flex-start",
               cursor: "pointer",
+              position: "relative",
+              isolation: "isolate",
+              overflow: "hidden",
             }}
             onClick={() => setSelectedSymbol(r.symbol)}
             tabIndex={0}
             role="button"
             aria-label={`Open chart for ${r.symbol}`}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setSelectedSymbol(r.symbol);
+              }
+            }}
           >
             <div style={{ fontWeight: 600, fontSize: 22 }}>{r.symbol}</div>
             <div style={{ fontSize: 18 }}>${dollars(r.current)}</div>
@@ -84,6 +95,27 @@ export default function HeatmapGrid({ setSelectedSymbol }) {
                 <span>Dividend: <b>${divInfo.annualDividend}</b> / yr</span>
                 <span>Yield: <b>{divInfo.yield}%</b></span>
                 <span>Frequency: <b>{divInfo.frequency}</b></span>
+              </div>
+            )}
+
+            {isMobile && activeSymbol === r.symbol && (
+              <div className="stockInlineChartPanel stockInlineChartPanelOpen">
+                <div className="stockInlineChartHeader">
+                  <span>{r.symbol} chart</span>
+                  <button
+                    type="button"
+                    className="stockInlineChartClose"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSymbol(r.symbol);
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+                <div className="stockInlineChartBody">
+                  <TradingViewAdvancedChart symbol={r.symbol} />
+                </div>
               </div>
             )}
           </div>

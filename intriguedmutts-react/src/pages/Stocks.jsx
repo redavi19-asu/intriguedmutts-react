@@ -32,14 +32,31 @@ const TABS = [
 
 export default function Stocks() {
   const [selectedSymbol, setSelectedSymbol] = useState(null);
+  const [mobileSymbol, setMobileSymbol] = useState(null);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false
+  );
   const loc = useLocation();
   const nav = useNavigate();
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia("(max-width: 768px)");
+    const onChange = (e) => setIsMobile(e.matches);
+    setIsMobile(media.matches);
+    media.addEventListener("change", onChange);
+    return () => media.removeEventListener("change", onChange);
+  }, []);
 
   const tabFromUrl = useMemo(() => {
     return new URLSearchParams(loc.search).get("tab") || "watchlist";
   }, [loc.search]);
 
   const [tab, setTab] = useState(tabFromUrl);
+
+  useEffect(() => {
+    setMobileSymbol(null);
+  }, [tab]);
 
   // Only update state when the URL actually changes (prevents infinite loops)
   useEffect(() => {
@@ -58,6 +75,14 @@ export default function Stocks() {
     if (currentSearch !== nextSearch) {
       nav({ pathname: loc.pathname, search: `?${nextSearch}` }, { replace: true });
     }
+  };
+
+  const handleSymbolSelect = (symbol) => {
+    if (isMobile) {
+      setMobileSymbol((prev) => (prev === symbol ? null : symbol));
+      return;
+    }
+    setSelectedSymbol(symbol);
   };
 
   return (
@@ -504,7 +529,11 @@ export default function Stocks() {
             background: "rgba(0,0,0,0.55)",
           }}
         >
-          <WatchlistTiles setSelectedSymbol={setSelectedSymbol} />
+          <WatchlistTiles
+            setSelectedSymbol={handleSymbolSelect}
+            activeSymbol={isMobile ? mobileSymbol : null}
+            isMobile={isMobile}
+          />
         </div>
       )}
 
@@ -518,7 +547,11 @@ export default function Stocks() {
           }}
         >
           <h2 style={{ marginTop: 0 }}>52-week heatmap</h2>
-          <HeatmapGrid setSelectedSymbol={setSelectedSymbol} />
+          <HeatmapGrid
+            setSelectedSymbol={handleSymbolSelect}
+            activeSymbol={isMobile ? mobileSymbol : null}
+            isMobile={isMobile}
+          />
         </div>
       )}
 
@@ -532,7 +565,11 @@ export default function Stocks() {
           }}
         >
            <h2 style={{ marginTop: 0 }}>Options Watch List</h2>
-          <OptionsWatchlistTiles setSelectedSymbol={setSelectedSymbol} />
+          <OptionsWatchlistTiles
+            setSelectedSymbol={handleSymbolSelect}
+            activeSymbol={isMobile ? mobileSymbol : null}
+            isMobile={isMobile}
+          />
         </div>
       )}
 
@@ -546,15 +583,21 @@ export default function Stocks() {
             background: "rgba(0,0,0,0.55)",
           }}
         >
-          <Options52WeekHeatmap setSelectedSymbol={setSelectedSymbol} />
+          <Options52WeekHeatmap
+            setSelectedSymbol={handleSymbolSelect}
+            activeSymbol={isMobile ? mobileSymbol : null}
+            isMobile={isMobile}
+          />
         </div>
       )}
 
       {/* Bottom-docked TradingView panel */}
-      <TradingViewPanel
-        symbol={selectedSymbol}
-        onClose={() => setSelectedSymbol(null)}
-      />
+      {!isMobile && (
+        <TradingViewPanel
+          symbol={selectedSymbol}
+          onClose={() => setSelectedSymbol(null)}
+        />
+      )}
       <Footer />
       </div>
     </div>

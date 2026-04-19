@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { getWatchlist } from "../lib/stocksApi";
 import dividendInfo from "../lib/dividendInfo";
+import TradingViewAdvancedChart from "./TradingViewAdvancedChart";
 
 // Helper functions for sign and formatting
 const signClass = (n) => (n > 0 ? "pos" : n < 0 ? "neg" : "flat");
@@ -12,7 +13,7 @@ const fmtSigned = (n, digits = 2) => {
   return `${s}${v.toFixed(digits)}`;
 };
 
-export default function WatchlistTiles({ setSelectedSymbol }) {
+export default function WatchlistTiles({ setSelectedSymbol, activeSymbol, isMobile = false }) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState("");
 
@@ -35,9 +36,9 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
       <h2 style={{ marginBottom: 12 }}>Watchlist</h2>
 
       <div
+        className="stockTileScroller"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+          "--stock-card-min": "220px",
           gap: 12,
         }}
       >
@@ -55,6 +56,7 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
           return (
             <div
               key={symbol}
+              className="stockTileCard"
               style={{
                 border: "1px solid rgba(255,255,255,0.15)",
                 borderRadius: 12,
@@ -66,11 +68,20 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
                 alignItems: "flex-start",
                 cursor: "pointer",
                 marginBottom: 4,
+                position: "relative",
+                isolation: "isolate",
+                overflow: "hidden",
               }}
               onClick={() => setSelectedSymbol(symbol)}
               tabIndex={0}
               role="button"
               aria-label={`Open chart for ${symbol}`}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setSelectedSymbol(symbol);
+                }
+              }}
             >
               <div style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
                 <strong style={{ fontWeight: 600, fontSize: 22 }}>{symbol}</strong>
@@ -114,6 +125,27 @@ export default function WatchlistTiles({ setSelectedSymbol }) {
                   <span>Dividend: <b>${divInfo.annualDividend}</b> / yr</span>
                   <span>Yield: <b>{divInfo.yield}%</b></span>
                   <span>Frequency: <b>{divInfo.frequency}</b></span>
+                </div>
+              )}
+
+              {isMobile && activeSymbol === symbol && (
+                <div className="stockInlineChartPanel stockInlineChartPanelOpen">
+                  <div className="stockInlineChartHeader">
+                    <span>{symbol} chart</span>
+                    <button
+                      type="button"
+                      className="stockInlineChartClose"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedSymbol(symbol);
+                      }}
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div className="stockInlineChartBody">
+                    <TradingViewAdvancedChart symbol={symbol} />
+                  </div>
                 </div>
               )}
             </div>

@@ -1,16 +1,12 @@
 
 import React, { useEffect, useState } from "react";
 import { getOptionsHeatmap } from "../lib/stocksApi";
-import TradingViewPanel from "./TradingViewPanel";
+import TradingViewAdvancedChart from "./TradingViewAdvancedChart";
 
-export default function Options52WeekHeatmap({ setSelectedSymbol, selectedSymbol }) {
+export default function Options52WeekHeatmap({ setSelectedSymbol, activeSymbol, isMobile = false }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-
-  // Pass raw ticker to TradingView (no exchange prefix)
-  const getTvSymbol = (symbol) => symbol;
 
   useEffect(() => {
     setLoading(true);
@@ -34,9 +30,9 @@ export default function Options52WeekHeatmap({ setSelectedSymbol, selectedSymbol
       <div>
         <h2>Options 52-week heatmap</h2>
         <div
+          className="stockTileScroller"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+            "--stock-card-min": "180px",
             gap: 18,
             marginTop: 18,
           }}
@@ -46,6 +42,7 @@ export default function Options52WeekHeatmap({ setSelectedSymbol, selectedSymbol
             return (
               <div
                 key={item.symbol}
+                className="stockTileCard"
                 style={{
                   borderRadius: 18,
                   background: "rgba(0,0,0,0.55)",
@@ -61,11 +58,20 @@ export default function Options52WeekHeatmap({ setSelectedSymbol, selectedSymbol
                   flexDirection: "column",
                   alignItems: "flex-start",
                   cursor: "pointer",
+                  position: "relative",
+                  isolation: "isolate",
+                  overflow: "hidden",
                 }}
                 onClick={() => setSelectedSymbol(item.symbol)}
                 tabIndex={0}
                 role="button"
                 aria-label={`Open chart for ${item.symbol}`}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelectedSymbol(item.symbol);
+                  }
+                }}
               >
                 <div style={{ fontWeight: 600, fontSize: 22 }}>{item.symbol}</div>
                 <div style={{ fontSize: 18 }}>${item.current}</div>
@@ -78,16 +84,32 @@ export default function Options52WeekHeatmap({ setSelectedSymbol, selectedSymbol
                 <div style={{ fontSize: 13, opacity: 0.8, marginTop: 2 }}>
                   52w: {item.low52}–{item.high52}
                 </div>
+
+                {isMobile && activeSymbol === item.symbol && (
+                  <div className="stockInlineChartPanel stockInlineChartPanelOpen">
+                    <div className="stockInlineChartHeader">
+                      <span>{item.symbol} chart</span>
+                      <button
+                        type="button"
+                        className="stockInlineChartClose"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedSymbol(item.symbol);
+                        }}
+                      >
+                        Close
+                      </button>
+                    </div>
+                    <div className="stockInlineChartBody">
+                      <TradingViewAdvancedChart symbol={item.symbol} />
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
       </div>
-      {/* Bottom-docked TradingView panel */}
-      <TradingViewPanel
-        symbol={selectedSymbol ? getTvSymbol(selectedSymbol) : null}
-        onClose={() => setSelectedSymbol(null)}
-      />
     </>
   );
 }

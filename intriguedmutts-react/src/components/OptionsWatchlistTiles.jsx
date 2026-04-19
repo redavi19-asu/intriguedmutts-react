@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getQuote } from "../lib/stocksApi";
+import TradingViewAdvancedChart from "./TradingViewAdvancedChart";
 
 const SYMBOLS = [
   "F","T","CMCSA","UBER","PFE","NVO","PYPL","CCL","ZM","HIMS","HOOD"
 ];
 
-export default function OptionsWatchlistTiles({ setSelectedSymbol }) {
+export default function OptionsWatchlistTiles({ setSelectedSymbol, activeSymbol, isMobile = false }) {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -44,9 +45,9 @@ export default function OptionsWatchlistTiles({ setSelectedSymbol }) {
   return (
     <div>
       <div
+        className="stockTileScroller"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+          "--stock-card-min": "180px",
           gap: 18,
           marginTop: 18,
         }}
@@ -54,6 +55,7 @@ export default function OptionsWatchlistTiles({ setSelectedSymbol }) {
         {entries.map(([symbol, quote]) => (
           <div
             key={symbol}
+            className="stockTileCard"
             style={{
               borderRadius: 18,
               background: "rgba(0,0,0,0.55)",
@@ -64,11 +66,20 @@ export default function OptionsWatchlistTiles({ setSelectedSymbol }) {
               flexDirection: "column",
               alignItems: "flex-start",
               cursor: "pointer",
+              position: "relative",
+              isolation: "isolate",
+              overflow: "hidden",
             }}
             onClick={() => setSelectedSymbol(symbol)}
             tabIndex={0}
             role="button"
             aria-label={`Open chart for ${symbol}`}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setSelectedSymbol(symbol);
+              }
+            }}
           >
             <div style={{ fontWeight: 600, fontSize: 22 }}>{symbol}</div>
             {quote ? (
@@ -84,6 +95,27 @@ export default function OptionsWatchlistTiles({ setSelectedSymbol }) {
               </>
             ) : (
               <div style={{ fontSize: 14, opacity: 0.7 }}>No data</div>
+            )}
+
+            {isMobile && activeSymbol === symbol && (
+              <div className="stockInlineChartPanel stockInlineChartPanelOpen">
+                <div className="stockInlineChartHeader">
+                  <span>{symbol} chart</span>
+                  <button
+                    type="button"
+                    className="stockInlineChartClose"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedSymbol(symbol);
+                    }}
+                  >
+                    Close
+                  </button>
+                </div>
+                <div className="stockInlineChartBody">
+                  <TradingViewAdvancedChart symbol={symbol} />
+                </div>
+              </div>
             )}
           </div>
         ))}

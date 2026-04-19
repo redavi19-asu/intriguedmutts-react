@@ -68,6 +68,109 @@ body { background: #000; }
   transform: translateZ(0);
 }
 
+/* Stocks: responsive card rail on phones, grid on larger screens */
+.stockTileScroller {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--stock-card-min, 220px), 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .stockTileScroller {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: visible;
+    gap: 12px;
+    padding: 4px 2px 12px;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 105, 180, 0.55) rgba(255, 255, 255, 0.08);
+  }
+
+  .stockTileScroller::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .stockTileScroller::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+  }
+
+  .stockTileScroller::-webkit-scrollbar-thumb {
+    background: rgba(255, 105, 180, 0.65);
+    border-radius: 999px;
+  }
+
+  .stockTileCard {
+    flex: 0 0 clamp(252px, 78vw, 320px);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+}
+
+.stockInlineChartPanel {
+  margin-top: 12px;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 105, 180, 0.35);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 105, 180, 0.12) 0%,
+    rgba(0, 0, 0, 0.72) 28%,
+    rgba(0, 0, 0, 0.84) 100%
+  );
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(6px);
+  transition: max-height 260ms ease, opacity 220ms ease, transform 220ms ease;
+}
+
+.stockInlineChartPanelOpen {
+  max-height: 420px;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stockInlineChartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  font-weight: 700;
+  color: #ffd1e9;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+
+.stockInlineChartClose {
+  border: 1px solid rgba(255, 105, 180, 0.8);
+  background: rgba(255, 105, 180, 0.12);
+  color: #ffd8ee;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stockInlineChartBody {
+  height: 280px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.7);
+}
+
+@media (min-width: 769px) {
+  .stockInlineChartPanel {
+    display: none;
+  }
+}
+
 /* dark overlay stays with background */
 .homeBg::before{
   content:"";
