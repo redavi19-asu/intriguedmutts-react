@@ -148,7 +148,11 @@ export default function Home() {
                 className="rounded-2xl border border-white/10 bg-white/5 p-6 merch-card"
               >
                 <img
-                  src={`${import.meta.env.BASE_URL}vault/vault${i}.png`}
+                  src={
+                    i === 1
+                      ? `${import.meta.env.BASE_URL}vault/vault1.new.png`
+                      : `${import.meta.env.BASE_URL}vault/vault${i}.png`
+                  }
                   alt={[
                     "Society Logo Tee (Black)",
                     "Doodle Scene Tee",
