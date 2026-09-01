@@ -14,6 +14,7 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+# Fresh deployment trigger after Pages custom-domain repair.
 jobs:
   build:
     runs-on: ubuntu-latest
