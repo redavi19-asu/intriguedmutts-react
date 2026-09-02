@@ -156,7 +156,7 @@
 #merchLegacy #cartBack,
 #merchLegacy #shipBack,
 #merchLegacy #lightboxBack {
-  display: none;                /* CLOSED by default */
+  display: none;
   position: fixed;
   inset: 0;
   z-index: 9999;
@@ -184,8 +184,8 @@
   position: relative;
   margin: 5vh auto;
   width: min(980px, 92vw);
-  max-height: 90vh;           /* IMPORTANT: allow scrolling to Add to Cart */
-  overflow: auto;             /* IMPORTANT */
+  max-height: 90vh;
+  overflow: auto;
   background: rgba(20, 20, 20, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
@@ -266,4 +266,253 @@
   object-fit: contain;
   margin: auto;
   display: block;
+}
+
+/* =====================================================
+   INTRIGUED MUTTS MERCH POLISH — FINAL OVERRIDE LAYER
+   Keeps legacy commerce logic intact while making the
+   size -> add -> cart -> checkout flow visually obvious.
+===================================================== */
+
+#merchLegacy #variantNote {
+  margin: 14px 0 8px !important;
+  color: #cfe9ff !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  letter-spacing: .01em !important;
+}
+
+#merchLegacy #variantList {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 11px !important;
+  margin-top: 10px !important;
+}
+
+#merchLegacy .variantRow {
+  min-height: 58px !important;
+  padding: 12px 14px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 14px !important;
+  background: rgba(255,255,255,.035) !important;
+  cursor: pointer !important;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease !important;
+}
+
+#merchLegacy .variantRow:hover,
+#merchLegacy .variantRow:focus-within {
+  transform: translateY(-1px) !important;
+  border-color: rgba(58,160,255,.85) !important;
+  background: rgba(58,160,255,.09) !important;
+  box-shadow: 0 0 0 1px rgba(58,160,255,.14), 0 8px 28px rgba(0,0,0,.2) !important;
+}
+
+#merchLegacy #modalBuyBtn {
+  display: block !important;
+  width: min(360px, 100%) !important;
+  min-height: 54px !important;
+  margin: 18px auto 4px !important;
+  padding: 13px 22px !important;
+  border: 1px solid rgba(255,255,255,.2) !important;
+  border-radius: 16px !important;
+  background: rgba(255,255,255,.06) !important;
+  color: rgba(255,255,255,.7) !important;
+  font-size: 15px !important;
+  font-weight: 1000 !important;
+  letter-spacing: .02em !important;
+  text-align: center !important;
+  box-shadow: none !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease, opacity 180ms ease !important;
+}
+
+#merchLegacy #modalBuyBtn:disabled {
+  opacity: .48 !important;
+  cursor: not-allowed !important;
+  filter: saturate(.45) !important;
+}
+
+#merchLegacy #modalBuyBtn:not(:disabled) {
+  opacity: 1 !important;
+  cursor: pointer !important;
+  color: #fff !important;
+  border-color: rgba(86,221,255,.95) !important;
+  background: linear-gradient(135deg, #1457ff 0%, #00bfe8 55%, #18c96e 100%) !important;
+  box-shadow: 0 0 0 1px rgba(65,190,255,.2), 0 0 24px rgba(58,160,255,.42), 0 0 38px rgba(24,201,110,.18) !important;
+  animation: mutts-add-ready 1.45s ease-in-out infinite !important;
+}
+
+#merchLegacy #modalBuyBtn:not(:disabled):hover,
+#merchLegacy #modalBuyBtn:not(:disabled):focus-visible {
+  transform: translateY(-2px) scale(1.01) !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.18), 0 0 30px rgba(58,160,255,.58), 0 0 46px rgba(24,201,110,.28) !important;
+}
+
+#merchLegacy #cartItems {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  width: min(560px, 94vw) !important;
+  height: 100dvh !important;
+  padding: 74px 22px 24px !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  background: rgba(10,13,18,.985) !important;
+  border-left: 1px solid rgba(91,185,255,.2) !important;
+  box-shadow: -18px 0 55px rgba(0,0,0,.42) !important;
+}
+
+#merchLegacy #cartHeaderStrip {
+  position: static !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  margin: 0 0 4px !important;
+  padding: 0 0 14px !important;
+  border-bottom: 1px solid rgba(255,255,255,.1) !important;
+}
+
+#merchLegacy #shipStatusPill {
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  min-height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 9px 14px !important;
+  border: 1px solid rgba(58,160,255,.55) !important;
+  border-radius: 999px !important;
+  background: rgba(58,160,255,.12) !important;
+  color: #d7efff !important;
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.025) !important;
+}
+
+#merchLegacy #cartFooter {
+  position: static !important;
+  width: 100% !important;
+  margin-top: auto !important;
+  padding: 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 9px !important;
+  border: 1px solid rgba(255,255,255,.1) !important;
+  border-radius: 18px !important;
+  background: rgba(255,255,255,.035) !important;
+  box-sizing: border-box !important;
+}
+
+#merchLegacy #cartSubtotal,
+#merchLegacy #cartProdSubtotal,
+#merchLegacy #cartShip,
+#merchLegacy #cartTax,
+#merchLegacy #cartTotal,
+#merchLegacy #paypalTotalNote {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 4px 0 !important;
+  box-sizing: border-box !important;
+  color: #fff !important;
+  text-align: left !important;
+}
+
+#merchLegacy #cartTotal {
+  margin-top: 3px !important;
+  padding-top: 11px !important;
+  border-top: 1px solid rgba(255,255,255,.12) !important;
+  font-size: 17px !important;
+  font-weight: 1000 !important;
+}
+
+#merchLegacy #paypalTotalNote {
+  color: rgba(255,255,255,.62) !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+#merchLegacy #checkoutBtn {
+  position: static !important;
+  inset: auto !important;
+  width: 100% !important;
+  min-height: 58px !important;
+  margin: 8px 0 0 !important;
+  padding: 14px 20px !important;
+  border: 1px solid rgba(66,185,255,.85) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, rgba(20,87,255,.96), rgba(0,170,224,.96)) !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  font-weight: 1000 !important;
+  letter-spacing: .02em !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  box-shadow: 0 10px 24px rgba(0,80,180,.24), 0 0 24px rgba(58,160,255,.16) !important;
+  transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease !important;
+}
+
+#merchLegacy #checkoutBtn:hover,
+#merchLegacy #checkoutBtn:focus-visible {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 12px 30px rgba(0,80,180,.32), 0 0 30px rgba(58,160,255,.28) !important;
+}
+
+#merchLegacy #checkoutBtn:disabled {
+  opacity: .46 !important;
+  cursor: not-allowed !important;
+  filter: saturate(.45) !important;
+}
+
+#merchLegacy #closeCartBtn {
+  min-height: 40px !important;
+  padding: 9px 13px !important;
+  border-radius: 12px !important;
+}
+
+@keyframes mutts-add-ready {
+  0%, 100% {
+    box-shadow: 0 0 0 1px rgba(65,190,255,.2), 0 0 20px rgba(58,160,255,.35), 0 0 34px rgba(24,201,110,.14);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(95,225,255,.26), 0 0 31px rgba(58,160,255,.62), 0 0 48px rgba(24,201,110,.34);
+  }
+}
+
+@media (max-width: 620px) {
+  #merchLegacy #modalBuyBtn {
+    width: 100% !important;
+  }
+
+  #merchLegacy #cartItems {
+    width: 100vw !important;
+    padding-right: 16px !important;
+    padding-left: 16px !important;
+  }
+
+  #merchLegacy #shipStatusPill {
+    white-space: normal !important;
+    text-align: center !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #merchLegacy #modalBuyBtn:not(:disabled) {
+    animation: none !important;
+  }
+
+  #merchLegacy .variantRow,
+  #merchLegacy #modalBuyBtn,
+  #merchLegacy #checkoutBtn {
+    transition: none !important;
+  }
 }
