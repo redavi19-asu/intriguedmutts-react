@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../styles/merchLegacy.css";
 
 export default function Merch() {
   const nav = useNavigate();
@@ -69,6 +70,7 @@ export default function Merch() {
 
   return (
     <div
+      id="merchLegacy"
       className="relative min-h-screen"
       style={{
         minHeight: "100vh",
