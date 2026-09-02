@@ -136,7 +136,7 @@ export default function Merch() {
             <img id="modalImg" alt="" />
             <div id="enlargeLabel" />
             <button id="modalBuyBtn" />
-            <button id="closeModal" />
+            <button id="closeModal" style={{ display: "none" }} aria-hidden="true" tabIndex={-1} />
             <div id="variantList" />
             <div id="variantNote" />
           </div>
