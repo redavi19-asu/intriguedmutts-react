@@ -20,7 +20,7 @@ test('retail totals ignore client price and reject invalid quantities; no real p
  const start=await worker.fetch(req('/cart/start',{}),env,{});const {cartToken}=await start.json();
  const cart={currency:'USD',items:[{syncVariantId:123,qty:2,unitPrice:'0.01'}],shipping:{name:'Test',phone:'555',address:{address1:'A',city:'B',state_code:'MD',zip:'20000',country_code:'US'}}};
  const res=await worker.fetch(req('/paypal/estimate',cart,cartToken),env,{});const data=await res.json();
- assert.equal(data.totals.subtotal,'50.00');assert.equal(data.totals.total,'58.00');
+ assert.equal(data.totals.subtotal,'50.00');assert.equal(data.totals.total,'58.00');assert.equal(data.printfulEstimate,undefined);
  cart.items[0].qty=1.5;
  const bad=await worker.fetch(req('/paypal/estimate',cart,cartToken),env,{});assert.equal((await bad.json()).ok,false);
  assert.equal(paymentCalls,0);

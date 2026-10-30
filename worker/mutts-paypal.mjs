@@ -840,7 +840,7 @@ export default {
           currency: pfTotals.currency || currency,
         };
 
-        return json({ ok: true, totals, printfulEstimate: pfTotals }, 200, origin);
+        return json({ ok: true, totals }, 200, origin);
       } catch (err) {
         return requestError(err, origin);
       }
