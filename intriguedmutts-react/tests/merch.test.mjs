@@ -1,0 +1,36 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { JSDOM } from 'jsdom';
+import { mountMerch } from '../public/legacy/merch.js';
+
+test('shipping, cart rendering, and repeated page mounts', async () => {
+ const jsx = readFileSync(new URL('../src/pages/Merch.jsx', import.meta.url), 'utf8');
+ const ids = [...jsx.matchAll(/id="([^"]+)"/g)].map(m=>m[1]);
+ const dom = new JSDOM(`<div class="topActions"></div>${ids.map(id=>`<${id==='shipCountry'?'select':id.startsWith('ship') && /Name|Phone|Address|City|State|Zip/.test(id)?'input':'div'} id="${id}"></${id==='shipCountry'?'select':id.startsWith('ship') && /Name|Phone|Address|City|State|Zip/.test(id)?'input':'div'}>`).join('')}`,{url:'https://intriguedmutts.com/#/merch'});
+ const w=dom.window;
+ for(const k of ['window','document','localStorage','history','getComputedStyle','AbortController']) globalThis[k]= k==='getComputedStyle'? w[k].bind(w):w[k];
+ globalThis.requestAnimationFrame=fn=>fn(); w.scrollTo=()=>{};
+ globalThis.fetch=async()=>({ok:true,json:async()=>({ok:true,result:[],cartToken:'mock-token',totals:{shipping:'5.00',tax:'0.00'}})});
+ globalThis.alert=()=>{};
+ const country=w.document.getElementById('shipCountry');country.innerHTML='<option value="US">US</option>';
+ localStorage.setItem('mutts_shipping_v1', JSON.stringify({name:'Test',phone:'5550100',address:{address1:'A',city:'B',state_code:'MD',zip:'20000',country_code:'US'}}));
+ localStorage.setItem('mutts_cart_v1', JSON.stringify([{lineId:'1::2',qty:1,unitPrice:20,productName:'<img src=x onerror=alert(1)>',variantName:'<script>bad</script>',imageUrl:'" onerror="bad',syncVariantId:2}]));
+ let dispose=mountMerch(); await new Promise(r=>setTimeout(r,80));
+ const el=id=>document.getElementById(id);
+ el('shippingBtn').click();
+ assert.equal(el('shipPhone').value,'5550100');
+ assert.equal(document.body.classList.contains('shipping-open'),true);
+ el('shipCloseBtn').click();
+ assert.equal(el('shipBack').style.display,'none');
+ assert.equal(document.body.classList.contains('shipping-open'),false);
+ assert.equal(document.body.style.overflow,'');
+ assert.equal(el('cartList').querySelector('script'),null);
+ assert.equal(el('cartList').querySelector('img').hasAttribute('onerror'),false);
+ assert.match(el('cartList').textContent,/<img src=x/);
+ dispose(); dispose=mountMerch(); await new Promise(r=>setTimeout(r,80));
+ assert.equal(document.querySelectorAll('#cartBtn').length,1);
+ el('shippingBtn').click(); document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));
+ assert.equal(el('shipBack').style.display,'none');
+ dispose();w.close();
+});

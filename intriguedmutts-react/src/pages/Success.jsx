@@ -49,6 +49,18 @@ function readQueryFromHashOrSearch(locSearch) {
 }
 
 
+  async function captureOrder(orderId, successToken) {
+    if (!successToken) throw new Error("Receipt authorization is missing. Please use the original PayPal return link or contact support with your order ID.");
+    const res = await fetch(`${WORKER_BASE}/paypal/capture`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ orderId, token: successToken }),
+    });
+    const result = await res.json().catch(() => null);
+    if (!res.ok || !result?.ok) throw new Error(result?.error || "Could not finalize payment");
+    return result;
+  }
+
 export default function Success() {
   const [badgeKind, setBadgeKind] = useState("loading"); // loading | ok | fail
   const [badgeText, setBadgeText] = useState("Finalizing your payment...");
@@ -61,72 +73,6 @@ export default function Success() {
   const base = import.meta.env.BASE_URL || "/";
   const bgUrl = `${base}legacy/merchbackground.png`;
 
-  function getCartToken() {
-    return localStorage.getItem("mutts_cart_token") || "";
-  }
-
-  async function startCartToken() {
-    const res = await fetch(`${WORKER_BASE}/cart/start`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
-
-    const j = await res.json().catch(() => null);
-    if (!res.ok || !j?.ok || !j?.cartToken) {
-      throw new Error(j?.error || `${res.status} ${res.statusText}`);
-    }
-
-    localStorage.setItem("mutts_cart_token", j.cartToken);
-    return j.cartToken;
-  }
-
-  async function captureOrder(orderId, successToken) {
-    // ✅ Best path: success token capture (NO auth headers needed)
-    if (successToken) {
-      const res = await fetch(`${WORKER_BASE}/paypal/capture`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, token: successToken }),
-      });
-
-      const j = await res.json().catch(() => null);
-      if (!res.ok || !j?.ok) {
-        const msg = j?.error || `${res.status} ${res.statusText}`;
-        throw new Error(msg);
-      }
-      return j;
-    }
-
-    // ✅ Otherwise: try Bearer cart token (or legacy X-API-KEY fallback)
-    let cartToken = getCartToken();
-    if (!cartToken) {
-      // If you got to /success directly, you likely won't have a token.
-      // So create one now and retry.
-      cartToken = await startCartToken();
-    }
-
-    const headers = { "Content-Type": "application/json" };
-    if (cartToken) {
-      headers["Authorization"] = `Bearer ${cartToken}`;
-    } else {
-      // Legacy fallback ONLY if you still use it:
-      headers["X-API-KEY"] = import.meta.env.VITE_WORKER_API_KEY || "";
-    }
-
-    const res = await fetch(`${WORKER_BASE}/paypal/capture`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ orderId }),
-    });
-
-    const j = await res.json().catch(() => null);
-    if (!res.ok || !j?.ok) {
-      const msg = j?.error || `${res.status} ${res.statusText}`;
-      throw new Error(msg);
-    }
-    return j;
-  }
 
   useEffect(() => {
     let cancelled = false;

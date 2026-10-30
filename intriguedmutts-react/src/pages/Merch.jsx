@@ -15,53 +15,17 @@ export default function Merch() {
       document.head.appendChild(link);
     }
 
-    // 2) Inject legacy JS once
-    if (!document.getElementById("legacy-merch-script")) {
-      const base = import.meta.env.BASE_URL;
-      const script = document.createElement("script");
-      script.id = "legacy-merch-script";
-      script.src = `${base}legacy/merch.js`;
-      script.defer = true;
-      document.body.appendChild(script);
-    }
-
-    // 3) Keep Edit Shipping working even if legacy JS rebuilds the cart DOM
-    const bindCartButtons = () => {
-      const shipBack = document.getElementById("shipBack");
-      const editBtn = document.getElementById("editShippingFromCartBtn");
-
-      // Force a valid country code so Printful estimate works
-      const shipCountry = document.getElementById("shipCountry");
-      if (shipCountry && shipCountry.value && shipCountry.value.length !== 2) {
-        shipCountry.value = "US";
-      }
-      if (shipCountry && !shipCountry.value) shipCountry.value = "US";
-
-      if (!shipBack || !editBtn) return;
-
-      // prevent duplicate binds
-      if (editBtn.dataset.bound === "1") return;
-      editBtn.dataset.bound = "1";
-
-      editBtn.addEventListener(
-        "click",
-        (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          shipBack.style.display = "flex"; // ✅ SAME as top shipping
-        },
-        true
-      );
-    };
-
-    const obs = new MutationObserver(bindCartButtons);
-    obs.observe(document.body, { childList: true, subtree: true });
-
-    const t = setTimeout(bindCartButtons, 200);
-
+    let cancelled = false;
+    let dispose;
+    import(/* @vite-ignore */ new URL(`${import.meta.env.BASE_URL}legacy/merch.js`, document.baseURI).href)
+      .then(({ mountMerch }) => {
+        if (!cancelled) dispose = mountMerch();
+      }).catch(() => {
+        if (!cancelled) document.getElementById("statusText").textContent = "Storefront could not load. Please refresh to try again.";
+      });
     return () => {
-      clearTimeout(t);
-      obs.disconnect();
+      cancelled = true;
+      dispose?.();
     };
   }, []);
 
@@ -145,12 +109,7 @@ export default function Merch() {
         <div
           id="shipBack"
           style={{ display: "none" }}
-          onClick={(e) => {
-            // click outside the modal closes
-            if (e.target && e.target.id === "shipBack") {
-              e.currentTarget.style.display = "none";
-            }
-          }}
+
         >
           <div id="shipModal">
             <div id="shipTopActions" className="topActions">
@@ -162,12 +121,7 @@ export default function Merch() {
                   <button
                     id="shipCloseBtn"
                     type="button"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      const back = document.getElementById("shipBack");
-                      if (back) back.style.display = "none";
-                    }}
+
                   >
                     Close
                   </button>

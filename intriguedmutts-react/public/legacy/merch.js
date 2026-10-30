@@ -1,3 +1,16 @@
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[c]));
+}
+function safeImage(value) {
+  try { const url = new URL(value); return url.protocol === "https:" ? escapeHtml(url.href) : ""; }
+  catch { return ""; }
+}
+export function mountMerch() {
+let disposed = false;
+const lifecycle = new AbortController();
+function listen(target, event, handler) {
+  target.addEventListener(event, handler, { signal: lifecycle.signal });
+}
 function lockScroll() {
       document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
@@ -11,7 +24,7 @@ function lockScroll() {
     }
 
 // =====================================================
-(function muttsPaypalAuthPatch(){
+
   // ✅ MUTTS PAYPAL AUTH PATCH (legacy merch.js)
   // - gets short-lived cart token from /cart/start
   // - sends Authorization: Bearer <token> for protected routes
@@ -19,11 +32,19 @@ function lockScroll() {
 
   const API_BASE = "https://mutts-paypal.ryanedavis.workers.dev";
   let __cartToken = null;
+  let tokenExpiresAt = 0;
+  let tokenRequest;
 
   async function ensureCartToken() {
-    if (__cartToken) return __cartToken;
+    if (__cartToken && Date.now() < tokenExpiresAt) return __cartToken;
+    if (tokenRequest) return tokenRequest;
+    tokenRequest = startCartSession();
+    try { return await tokenRequest; } finally { tokenRequest = null; }
+  }
 
-    const res = await fetch(`${API_BASE}/cart/start`, {
+  async function startCartSession() {
+
+    const res = await fetchWithTimeout(`${API_BASE}/cart/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: "{}",
@@ -35,6 +56,7 @@ function lockScroll() {
       throw new Error(data.error || "cart/start failed");
     }
 
+    tokenExpiresAt = Date.now() + 9 * 60 * 1000;
     __cartToken = data.cartToken;
     return __cartToken;
   }
@@ -42,7 +64,7 @@ function lockScroll() {
   async function apiPost(path, body) {
     const token = await ensureCartToken();
 
-    const res = await fetch(`${API_BASE}${path}`, {
+    const res = await fetchWithTimeout(`${API_BASE}${path}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -59,21 +81,8 @@ function lockScroll() {
     return data;
   }
 
-  async function apiGet(path) {
-    const res = await fetch(`${API_BASE}${path}`);
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok || data?.ok === false) {
-      console.error(`GET ${path} failed:`, data);
-      throw new Error(data?.error || `GET ${path} failed`);
-    }
-    return data;
-  }
-
   // ✅ IMPORTANT: expose globally so the rest of merch.js can use them
-  window.ensureCartToken = ensureCartToken;
-  window.apiPost = apiPost;
-  window.apiGet = apiGet;
-})();
+
 // ===============================
 // CART UI HOTFIX (DOM-based, reliable)
 // - Hide broken "Edit shipping" button
@@ -81,10 +90,6 @@ function lockScroll() {
 // - Move Checkout to right + make it bigger
 // ===============================
 (function cartUiHotfixBoot(){
-  function findButtonByText(rx){
-    return [...document.querySelectorAll("button")].find(b => rx.test((b.textContent || "").trim()));
-  }
-
   function applyHotfix(){
     console.log("✅ CART UI HOTFIX APPLY");
 
@@ -102,7 +107,7 @@ function lockScroll() {
       document.getElementById("editShippingFromCartBtn") ||
       allBtns.find(b => /edit\s*shipping/i.test((b.textContent || "").trim()));
 
-    if (editBtn) editBtn.style.display = "none";
+    if (editBtn) editBtn.style.display = "";
 
     // 2) Shipping pill: pin top-right (but don't overlap Close)
     const shipPill = document.getElementById("shipStatusPill");
@@ -163,14 +168,7 @@ function lockScroll() {
     if (total) total.style.fontSize = "18px";
   }
 
-  // run now + after DOM changes (your cart content changes a lot)
   applyHotfix();
-  const obs = new MutationObserver(applyHotfix);
-  obs.observe(document.body, { childList: true, subtree: true });
-
-  // also run shortly after load (covers slow renders)
-  setTimeout(applyHotfix, 250);
-  setTimeout(applyHotfix, 800);
 })();
 // Force cart header/footer nodes into drawer (authoritative)
 function forceCartNodesIntoDrawer() {
@@ -220,53 +218,11 @@ function toggleCart() {
   if (open) closeCart();
   else openCart();
 }
-// Helper to mount cart footer and header inside drawer
-function mountCartFooterInsideDrawer() {
-  const cartItems = document.getElementById("cartItems");
-  if (!cartItems) return;
-
-  // Create a footer container at the bottom of the drawer
-  let footer = document.getElementById("cartFooter");
-  if (!footer) {
-    footer = document.createElement("div");
-    footer.id = "cartFooter";
-    cartItems.appendChild(footer);
-  }
-
-  // Create a header strip inside drawer for shipping pill + edit btn
-  let header = document.getElementById("cartHeaderStrip");
-  if (!header) {
-    header = document.createElement("div");
-    header.id = "cartHeaderStrip";
-    cartItems.insertBefore(header, cartItems.firstChild);
-  }
-
-  const headerIds = ["shipStatusPill", "editShippingFromCartBtn"];
-  const footerIds = [
-    "cartProdSubtotal",
-    "cartSubtotal",
-    "cartShip",
-    "cartTax",
-    "cartTotal",
-    "paypalTotalNote",
-    "checkoutBtn"
-  ];
-
-  // Move header bits into drawer header
-  headerIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el && el.parentElement !== header) header.appendChild(el);
-  });
-
-  // Move footer bits into drawer footer
-  footerIds.forEach((id) => {
-    const el = document.getElementById(id);
-    if (el && el.parentElement !== footer) footer.appendChild(el);
-  });
-}
 // ✅ Close product modal with Escape
-document.addEventListener("keydown", (e) => {
+listen(document, "keydown", (e) => {
   if (e.key !== "Escape") return;
+  closeShippingModal();
+  closeCart();
   const modalBackEl = document.getElementById("modalBack");
   if (modalBackEl && getComputedStyle(modalBackEl).display !== "none") {
     modalBackEl.style.display = "none";
@@ -284,17 +240,6 @@ document.addEventListener("keydown", (e) => {
   });
 })();
 // ...removed duplicate and broken event handler assignments; all event binding is now handled in bindLegacyButtons() below...
-function waitFor(id) {
-  return new Promise(resolve => {
-    const i = setInterval(() => {
-      const el = document.getElementById(id);
-      if (el) {
-        clearInterval(i);
-        resolve(el);
-      }
-    }, 50);
-  });
-}
 const WORKER_BASE = "https://mutts-paypal.ryanedavis.workers.dev".replace(/\/$/, "");
 const STORE_API_BASE = WORKER_BASE;
 
@@ -303,74 +248,36 @@ const STORE_API_BASE = WORKER_BASE;
 // ===============================
 const PAYPAL_WORKER_BASE = WORKER_BASE;
 
-// Token-based auth (no hardcoded secrets)
-
-// ===============================
-// CART TOKEN MANAGEMENT
-// ===============================
-const CART_TOKEN_KEY = "mutts_cart_token_v1";
-
-async function getCartToken() {
-  const res = await fetchWithTimeout(`${PAYPAL_WORKER_BASE}/cart/start`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({})
-  }, 10000);
-
-  const data = await res.json();
-  if (!data.ok || !data.cartToken) throw new Error(data.error || "Failed to start cart session");
-
-  localStorage.setItem(CART_TOKEN_KEY, data.cartToken);
-  return data.cartToken;
-}
-
-async function authHeaders() {
-  let token = localStorage.getItem(CART_TOKEN_KEY);
-  if (!token) token = await getCartToken();
-
-  return {
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${token}`,
-  };
-}
-
 // Timeout helper
-function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
-  return Promise.race([
-    fetch(url, options),
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Request timeout")), timeoutMs)
-    )
-  ]);
+async function fetchWithTimeout(url, options = {}, timeoutMs = 10000) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try { return await fetch(url, { ...options, signal: AbortSignal.any([controller.signal, lifecycle.signal]) }); }
+  finally { clearTimeout(timeout); }
 }
 
 const USE_MOCK_DATA = false; // Set true for offline testing
 
 const grid = document.getElementById("grid");
 const statusText = document.getElementById("statusText");
-const refreshBtn = document.getElementById("refreshBtn");
 const shippingBtn = document.getElementById("shippingBtn");
 
 const modalBack = document.getElementById("modalBack");
 const modalTitle = document.getElementById("modalTitle");
 const modalImg = document.getElementById("modalImg");
 const modalBuyBtn = document.getElementById("modalBuyBtn");
-const closeModal = document.getElementById("closeModal");
 const variantList = document.getElementById("variantList");
 const variantNote = document.getElementById("variantNote");
 
 // Cart drawer DOM
 const cartBack = document.getElementById("cartBack");
-const closeCartBtn = document.getElementById("closeCartBtn");
 const cartItemsEl = document.getElementById("cartList");
 const cartSubtotalEl = document.getElementById("cartSubtotal");
-const cartProdSubtotalEl = document.getElementById("cartProdSubtotal");
 const cartShipEl = document.getElementById("cartShip");
 const cartTaxEl = document.getElementById("cartTax");
 const cartTotalEl = document.getElementById("cartTotal");
 const paypalTotalNote = document.getElementById("paypalTotalNote");
 const checkoutBtn = document.getElementById("checkoutBtn");
-const editShippingFromCartBtn = document.getElementById("editShippingFromCartBtn");
 const shipStatusPill = document.getElementById("shipStatusPill");
 
 // Lightbox elements
@@ -379,10 +286,6 @@ const lightboxImg = document.getElementById("lightboxImg");
 
 // Shipping modal elements
 const shipBack = document.getElementById("shipBack");
-const shipCloseBtn = document.getElementById("shipCloseBtn");
-const shipClearBtn = document.getElementById("shipClearBtn");
-const shipSaveBtn = document.getElementById("shipSaveBtn");
-const shipSaveAndCheckoutBtn = document.getElementById("shipSaveAndCheckoutBtn");
 const shipModePill = document.getElementById("shipModePill");
 
 const shipName = document.getElementById("shipName");
@@ -403,7 +306,7 @@ function redirectToClubhouse(){
   window.location.href = "./index.html#mancave";
 }
 history.pushState({ page: "merch" }, "", window.location.href);
-window.addEventListener("popstate", () => redirectToClubhouse());
+listen(window, "popstate", () => redirectToClubhouse());
 
 // ===============================
 // State
@@ -418,8 +321,10 @@ const variantCache = {}; // Cache variants by product ID
 const CART_KEY = "mutts_cart_v1";
 
 function getCart() {
-  try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); }
-  catch { return []; }
+  try {
+    const cart = JSON.parse(localStorage.getItem(CART_KEY) || "[]");
+    return Array.isArray(cart) ? cart.filter(it => it && Number.isSafeInteger(Number(it.qty)) && Number(it.qty) > 0 && Number.isFinite(Number(it.unitPrice))) : [];
+  } catch { return []; }
 }
 
 function saveCart(cart) {
@@ -493,6 +398,7 @@ function removeFromCart(lineId) {
 function ensureCartButton() {
   if (!headerRight) return;
   if (cartBtn) return;
+  document.getElementById("cartBtn")?.remove();
 
   cartBtn = document.createElement("button");
   cartBtn.className = "cartBtn";
@@ -515,10 +421,11 @@ function updateCartBadge() {
 }
 
 function openCart() {
+  modalBack.style.display = "none";
+  lightboxBack.style.display = "none";
   forceCartNodesIntoDrawer();   // ✅ ensures totals are inside drawer every time
   renderCart();
   cartBack.style.display = "flex";
-  estimateCartTotals();
 }
 
 function closeCart() {
@@ -530,6 +437,7 @@ function renderCart() {
   cartItemsEl.innerHTML = "";
 
   if (!cart.length) {
+    estimateCartTotals();
     cartItemsEl.innerHTML = `
       <div style="padding:14px;border:1px dashed #444;border-radius:12px;color:#aaa">
         Your cart is empty. Add a size from any product.
@@ -545,12 +453,12 @@ function renderCart() {
     row.className = "cartItem";
 
     row.innerHTML = `
-      <img src="${it.imageUrl || ""}" alt="" loading="lazy" data-act="openItem" style="cursor:pointer">
+      <img src="${safeImage(it.imageUrl)}" alt="" loading="lazy" data-act="openItem" style="cursor:pointer">
       <div>
         <div class="cartName" data-act="openItem" style="cursor:pointer;text-decoration:underline;">
-          ${it.productName || "Item"}
+          ${escapeHtml(it.productName || "Item")}
         </div>
-        <div class="cartMeta">${it.variantName || ""}</div>
+        <div class="cartMeta">${escapeHtml(it.variantName)}</div>
         <div class="cartMeta">Unit: ${money(it.unitPrice)}</div>
 
         <div class="cartQtyRow">
@@ -588,7 +496,7 @@ function renderCart() {
 const SHIPPING_KEY = "mutts_shipping_v1";
 
 function getShipping() {
-  try { return JSON.parse(localStorage.getItem(SHIPPING_KEY) || "null"); }
+  try { const saved = JSON.parse(localStorage.getItem(SHIPPING_KEY) || "null"); return saved && typeof saved === "object" ? sanitizeShippingForWorker(saved) : null; }
   catch { return null; }
 }
 
@@ -645,6 +553,7 @@ function fillShippingFormFromSaved() {
   const s = getShipping();
   if (!s || !s.address) {
     shipName.value = "";
+    shipPhone.value = "";
     shipAddress1.value = "";
     shipAddress2.value = "";
     shipCity.value = "";
@@ -656,6 +565,7 @@ function fillShippingFormFromSaved() {
   }
 
   shipName.value = s.name || "";
+  shipPhone.value = s.phone || "";
   shipAddress1.value = s.address.address1 || s.address.address_line_1 || "";
   shipAddress2.value = s.address.address2 || s.address.address_line_2 || "";
   shipCity.value = s.address.city || s.address.admin_area_2 || "";
@@ -669,7 +579,8 @@ function fillShippingFormFromSaved() {
 function openShippingModal() {
   fillShippingFormFromSaved();
   shipBack.style.display = "flex";
-  if (typeof setShippingOpen === 'function') setShippingOpen(true);
+  document.body.classList.add("shipping-open", "modal-open");
+  shipName.focus();
   requestAnimationFrame(() => {
     shipBack.scrollTop = 0;
   });
@@ -679,7 +590,7 @@ function openShippingModal() {
 
 function closeShippingModal() {
   shipBack.style.display = "none";
-  if (typeof setShippingOpen === 'function') setShippingOpen(false);
+  document.body.classList.remove("shipping-open", "modal-open");
   unlockScroll();
 }
 
@@ -739,7 +650,9 @@ async function ensureShippingOrOpenModal() {
 }
 
 // Estimate shipping/tax/total via Worker to preview costs before PayPal
+let estimateVersion = 0;
 async function estimateCartTotals() {
+  const version = ++estimateVersion;
   const cart = getCart();
   cartShipEl.textContent = "$—";
   cartTaxEl.textContent = "$—";
@@ -750,7 +663,7 @@ async function estimateCartTotals() {
 
   // Patch: sanitize shipping
   const shipping = sanitizeShippingForWorker(getShipping());
-  if (!shipping || !shipping.address) {
+  if (!shippingLooksValid(shipping)) {
     cartShipEl.textContent = "Add shipping";
     cartTaxEl.textContent = "Add shipping";
     return;
@@ -772,26 +685,24 @@ async function estimateCartTotals() {
         catalogVariantId: it.catalogVariantId,
       })),
     });
+    if (version !== estimateVersion || disposed) return;
     const pf = est.totals;
 
     cartShipEl.textContent = money(Number(pf.shipping));
     cartTaxEl.textContent = money(Number(pf.tax));
 
-    const retailSubtotal = calcSubtotal(getCart());
-    const finalTotal =
-      retailSubtotal +
-      Number(pf.shipping) +
-      Number(pf.tax);
-
-    cartTotalEl.textContent = money(finalTotal);
+    cartSubtotalEl.textContent = money(Number(pf.subtotal));
+    cartTotalEl.textContent = money(Number(pf.total));
 
   } catch (e) {
     console.log("estimateCartTotals error:", e);
   }
 }
 
-// Patch: use sanitized shipping for worker
+let checkoutPending = false;
+// Only one order request may run at a time.
 async function checkoutCartWithPayPal() {
+  if (checkoutPending) return;
   const cart = getCart();
   if (!cart.length) return;
 
@@ -819,6 +730,7 @@ async function checkoutCartWithPayPal() {
     return; // ✅ stops checkout before calling backend
   }
 
+  checkoutPending = true;
   checkoutBtn.disabled = true;
   checkoutBtn.textContent = "Creating PayPal order...";
 
@@ -851,7 +763,11 @@ async function checkoutCartWithPayPal() {
     }
 
     // straight to PayPal
-    window.location.href = ord.approveUrl;
+    const approval = new URL(ord.approveUrl);
+    if (approval.protocol !== "https:" || !["www.paypal.com", "www.sandbox.paypal.com"].includes(approval.hostname)) {
+      throw new Error("Invalid PayPal approval URL");
+    }
+    if (!disposed) window.location.href = approval.href;
   } catch (err) {
     console.error("❌ checkout error:", err);
     if (err.message === "Request timeout") {
@@ -862,6 +778,7 @@ async function checkoutCartWithPayPal() {
       alert("Checkout failed: " + err.message);
     }
   } finally {
+    checkoutPending = false;
     checkoutBtn.disabled = false;
     checkoutBtn.textContent = "Checkout (PayPal)";
   }
@@ -951,7 +868,7 @@ async function loadProducts() {
         Please check your internet connection or the API may be down.<br>
         <button onclick="location.reload()" class="btnGlow" style="margin-top:10px">Retry</button>`;
     } else {
-      statusText.innerHTML = `⚠️ <strong>Failed to load products:</strong> ${err.message}<br>
+      statusText.innerHTML = `⚠️ <strong>Failed to load products:</strong> ${escapeHtml(err.message)}<br>
         <button onclick="location.reload()" class="btnGlow" style="margin-top:10px">Retry</button>`;
     }
   }
@@ -1019,9 +936,9 @@ function renderProducts() {
 
     card.innerHTML = `
       <div class="imgWrap">
-        <img src="${thumb}" loading="lazy" onload="this.classList.add('loaded')">
+        <img src="${safeImage(thumb)}" loading="lazy" onload="this.classList.add('loaded')">
       </div>
-      <h3 style="margin:12px 0 10px">${prod.name}</h3>
+      <h3 style="margin:12px 0 10px">${escapeHtml(prod.name)}</h3>
       <button class="buyBtn">View sizes</button>
     `;
 
@@ -1048,7 +965,7 @@ async function openModal(prod){
       const data = await res.json();
       activeProduct = { ...prod, ...(data?.result || {}) };
     }
-  } catch (e) {
+  } catch {
     console.log("Product detail fetch failed, using list data only.");
   }
 
@@ -1105,14 +1022,8 @@ async function openModal(prod){
     strip.appendChild(t);
   });
 
-  const enlargeLabel = document.getElementById("enlargeLabel");
-  const imgContainer = modalImg.parentElement;
-  if (enlargeLabel && imgContainer) {
-    imgContainer.insertAdjacentElement("afterend", enlargeLabel);
-    enlargeLabel.insertAdjacentElement("afterend", strip);
-  } else {
-    imgContainer.insertAdjacentElement("afterend", strip);
-  }
+  // Keep the gallery inside its product dialog.
+  modalImg.insertAdjacentElement("afterend", strip);
 
   variantList.innerHTML = "";
   variantNote.textContent = "Loading sizes...";
@@ -1151,13 +1062,16 @@ async function loadVariants() {
     variants.forEach(v => {
       const row = document.createElement("div");
       row.className = "variantRow";
+      row.setAttribute("role", "button");
+      row.tabIndex = 0;
+      row.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); row.click(); } };
 
       const price = Number(v.retail_price || 0).toFixed(2);
 
       row.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
           <div>
-            <div style="font-weight:900">${v.name}</div>
+            <div style="font-weight:900">${escapeHtml(v.name)}</div>
             <div style="font-size:13px;color:#aaa">$${price}</div>
           </div>
           <div style="font-size:12px;color:#aaa">Tap to select</div>
@@ -1223,118 +1137,6 @@ function bindLegacyButtons() {
   const shipBack = document.getElementById("shipBack");
   const shipCloseBtn = document.getElementById("shipCloseBtn");
 
-  // ===== Shipping modal: make close reliable (mobile) =====
-  (function bindShippingModalHard() {
-    const shipBack = document.getElementById("shipBack");
-    const shipCloseBtn = document.getElementById("shipCloseBtn");
-    const shipCloseBtn2 = document.getElementById("shipCloseBtn2"); // if you ever add one
-    const shippingBtn = document.getElementById("shippingBtn"); // TOP BAR button
-
-    // Helper to toggle .shipping-open and .modal-open on body
-    const setShippingOpen = (on) => {
-      document.body.classList.toggle("shipping-open", !!on);
-      document.body.classList.toggle("modal-open", !!on);
-    };
-
-    // Safety: never start stuck open
-    setShippingOpen(false);
-
-    // watch for style/class changes (JS toggles display)
-    (() => {
-      const shipBack = document.getElementById("shipBack");
-      if (!shipBack) return;
-
-      const mo = new MutationObserver(() => setShippingOpen(true));
-      mo.observe(shipBack, { attributes: true, attributeFilter: ["style", "class"] });
-    })();
-
-    if (!shipBack) return;
-
-    const openShipping = () => {
-      shipBack.style.display = "flex";
-      const shipForm = document.getElementById("shipForm");
-      (shipForm || shipBack).scrollTop = 0;
-      requestAnimationFrame(() => {
-        document.getElementById("shipName")?.focus();
-      });
-    };
-
-    const closeShipping = () => {
-      shipBack.style.display = "none";
-      setShippingOpen(false);
-    };
-
-    // 1) Top bar Shipping button MUST open shipping
-    if (shippingBtn && shippingBtn.dataset.bound !== "1") {
-      shippingBtn.dataset.bound = "1";
-      shippingBtn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        openShipping();
-      });
-    }
-
-    // 2) Close buttons MUST close (even on mobile)
-    const bindCloseBtn = (btn) => {
-      if (!btn || btn.dataset.bound === "1") return;
-      btn.dataset.bound = "1";
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        closeShipping();
-        setShippingOpen(false);
-      });
-    };
-    bindCloseBtn(shipCloseBtn);
-    bindCloseBtn(shipCloseBtn2);
-
-    // 3) Tap outside closes
-    if (shipBack.dataset.boundOutside !== "1") {
-      shipBack.dataset.boundOutside = "1";
-      shipBack.addEventListener("click", (e) => {
-        if (e.target === shipBack) {
-          closeShipping();
-          setShippingOpen(false);
-        }
-      });
-    }
-
-    // 4) ESC closes
-    if (!window.__shipEscBound) {
-      window.__shipEscBound = true;
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-          closeShipping();
-          setShippingOpen(false);
-        }
-      });
-    }
-  })();
-  (() => {
-    if (!shipBack) return;
-
-    // Tap outside closes
-    shipBack.onclick = (e) => {
-      if (e.target === shipBack) closeShippingModal();
-    };
-
-    // Close button closes
-    if (shipCloseBtn) {
-      shipCloseBtn.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        closeShippingModal();
-      };
-    }
-
-    // ESC closes (desktop convenience)
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        const open = getComputedStyle(shipBack).display !== "none";
-        if (open) closeShippingModal();
-      }
-    });
-  })();
   const shipClearBtn = document.getElementById("shipClearBtn");
   const shipSaveBtn = document.getElementById("shipSaveBtn");
   const shipSaveAndCheckoutBtn = document.getElementById("shipSaveAndCheckoutBtn");
@@ -1393,10 +1195,7 @@ function bindLegacyButtons() {
 (async function bootMerch() {
   console.log("🧵 Merch boot starting...");
 
-  await waitFor("grid");
-  await waitFor("modalBack");
-  await waitFor("cartBack");
-  await waitFor("checkoutBtn");
+  if (disposed) return;
 
   console.log("✅ Merch DOM ready — starting app");
 
@@ -1411,5 +1210,14 @@ function bindLegacyButtons() {
   loadProducts();
 
   // Safety: bind again 1 tick later (sometimes React paints after script)
-  setTimeout(bindLegacyButtons, 0);
+
 })();
+return () => {
+  disposed = true;
+  estimateVersion++;
+  lifecycle.abort();
+  cartBtn?.remove();
+  unlockScroll();
+  document.body.classList.remove("shipping-open", "modal-open");
+};
+}
