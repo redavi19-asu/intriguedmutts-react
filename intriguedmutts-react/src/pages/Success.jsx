@@ -53,7 +53,6 @@ export default function Success() {
   const [badgeKind, setBadgeKind] = useState("loading"); // loading | ok | fail
   const [badgeText, setBadgeText] = useState("Finalizing your payment...");
   const [data, setData] = useState(null); // { record, capture } OR { record }
-  const [debugOpen, setDebugOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const loc = useLocation();
@@ -152,10 +151,10 @@ export default function Success() {
         setData(result);
 
         const recordStatus = (result.record?.status || "").toUpperCase();
-        const ok = recordStatus.includes("COMPLET") || recordStatus.includes("APPROVED");
+        const ok = recordStatus === "COMPLETED";
 
         setBadgeKind(ok ? "ok" : "fail");
-        setBadgeText(ok ? "Payment completed" : `Payment status: ${result.record?.status || "UNKNOWN"}`);
+        setBadgeText(ok ? "Payment completed" : `Payment not confirmed: ${result.record?.status || "UNKNOWN"}`);
       } catch (e) {
         if (cancelled) return;
         console.error(e);
@@ -407,16 +406,6 @@ export default function Success() {
               <div className="amt">{total != null ? money(total, currency) : "—"}</div>
             </div>
           </div>
-
-          <div className="toggle" onClick={() => setDebugOpen((v) => !v)}>
-            {debugOpen ? "▼ Debug details (optional)" : "▶ Debug details (optional)"}
-          </div>
-
-          {debugOpen && (
-            <pre>
-              {JSON.stringify({ record, capture, token, st }, null, 2)}
-            </pre>
-          )}
 
           <div className="btnRow">
             <Link className="btn" to="/merch">← Back to Merch</Link>
