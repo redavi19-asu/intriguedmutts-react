@@ -17,7 +17,9 @@ export default function Merch() {
 
     let cancelled = false;
     let dispose;
-    import(/* @vite-ignore */ new URL(`${import.meta.env.BASE_URL}legacy/merch.js`, document.baseURI).href)
+    const scriptUrl = new URL(`${import.meta.env.BASE_URL}legacy/merch.js`, document.baseURI);
+    scriptUrl.searchParams.set("build", import.meta.url);
+    import(/* @vite-ignore */ scriptUrl.href)
       .then(({ mountMerch }) => {
         if (!cancelled) dispose = mountMerch();
       }).catch(() => {
