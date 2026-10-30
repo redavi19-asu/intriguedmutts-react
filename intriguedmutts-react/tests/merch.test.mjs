@@ -32,5 +32,17 @@ test('shipping, cart rendering, and repeated page mounts', async () => {
  assert.equal(document.querySelectorAll('#cartBtn').length,1);
  el('shippingBtn').click(); document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));
  assert.equal(el('shipBack').style.display,'none');
+ let orders=0, renders=0, removals=0;
+ w.turnstile={render:(_element,params)=>{renders++;setTimeout(()=>params.callback('single-use-'+renders),10);return 'test-widget';},remove:()=>{removals++;}};
+ globalThis.fetch=async (url,options)=>{
+  if(url.endsWith('/paypal/order')){orders++;const body=JSON.parse(options.body);assert.match(body.turnstileToken,/single-use/);await new Promise(r=>setTimeout(r,15));return {ok:false,json:async()=>({ok:false,error:'Mock order stopped before payment'})};}
+  return {ok:true,json:async()=>({ok:true,cartToken:'mock',result:[],totals:{subtotal:'20',shipping:'5',tax:'0',total:'25'}})};
+ };
+ el('checkoutBtn').click();el('checkoutBtn').click();
+ await new Promise(r=>setTimeout(r,70));
+ assert.equal(orders,1,'rapid double click must create only one order');
+ assert.equal(removals,1,'used widget must be removed before retry');
+ el('checkoutBtn').click();await new Promise(r=>setTimeout(r,70));
+ assert.equal(orders,2);assert.equal(renders,2,'retry requires a fresh widget');
  dispose();w.close();
 });

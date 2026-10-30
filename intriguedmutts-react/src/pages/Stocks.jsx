@@ -7,7 +7,7 @@ const darkCard = {
 };
 
 import { useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Footer from "../components/Footer";
 import WatchlistTiles from "../components/WatchlistTiles";
 import OptionsWatchlistTiles from "../components/OptionsWatchlistTiles";
@@ -38,13 +38,11 @@ export default function Stocks() {
     typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false
   );
   const loc = useLocation();
-  const nav = useNavigate();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
     const media = window.matchMedia("(max-width: 768px)");
     const onChange = (e) => setIsMobile(e.matches);
-    setIsMobile(media.matches);
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
   }, []);
@@ -55,28 +53,16 @@ export default function Stocks() {
 
   const [tab, setTab] = useState(tabFromUrl);
 
-  useEffect(() => {
+  const [previousTabUrl, setPreviousTabUrl] = useState(tabFromUrl);
+  const [previousTab, setPreviousTab] = useState(tab);
+  if (previousTabUrl !== tabFromUrl) {
+    setPreviousTabUrl(tabFromUrl);
+    setTab(tabFromUrl);
+  }
+  if (previousTab !== tab) {
+    setPreviousTab(tab);
     setMobileSymbol(null);
-  }, [tab]);
-
-  // Only update state when the URL actually changes (prevents infinite loops)
-  useEffect(() => {
-    if (tab !== tabFromUrl) setTab(tabFromUrl);
-  }, [tabFromUrl]); // <-- IMPORTANT: only depends on tabFromUrl
-
-  const setTabAndUrl = (next) => {
-    setTab(next);
-
-    const params = new URLSearchParams(loc.search);
-    params.set("tab", next);
-
-    const nextSearch = params.toString();
-    const currentSearch = loc.search.replace(/^\?/, "");
-
-    if (currentSearch !== nextSearch) {
-      nav({ pathname: loc.pathname, search: `?${nextSearch}` }, { replace: true });
-    }
-  };
+  }
 
   const handleSymbolSelect = (symbol) => {
     if (isMobile) {

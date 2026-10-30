@@ -1,8 +1,4 @@
 import { useNavigate } from "react-router-dom";
-const linkBase =
-  "px-3 py-2 text-sm uppercase tracking-widest text-gray-300 hover:text-white transition";
-const linkActive = "text-white";
-
 export default function Navbar() {
   const navigate = useNavigate();
   const base = import.meta.env.BASE_URL || "/";

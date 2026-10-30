@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import { useConsent } from "../context/ConsentContext";
+import { useConsent } from "../context/useConsent";
 
 function scrollToId(id) {
   const el = document.getElementById(id);

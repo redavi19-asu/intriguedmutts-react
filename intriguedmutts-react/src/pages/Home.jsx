@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import HomeStocksCards from "../components/HomeStocksCards";
 import { useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import Hero from "../components/Hero";
-import { useConsent } from "../context/ConsentContext";
+import { useConsent } from "../context/useConsent";
 
 function Section({ title, kicker, children, ctaTo, ctaText, id }) {
   return (
@@ -98,7 +98,7 @@ export default function Home() {
       </section>
 
       {/* Society section */}
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0, y: 18 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-120px" }}
@@ -123,7 +123,7 @@ export default function Home() {
             <li>A living world (site evolves with the pack)</li>
           </ul>
         </Section>
-      </motion.div>
+      </Motion.div>
 
       {/* Merch section (full version with ENTER button) */}
       <section

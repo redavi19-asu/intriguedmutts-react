@@ -11,6 +11,7 @@ import StocksGate from "./pages/StocksGate";
 import Society from "./pages/Society";
 import ScrollToTop from "./components/ScrollToTop";
 import Success from "./pages/Success";
+import Cancel from "./pages/Cancel";
 import ConsentManager from "./components/ConsentManager";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/stocks" element={<Stocks />} />
         <Route path="/society" element={<Society />} />
         <Route path="/success" element={<Success />} />
+        <Route path="/cancel" element={<Cancel />} />
         <Route path="/privacy-policy" element={<Layout><PrivacyPolicy /></Layout>} />
         <Route path="/cookie-policy" element={<Layout><CookiePolicy /></Layout>} />
         <Route path="/do-not-sell" element={<Layout><DoNotSell /></Layout>} />

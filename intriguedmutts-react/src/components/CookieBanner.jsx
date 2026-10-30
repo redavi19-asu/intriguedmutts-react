@@ -1,4 +1,4 @@
-import { useConsent } from "../context/ConsentContext";
+import { useConsent } from "../context/useConsent";
 
 export default function CookieBanner() {
   const {

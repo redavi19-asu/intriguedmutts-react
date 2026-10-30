@@ -12,8 +12,6 @@ export default function OptionsWatchlistTiles({ setSelectedSymbol, activeSymbol,
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
     Promise.all(SYMBOLS.map((s) => getQuote(s)))
       .then((results) => {
         const mapped = SYMBOLS.map((symbol, i) => {

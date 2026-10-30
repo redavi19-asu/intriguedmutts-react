@@ -9,8 +9,6 @@ export default function Options52WeekHeatmap({ setSelectedSymbol, activeSymbol, 
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
     getOptionsHeatmap()
       .then((optionsHeatmap) => {
         setData(optionsHeatmap || []);

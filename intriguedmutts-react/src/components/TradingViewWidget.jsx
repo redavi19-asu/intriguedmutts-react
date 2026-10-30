@@ -7,8 +7,9 @@ export default function TradingViewWidget({ symbol }) {
 
   useEffect(() => {
     if (!symbol || !containerRef.current || !canLoadWidget) return;
+    const container = containerRef.current;
     // Clear previous widget
-    containerRef.current.innerHTML = "";
+    container.innerHTML = "";
     // Create script
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
@@ -25,10 +26,10 @@ export default function TradingViewWidget({ symbol }) {
       hide_side_toolbar: false,
       container_id: "tv-advanced-chart-container",
     });
-    containerRef.current.appendChild(script);
+    container.appendChild(script);
     // Cleanup
     return () => {
-      containerRef.current.innerHTML = "";
+      container.innerHTML = "";
     };
   }, [symbol, canLoadWidget]);
 

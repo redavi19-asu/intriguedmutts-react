@@ -1,4 +1,4 @@
-import { motion } from "framer-motion"
+import { motion as Motion } from "framer-motion"
 
 export default function Hero() {
   const base = import.meta.env.BASE_URL || "/";

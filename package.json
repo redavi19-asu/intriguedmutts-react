@@ -6,7 +6,7 @@
     "tailwindcss": "^4.1.18"
   },
   "scripts": {
-    "deploy": "cd intriguedmutts-react && npm run build && cd .. && npx gh-pages -d intriguedmutts-react/dist -b gh-pages",
+    "deploy": "npm --prefix intriguedmutts-react run deploy",
     "deploy:full": "npm run deploy"
   }
 }

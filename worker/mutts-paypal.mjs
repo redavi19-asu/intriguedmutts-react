@@ -3,14 +3,15 @@
 // CART_TOKEN_SECRET, PAYPAL_WEBHOOK_ID. Required KV binding: ORDERS.
 // Capture requires the per-order receipt token; public cart tokens only
 // authorize estimates and order creation. Prices resolve from Printful.
+const RELEASE_VERSION = "1.0.0";
 const PAYPAL_API_BASE = "https://api-m.paypal.com";
 
 
 /**
  * Point PayPal return/cancel pages at the LIVE domain (front-end).
- * PayPal API still uses sandbox base above.
+ * PayPal uses the production API.
  */
-const SITE_BASE = "https://redavi19-asu.github.io/intriguedmutts-react";
+const SITE_BASE = "https://intriguedmutts.com";
 const RETURN_URL = `${SITE_BASE}/#/success`;
 const CANCEL_URL = `${SITE_BASE}/#/cancel`;
 
@@ -28,13 +29,11 @@ const ALLOWED_ORIGINS = new Set([
 function isAllowedOrigin(origin) {
   if (!origin) return false;
   try {
-    const u = new URL(origin);
+    new URL(origin);
 
     // Exact allowlist
     if (ALLOWED_ORIGINS.has(origin)) return true;
 
-    // Codespaces preview e.g. https://xxx.app.github.dev
-    if (u.hostname.endsWith(".app.github.dev")) return true;
 
     return false;
   } catch {
@@ -81,6 +80,70 @@ function json(data, status = 200, origin = "") {
   });
 }
 
+class RequestError extends Error {
+  constructor(message, status = 400) { super(message); this.status = status; }
+}
+function requestError(error, origin) {
+  const status = error instanceof RequestError ? error.status : 503;
+  return json({ ok: false, error: error instanceof RequestError ? error.message : "Service temporarily unavailable. Please try again." }, status, origin);
+}
+async function readBoundedText(request, maxBytes = 65536) {
+  if (Number(request.headers.get("Content-Length")) > maxBytes) throw new RequestError("Request too large", 413);
+  if (!request.body) throw new RequestError("JSON body required");
+  const reader = request.body.getReader();
+  const chunks = [];
+  let length = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      length += value.byteLength;
+      if (length > maxBytes) { await reader.cancel(); throw new RequestError("Request too large", 413); }
+      chunks.push(value);
+    }
+  } finally { reader.releaseLock(); }
+  const bytes = new Uint8Array(length);
+  let offset = 0;
+  for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
+  return new TextDecoder().decode(bytes);
+}
+async function readJsonBody(request) {
+  const body = safeJsonParse(await readBoundedText(request));
+  if (!body || typeof body !== "object" || Array.isArray(body)) throw new RequestError("Invalid JSON body");
+  return body;
+}
+async function secretEquals(expected, actual) {
+  if (!expected || !actual) return false;
+  const encode = value => new TextEncoder().encode(String(value));
+  const hashes = await Promise.all([expected, actual].map(value => crypto.subtle.digest("SHA-256", encode(value))));
+  const a = new Uint8Array(hashes[0]), b = new Uint8Array(hashes[1]);
+  let difference = 0;
+  for (let i = 0; i < a.length; i++) difference |= a[i] ^ b[i];
+  return difference === 0;
+}
+async function verifyCheckout(request, env, token) {
+  if (typeof token !== "string" || !token || token.length > 2048) throw new RequestError("Refresh this page to load the checkout security check, then try again.", 403);
+  if (!env.TURNSTILE_SECRET) throw new Error("Checkout verification unavailable");
+  let result;
+  try {
+    const response = await fetchUpstream("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ secret: env.TURNSTILE_SECRET, response: token,
+        remoteip: request.headers.get("CF-Connecting-IP") || "" }),
+    });
+    if (!response.ok) throw new Error("Verification unavailable");
+    result = await response.json();
+  } catch { throw new RequestError("Checkout verification unavailable. Please try again.", 403); }
+  const hostnames = new Set(["intriguedmutts.com", "www.intriguedmutts.com", "redavi19-asu.github.io"]);
+  if (result.success !== true || result.action !== "checkout" || !hostnames.has(result.hostname)) {
+    throw new RequestError("Checkout verification expired or failed. Please try again.", 403);
+  }
+}
+
+async function fetchUpstream(url, options = {}) {
+  return fetch(url, { ...options, signal: AbortSignal.timeout(8000) });
+}
+
 // --- auth helpers ---
 
 function readBearerToken(request) {
@@ -89,14 +152,14 @@ function readBearerToken(request) {
   return h.slice(7).trim();
 }
 
-function requireLegacyApiKey(request, env) {
+async function requireLegacyApiKey(request, env) {
   const expected = (env.API_KEY || "").trim();
   if (!expected) {
     // Legacy not configured — treat as unavailable rather than failing hard
     return { ok: false, status: 401, error: "Unauthorized" };
   }
   const key = (request.headers.get("X-API-KEY") || "").trim();
-  if (!key || key !== expected) return { ok: false, status: 401, error: "Unauthorized" };
+  if (!await secretEquals(expected, key)) return { ok: false, status: 401, error: "Unauthorized" };
   return { ok: true };
 }
 
@@ -158,7 +221,7 @@ async function verifyToken(secret, token) {
 // - checks Origin allowlist (including Codespaces preview)
 // - enforces JSON + POST
 function guardBrowserRequest(request, origin) {
-  if (origin && !isAllowedOrigin(origin)) {
+  if (!isAllowedOrigin(origin)) {
     return { ok: false, status: 403, error: "Forbidden (origin not allowed)" };
   }
   if (request.method !== "POST") {
@@ -184,7 +247,7 @@ async function requireAuth(request, env) {
     return { ok: false, status: 401, error: "Invalid/expired cart token" };
   }
 
-  const legacy = requireLegacyApiKey(request, env);
+  const legacy = await requireLegacyApiKey(request, env);
   if (legacy.ok) return { ok: true, mode: "apiKey", session: null };
 
   return legacy;
@@ -200,7 +263,7 @@ async function getAccessToken(env) {
 
   const auth = btoa(`${clientId}:${secret}`);
 
-  const res = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
+  const res = await fetchUpstream(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${auth}`,
@@ -264,18 +327,18 @@ function normalizeItems(body) {
 // Resolve every retail price from the authenticated merchant catalog.
 async function resolveRetailItems(env, body) {
   const raw = body.items || body.cart;
-  if (!Array.isArray(raw) || !raw.length || raw.length > 50) throw new Error("Invalid cart");
-  if (body.currency && body.currency !== "USD") throw new Error("Unsupported currency");
-  if (raw.some(it => !it || !Number.isSafeInteger(Number(it.qty)) || Number(it.qty) < 1 || Number(it.qty) > 99)) throw new Error("Invalid quantity");
+  if (!Array.isArray(raw) || !raw.length || raw.length > 50) throw new RequestError("Invalid cart");
+  if (body.currency && body.currency !== "USD") throw new RequestError("Unsupported currency");
+  if (raw.some(it => !it || !Number.isSafeInteger(Number(it.qty)) || Number(it.qty) < 1 || Number(it.qty) > 99)) throw new RequestError("Invalid quantity");
   const items = normalizeItems(body);
   for (const item of items) {
     if (!Number.isSafeInteger(item.qty) || item.qty < 1 || item.qty > 99 ||
-        !Number.isSafeInteger(item.syncVariantId) || item.syncVariantId < 1) throw new Error("Invalid cart item");
+        !Number.isSafeInteger(item.syncVariantId) || item.syncVariantId < 1) throw new RequestError("Invalid cart item");
     const data = await printfulRequest(env, `/store/variants/${item.syncVariantId}`);
     const variant = data?.result;
     const price = Number(variant?.retail_price);
     if (!variant || variant.is_ignored || variant.synced === false || Number(variant.id) !== item.syncVariantId || !Number.isFinite(price) || price <= 0 ||
-        (variant.currency && variant.currency !== "USD")) throw new Error("Unavailable retail variant");
+        (variant.currency && variant.currency !== "USD")) throw new RequestError("Unavailable retail variant");
     item.unitPrice = price.toFixed(2);
     item.lineTotal = (price * item.qty).toFixed(2);
     item.variantName = variant.name || "";
@@ -283,8 +346,8 @@ async function resolveRetailItems(env, body) {
   return items;
 }
 function publicRecord(record) {
-  const { successToken, ...receipt } = record;
-  return receipt;
+  const fields = ["orderId", "status", "currency", "totals", "items", "payer", "shipping", "createdAt", "updatedAt", "captureStatus"];
+  return Object.fromEntries(fields.filter(key => record[key] !== undefined).map(key => [key, record[key]]));
 }
 
 // =======================================================
@@ -418,7 +481,7 @@ async function printfulRequest(env, path, method = "GET", body = null) {
   const token = (env.PRINTFUL_API_KEY || "").trim();
   if (!token) throw new Error("Missing PRINTFUL_API_KEY secret");
 
-  const res = await fetch(`${PRINTFUL_API_BASE}${path}`, {
+  const res = await fetchUpstream(`${PRINTFUL_API_BASE}${path}`, {
     method,
     headers: {
       Authorization: `Bearer ${token}`,
@@ -430,7 +493,7 @@ async function printfulRequest(env, path, method = "GET", body = null) {
   const text = await res.text();
   const data = safeJsonParse(text);
 
-  if (!res.ok) throw new Error(`Printful request failed (${res.status})`);
+  if (!res.ok) { const error = new Error(`Printful request failed (${res.status})`); error.status = res.status; throw error; }
   return data ?? { raw: text };
 }
 
@@ -499,7 +562,16 @@ async function createPrintfulOrderFromRecord(env, record) {
     confirm: autoConfirm,
   };
 
-  return await printfulRequest(env, "/orders", "POST", payload);
+  try { return await printfulRequest(env, "/orders", "POST", payload); }
+  catch (error) {
+    // Printful enforces unique external IDs. Recover a draft created by an
+    // earlier attempt whose response or subsequent KV write was lost.
+    try {
+      const existing = await printfulRequest(env, `/orders/@${encodeURIComponent(payload.external_id)}`);
+      if (existing?.result?.id) return existing;
+    } catch { /* Preserve the original failure so PayPal retries. */ }
+    throw error;
+  }
 }
 
 // ------------------ PayPal webhook verification ------------------
@@ -530,7 +602,7 @@ async function verifyPayPalWebhookSignature(request, env, webhookEventObj) {
     webhook_event: webhookEventObj,
   };
 
-  const res = await fetch(`${PAYPAL_API_BASE}/v1/notifications/verify-webhook-signature`, {
+  const res = await fetchUpstream(`${PAYPAL_API_BASE}/v1/notifications/verify-webhook-signature`, {
     method: "POST",
     headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -549,30 +621,46 @@ function extractOrderIdFromWebhook(event) {
   return related?.order_id || related?.checkout_order_id || null;
 }
 
-function extractCustomIdFromWebhook(event) {
-  return event?.resource?.custom_id || null;
-}
 
 // =======================================================
 // WORKER
 // =======================================================
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     const url = new URL(request.url);
     const origin = request.headers.get("Origin") || "";
 
+    try {
     // --------- OPTIONS ----------
     if (request.method === "OPTIONS") {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
+    const checkoutPost = request.method === "POST" && (url.pathname === "/cart/start" || url.pathname.startsWith("/paypal/"));
+    const catalogGet = request.method === "GET" && url.pathname.startsWith("/api/store/products");
+    if (checkoutPost) {
+      const guard = guardBrowserRequest(request, origin);
+      if (!guard.ok) return json({ ok: false, error: guard.error }, guard.status, origin);
+    }
+    if (checkoutPost || catalogGet) {
+      if (!env.CHECKOUT_LIMITER) return json({ ok: false, error: "Checkout protection unavailable" }, 503, origin);
+      const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+      const limit = await env.CHECKOUT_LIMITER.limit({ key: `checkout:${ip}` });
+      if (!limit.success) {
+        const response = json({ ok: false, error: "Too many requests. Please wait a minute and try again." }, 429, origin);
+        response.headers.set("Retry-After", "60");
+        return response;
+      }
+    }
     // ---------- HEALTH ----------
     if (request.method === "GET" && url.pathname === "/health") {
       return json(
         {
           ok: true,
           worker: "mutts-paypal",
+          version: RELEASE_VERSION,
+          checkoutProtection: Boolean(env.CHECKOUT_LIMITER),
           sandbox: PAYPAL_API_BASE.includes("sandbox"),
           hasKV: Boolean(env.ORDERS),
           returnUrl: RETURN_URL,
@@ -593,6 +681,7 @@ export default {
       const guard = guardBrowserRequest(request, origin);
       if (!guard.ok) return json({ ok: false, error: guard.error }, guard.status, origin);
 
+      await readJsonBody(request);
       const secret = (env.CART_TOKEN_SECRET || "").trim();
       if (!secret) return json({ ok: false, error: "Missing CART_TOKEN_SECRET" }, 500, origin);
 
@@ -628,118 +717,40 @@ export default {
     // POST /api/paypal/webhook
     // =======================================================
     if (request.method === "POST" && url.pathname === "/api/paypal/webhook") {
-      const rawBody = await request.text();
-      const event = safeJsonParse(rawBody);
-      if (!event) return new Response("Invalid JSON", { status: 400 });
-
-      try {
-        const verify = await verifyPayPalWebhookSignature(request, env, event);
-        if (!verify.ok) return new Response(`Invalid signature: ${verify.status || verify.error}`, { status: 401 });
-      } catch (err) {
-        return new Response(`Verify error: ${String(err.message || err)}`, { status: 401 });
+      const event = await readJsonBody(request);
+      const verification = await verifyPayPalWebhookSignature(request, env, event);
+      if (!verification.ok) return json({ ok: false, error: "Invalid webhook signature" }, 401, origin);
+      if (!env.ORDERS) return json({ ok: false, error: "Order storage unavailable" }, 503, origin);
+      if (!event.id || !/^[A-Za-z0-9-]{1,128}$/.test(event.id)) return json({ ok: false, error: "Invalid event id" }, 400, origin);
+      const eventKey = `pp:event:v2:${event.id}`;
+      if (await env.ORDERS.get(eventKey)) return new Response("OK (duplicate)", { status: 200 });
+      if (event.event_type === "PAYMENT.CAPTURE.COMPLETED") {
+        const orderId = extractOrderIdFromWebhook(event);
+        const existing = orderId ? await kvGet(env, `order:${orderId}`) : null;
+        const resource = event.resource || {};
+        // Unknown orders may be temporary KV propagation delays: request a retry.
+        if (!existing) return json({ ok: false, error: "Order not available yet" }, 503, origin);
+        const cents = value => Math.round(Number(value) * 100);
+        if (resource.status !== "COMPLETED" || resource.amount?.currency_code !== existing.currency ||
+            !Number.isFinite(Number(resource.amount?.value)) || cents(resource.amount.value) !== cents(existing.totals?.total)) {
+          return json({ ok: false, error: "Capture does not match the order" }, 409, origin);
+        }
+        let updated = { ...existing, status: "COMPLETED", captureStatus: "COMPLETED", captureId: resource.id,
+          updatedAt: nowIso(), webhook: { lastEventId: event.id, lastEventType: event.event_type, lastEventTime: event.create_time || nowIso() } };
+        await kvPut(env, `order:${orderId}`, updated, 60 * 60 * 24 * 14);
+        if (!updated.printfulOrderId) {
+          const pf = await createPrintfulOrderFromRecord(env, updated);
+          if (!pf?.result?.id) throw new Error("Fulfillment response missing order ID");
+          updated = { ...updated, printfulOrderId: pf.result.id,
+            printful: { createdAt: nowIso(), orderId: pf.result.id, status: pf.result.status,
+              confirm: String(env.PRINTFUL_AUTO_CONFIRM || "").toLowerCase() === "true" }, printfulError: null };
+          await kvPut(env, `order:${orderId}`, updated, 60 * 60 * 24 * 14);
+        }
+        if (updated.internalId) await kvPut(env, `internal:${updated.internalId}`, updated, 60 * 60 * 24 * 14);
       }
-
-      const eventId = event.id;
-      if (!eventId) return new Response("Missing event id", { status: 400 });
-
-      // de-dupe webhooks
-      if (env.ORDERS) {
-        const seen = await env.ORDERS.get(`pp:event:${eventId}`);
-        if (seen) return new Response("OK (duplicate)", { status: 200 });
-        await env.ORDERS.put(`pp:event:${eventId}`, "1", { expirationTtl: 60 * 60 * 24 * 14 });
-      }
-
-      const type = event.event_type || "UNKNOWN";
-      const resource = event.resource || {};
-
-      ctx?.waitUntil?.(
-        (async () => {
-          try {
-            if (!env.ORDERS) return;
-
-            if (type === "PAYMENT.CAPTURE.COMPLETED") {
-              const captureId = resource.id || null;
-              const captureStatus = resource.status || "COMPLETED";
-              const orderId = extractOrderIdFromWebhook(event);
-              const customId = extractCustomIdFromWebhook(event);
-
-              if (orderId) {
-                const existing = (await kvGet(env, `order:${orderId}`)) || {};
-                const updated = {
-                  ...existing,
-                  orderId,
-                  updatedAt: nowIso(),
-                  webhook: {
-                    lastEventId: eventId,
-                    lastEventType: type,
-                    lastEventTime: event.create_time || nowIso(),
-                  },
-                  captureId: existing.captureId || captureId,
-                  captureStatus: existing.captureStatus || captureStatus,
-                  status: "COMPLETED",
-                };
-
-                await kvPut(env, `order:${orderId}`, updated);
-                if (customId) await kvPut(env, `internal:${customId}`, updated);
-
-                // Auto-fulfill in Printful if not yet created
-                if (!updated.printfulOrderId) {
-                  try {
-                    const pf = await createPrintfulOrderFromRecord(env, updated);
-                    const printfulOrderId = pf?.result?.id || null;
-                    const printfulStatus = pf?.result?.status || null;
-
-                    const merged = {
-                      ...updated,
-                      printfulOrderId,
-                      printful: {
-                        createdAt: nowIso(),
-                        orderId: printfulOrderId,
-                        status: printfulStatus,
-                        confirm: String(env.PRINTFUL_AUTO_CONFIRM || "").toLowerCase() === "true",
-                      },
-                      printfulError: null,
-                    };
-
-                    await kvPut(env, `order:${orderId}`, merged);
-                    if (customId) await kvPut(env, `internal:${customId}`, merged);
-                  } catch (e) {
-                    const msg = String(e.message || e);
-                    console.log("Printful create order error:", msg);
-
-                    const merged = { ...updated, printfulOrderId: null, printful: null, printfulError: msg };
-                    await kvPut(env, `order:${orderId}`, merged);
-                    if (customId) await kvPut(env, `internal:${customId}`, merged);
-                  }
-                }
-              }
-
-              if (captureId) {
-                await kvPut(env, `pp:capture:${captureId}`, {
-                  eventId,
-                  type,
-                  captureId,
-                  captureStatus,
-                  orderId: orderId || null,
-                  customId: customId || null,
-                  receivedAt: nowIso(),
-                  raw: event,
-                });
-              }
-            } else {
-              await kvPut(env, `pp:eventlog:${eventId}`, {
-                eventId,
-                type,
-                receivedAt: nowIso(),
-                raw: event,
-              });
-            }
-          } catch (e) {
-            console.log("Webhook processing error:", String(e.message || e));
-          }
-        })()
-      );
-
+      // Only acknowledge a completed operation. Failures return a non-2xx
+      // response so PayPal's delivery retry can resume the same operation.
+      await env.ORDERS.put(eventKey, "1", { expirationTtl: 60 * 60 * 24 * 14 });
       return new Response("OK", { status: 200 });
     }
 
@@ -751,33 +762,24 @@ export default {
       return json({ ok: true, service: "mutts-paypal", storeApi: true, time: nowIso() }, 200, origin);
     }
 
-    if (request.method === "GET" && url.pathname === "/api/store/stores") {
-      try {
-        const data = await printfulRequest(env, "/stores", "GET");
-        return json(data, 200, origin);
-      } catch (e) {
-        return json({ ok: false, error: String(e.message || e) }, 500, origin);
-      }
-    }
-
     if (request.method === "GET" && url.pathname === "/api/store/products") {
       try {
         const data = await printfulRequest(env, "/store/products", "GET");
         return json(data, 200, origin);
       } catch (e) {
-        return json({ ok: false, error: String(e.message || e) }, 500, origin);
+        return requestError(e, origin);
       }
     }
 
     if (request.method === "GET" && url.pathname.startsWith("/api/store/products/")) {
       try {
         const id = url.pathname.split("/").pop();
-        if (!id) return json({ ok: false, error: "Missing product id" }, 400, origin);
+        if (!/^\d{1,20}$/.test(id || "")) return json({ ok: false, error: "Invalid product id" }, 400, origin);
 
         const data = await printfulRequest(env, `/store/products/${id}`, "GET");
         return json(data, 200, origin);
       } catch (e) {
-        return json({ ok: false, error: String(e.message || e) }, 500, origin);
+        return requestError(e, origin);
       }
     }
 
@@ -793,7 +795,7 @@ export default {
       if (!auth.ok) return json({ ok: false, error: auth.error }, auth.status, origin);
 
       try {
-        const body = await request.json().catch(() => ({}));
+        const body = await readJsonBody(request);
         const currency = (body.currency || "USD").toString();
 
         const items = await resolveRetailItems(env, body);
@@ -840,7 +842,7 @@ export default {
 
         return json({ ok: true, totals, printfulEstimate: pfTotals }, 200, origin);
       } catch (err) {
-        return json({ ok: false, error: String(err.message || err) }, 500, origin);
+        return requestError(err, origin);
       }
     }
 
@@ -856,7 +858,8 @@ export default {
       if (!auth.ok) return json({ ok: false, error: auth.error }, auth.status, origin);
 
       try {
-        const body = await request.json().catch(() => ({}));
+        const body = await readJsonBody(request);
+        await verifyCheckout(request, env, body.turnstileToken);
         const currency = (body.currency || "USD").toString();
 
         const items = await resolveRetailItems(env, body);
@@ -913,7 +916,7 @@ export default {
 
         const accessToken = await getAccessToken(env);
 
-        const orderRes = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
+        const orderRes = await fetchUpstream(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
           method: "POST",
           headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -979,7 +982,7 @@ export default {
           origin
         );
       } catch (err) {
-        return json({ ok: false, error: String(err.message || err) }, 500, origin);
+        return requestError(err, origin);
       }
     }
 
@@ -990,97 +993,18 @@ export default {
     // - No Authorization header required
     // - Requires matching successToken stored in KV
     // =======================================================
-    if (request.method === "POST" && url.pathname === "/paypal/success-capture") {
+    if (request.method === "POST" && ["/paypal/capture", "/paypal/success-capture"].includes(url.pathname)) {
       const guard = guardBrowserRequest(request, origin);
       if (!guard.ok) return json({ ok: false, error: guard.error }, guard.status, origin);
 
-      try {
-        const body = await request.json().catch(() => ({}));
-        const orderId = String(body.orderId || "").trim();
-        const token = String(body.token || "").trim();
-
-        if (!orderId) return json({ ok: false, error: "Missing orderId" }, 400, origin);
-        if (!token) return json({ ok: false, error: "Missing token" }, 400, origin);
-
-        const existing = await kvGet(env, `order:${orderId}`);
-        if (!existing) return json({ ok: false, error: "Unknown orderId" }, 404, origin);
-
-        if (!existing.successToken || existing.successToken !== token) {
-          return json({ ok: false, error: "Invalid success token" }, 401, origin);
-        }
-
-        if (existing.status === "COMPLETED") return json({ ok: true, record: publicRecord(existing) }, 200, origin);
-        // Perform capture
-        const accessToken = await getAccessToken(env);
-
-        const captureRes = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${orderId}/capture`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", "PayPal-Request-Id": `capture-${orderId}` },
-        });
-
-        const text = await captureRes.text();
-        if (!captureRes.ok) throw new Error(`Capture error (${captureRes.status})`);
-
-        const capture = JSON.parse(text);
-        const pu = capture.purchase_units?.[0];
-        const capObj = pu?.payments?.captures?.[0];
-
-        const payer = {
-          email: capture?.payer?.email_address || capture?.payment_source?.paypal?.email_address || null,
-          name: capture?.payer?.name
-            ? `${capture.payer.name.given_name || ""} ${capture.payer.name.surname || ""}`.trim()
-            : null,
-          payerId: capture?.payer?.payer_id || capture?.payment_source?.paypal?.account_id || null,
-        };
-
-        const paypalShipping = {
-          name: pu?.shipping?.name?.full_name || null,
-          address: pu?.shipping?.address || null,
-        };
-
-        const record = {
-          ...existing,
-          orderId,
-          updatedAt: nowIso(),
-          status: capObj?.status === "COMPLETED" ? "COMPLETED" : (capObj?.status || capture.status || "UNKNOWN"),
-          payer,
-          shipping: existing.shipping?.address ? existing.shipping : paypalShipping,
-          paypalShipping,
-          captureId: capObj?.id || null,
-          captureStatus: capObj?.status || null,
-          currency: capObj?.amount?.currency_code || existing.currency || null,
-          totals: { ...(existing.totals || {}), paidTotal: capObj?.amount?.value || existing?.totals?.total || null },
-        };
-
-        await kvPut(env, `order:${orderId}`, record, 60 * 60 * 24 * 14);
-        if (record?.internalId) await kvPut(env, `internal:${record.internalId}`, record, 60 * 60 * 24 * 14);
-
-        return json({ ok: true, status: record.status, record: publicRecord(record) }, 200, origin);
-      } catch (err) {
-        return json({ ok: false, error: String(err.message || err) }, 500, origin);
-      }
-    }
-
-    // =======================================================
-    // CAPTURE ORDER (BROWSER)
-    // POST /paypal/capture
-    //
-    // Accepts either:
-    //  A) Authorization: Bearer <cartToken> or X-API-KEY
-    //  B) Success-token body { orderId, token } (for success page redirect)
-    // =======================================================
-    if (request.method === "POST" && url.pathname === "/paypal/capture") {
-      const guard = guardBrowserRequest(request, origin);
-      if (!guard.ok) return json({ ok: false, error: guard.error }, guard.status, origin);
-
-      const body = await request.json().catch(() => ({}));
+      const body = await readJsonBody(request);
       const orderId = String(body.orderId || "").trim();
       const successToken = String(body.token || "").trim();
 
-      if (!orderId) return json({ ok: false, error: "Missing orderId" }, 400, origin);
+      if (!/^[A-Z0-9-]{5,32}$/.test(orderId)) return json({ ok: false, error: "Invalid orderId" }, 400, origin);
 
       const existing = await kvGet(env, `order:${orderId}`);
-      if (!existing || !successToken || existing.successToken !== successToken) {
+      if (!existing || !await secretEquals(existing.successToken, successToken)) {
         return json({ ok: false, error: "Unauthorized" }, 401, origin);
       }
       if (existing.status === "COMPLETED") return json({ ok: true, record: publicRecord(existing) }, 200, origin);
@@ -1088,7 +1012,7 @@ export default {
       try {
         const accessToken = await getAccessToken(env);
 
-        const captureRes = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders/${orderId}/capture`, {
+        const captureRes = await fetchUpstream(`${PAYPAL_API_BASE}/v2/checkout/orders/${encodeURIComponent(orderId)}/capture`, {
           method: "POST",
           headers: { Authorization: `Bearer ${accessToken}`, "Content-Type": "application/json", "PayPal-Request-Id": `capture-${orderId}` },
         });
@@ -1134,12 +1058,13 @@ export default {
 
         return json({ ok: true, status: record.status, record: publicRecord(record) }, 200, origin);
       } catch (err) {
-        return json({ ok: false, error: String(err.message || err) }, 500, origin);
+        return requestError(err, origin);
       }
     }
 
     // ---------- 404 ----------
     return json({ ok: false, error: "Not Found" }, 404, origin);
+    } catch (error) { return requestError(error, origin); }
   },
 };
 

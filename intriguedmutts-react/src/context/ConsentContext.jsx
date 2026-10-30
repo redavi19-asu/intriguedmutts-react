@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   getDefaultConsent,
   getStoredConsent,
@@ -6,7 +6,7 @@ import {
   saveConsent,
 } from "../lib/consent";
 
-const ConsentContext = createContext(null);
+import { ConsentContext } from "./consentState";
 
 export function ConsentProvider({ children }) {
   const initialConsent = getStoredConsent() || getDefaultConsent();
@@ -91,12 +91,4 @@ export function ConsentProvider({ children }) {
   );
 
   return <ConsentContext.Provider value={value}>{children}</ConsentContext.Provider>;
-}
-
-export function useConsent() {
-  const context = useContext(ConsentContext);
-  if (!context) {
-    throw new Error("useConsent must be used inside ConsentProvider");
-  }
-  return context;
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useConsent } from "../context/ConsentContext";
+import { useConsent } from "../context/useConsent";
 
 function ToggleRow({ id, label, description, checked, onChange, disabled = false }) {
   return (
@@ -33,25 +33,18 @@ export default function PreferencesModal() {
     savePreferences,
   } = useConsent();
 
+  return isPreferencesOpen ? <PreferencesForm consent={consent} closePreferences={closePreferences} savePreferences={savePreferences} /> : null;
+}
+
+function PreferencesForm({ consent, closePreferences, savePreferences }) {
   const [draft, setDraft] = useState({
     necessary: true,
-    analytics: false,
-    marketing: false,
-    preferences: false,
+    analytics: Boolean(consent.analytics),
+    marketing: Boolean(consent.marketing),
+    preferences: Boolean(consent.preferences),
   });
 
   useEffect(() => {
-    setDraft({
-      necessary: true,
-      analytics: Boolean(consent.analytics),
-      marketing: Boolean(consent.marketing),
-      preferences: Boolean(consent.preferences),
-    });
-  }, [consent, isPreferencesOpen]);
-
-  useEffect(() => {
-    if (!isPreferencesOpen) return undefined;
-
     const handleEscape = (event) => {
       if (event.key === "Escape") closePreferences();
     };
@@ -64,9 +57,7 @@ export default function PreferencesModal() {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleEscape);
     };
-  }, [isPreferencesOpen, closePreferences]);
-
-  if (!isPreferencesOpen) return null;
+  }, [closePreferences]);
 
   const handleSave = () => {
     savePreferences(draft);

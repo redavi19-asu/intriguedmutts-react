@@ -91,6 +91,7 @@ export default function Merch() {
             <div id="paypalTotalNote"></div>
 
             <button id="editShippingFromCartBtn">Edit shipping</button>
+            <div id="checkoutVerification" hidden />
             <button id="checkoutBtn">Checkout (PayPal)</button>
           </div>
         </div>
