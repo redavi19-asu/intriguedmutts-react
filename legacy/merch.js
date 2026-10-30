@@ -198,6 +198,7 @@ function forceCartNodesIntoDrawer() {
     "cartTax",
     "cartTotal",
     "paypalTotalNote",
+    "checkoutVerification",
     "checkoutBtn"
   ];
 
@@ -426,6 +427,7 @@ function openCart() {
   forceCartNodesIntoDrawer();   // ✅ ensures totals are inside drawer every time
   renderCart();
   cartBack.style.display = "flex";
+  if (getCart().length) void getCheckoutVerification().catch(() => {});
 }
 
 function closeCart() {
@@ -462,9 +464,9 @@ function renderCart() {
         <div class="cartMeta">Unit: ${money(it.unitPrice)}</div>
 
         <div class="cartQtyRow">
-          <button class="qtyBtn" data-act="dec">−</button>
+          <button class="qtyBtn" data-act="dec" aria-label="Decrease quantity">−</button>
           <div class="qtyNum">${it.qty}</div>
-          <button class="qtyBtn" data-act="inc">+</button>
+          <button class="qtyBtn" data-act="inc" aria-label="Increase quantity">+</button>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
@@ -699,10 +701,67 @@ async function estimateCartTotals() {
   }
 }
 
+let checkoutWidgetId = null;
+let checkoutVerificationPromise = null;
+let turnstileLoading = null;
+function loadTurnstile() {
+  if (window.turnstile) return Promise.resolve();
+  if (turnstileLoading) return turnstileLoading;
+  turnstileLoading = new Promise((resolve, reject) => {
+    const existing = document.getElementById("checkout-turnstile-script");
+    const script = existing || document.createElement("script");
+    script.id = "checkout-turnstile-script";
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    script.async = true;
+    script.onload = () => resolve();
+    script.onerror = () => { script.remove(); turnstileLoading = null; reject(new Error("Security check could not load. Please try again.")); };
+    if (!existing) document.head.appendChild(script);
+  });
+  return turnstileLoading;
+}
+let rejectCheckoutVerification;
+function getCheckoutVerification() {
+  if (checkoutVerificationPromise) return checkoutVerificationPromise;
+  checkoutVerificationPromise = (async () => {
+    await loadTurnstile();
+    if (disposed) throw new Error("Checkout closed");
+    const container = document.getElementById("checkoutVerification");
+    container.hidden = false;
+    container.style.display = "flex";
+    container.style.justifyContent = "center";
+    container.style.padding = "12px 0";
+    container.setAttribute("aria-label", "Checkout security check");
+    if (checkoutWidgetId !== null) window.turnstile.remove(checkoutWidgetId);
+    return new Promise((resolve, reject) => {
+      rejectCheckoutVerification = reject;
+      checkoutWidgetId = window.turnstile.render(container, {
+        sitekey: "0x4AAAAAAFtVZmrI_V2SwzSP", action: "checkout", theme: "dark", size: "flexible",
+        callback: token => { rejectCheckoutVerification = null; resolve(token); },
+        "error-callback": () => { rejectCheckoutVerification = null; checkoutVerificationPromise = null; reject(new Error("Security check failed. Please try again.")); },
+        "expired-callback": () => { rejectCheckoutVerification = null; checkoutVerificationPromise = null; reject(new Error("Security check expired. Please try again.")); },
+        "timeout-callback": () => { rejectCheckoutVerification = null; checkoutVerificationPromise = null; reject(new Error("Security check timed out. Please try again.")); },
+      });
+    });
+  })();
+  return checkoutVerificationPromise;
+}
+function resetCheckoutVerification() {
+  checkoutVerificationPromise = null;
+  if (checkoutWidgetId !== null && window.turnstile) {
+    window.turnstile.remove(checkoutWidgetId);
+    checkoutWidgetId = null;
+  }
+  const container = document.getElementById("checkoutVerification");
+  if (container) { container.hidden = true; container.style.display = "none"; }
+}
+
 let checkoutPending = false;
 // Only one order request may run at a time.
 async function checkoutCartWithPayPal() {
   if (checkoutPending) return;
+  checkoutPending = true;
+  checkoutBtn.disabled = true;
+  try {
   const cart = getCart();
   if (!cart.length) return;
 
@@ -730,13 +789,14 @@ async function checkoutCartWithPayPal() {
     return; // ✅ stops checkout before calling backend
   }
 
-  checkoutPending = true;
-  checkoutBtn.disabled = true;
   checkoutBtn.textContent = "Creating PayPal order...";
 
-  // ✅ only runs if shipping is valid
-  try {
+  // Only continue after shipping validation.
+    checkoutBtn.textContent = "Checking checkout security...";
+    const turnstileToken = await getCheckoutVerification();
+    checkoutBtn.textContent = "Creating PayPal order...";
     const ord = await apiPost("/paypal/order", {
+      turnstileToken,
       currency: "USD",
       shipping,
       items: cart.map(it => ({
@@ -778,8 +838,9 @@ async function checkoutCartWithPayPal() {
       alert("Checkout failed: " + err.message);
     }
   } finally {
+    resetCheckoutVerification();
     checkoutPending = false;
-    checkoutBtn.disabled = false;
+    checkoutBtn.disabled = !getCart().length;
     checkoutBtn.textContent = "Checkout (PayPal)";
   }
 }
@@ -1216,6 +1277,8 @@ return () => {
   disposed = true;
   estimateVersion++;
   lifecycle.abort();
+  rejectCheckoutVerification?.(new Error("Checkout closed"));
+  resetCheckoutVerification();
   cartBtn?.remove();
   unlockScroll();
   document.body.classList.remove("shipping-open", "modal-open");
