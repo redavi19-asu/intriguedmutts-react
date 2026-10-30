@@ -516,3 +516,24 @@
     transition: none !important;
   }
 }
+
+/* QC: restore visible keyboard focus despite the legacy global outline reset. */
+#merchLegacy button:focus-visible,
+#merchLegacy a:focus-visible,
+#merchLegacy input:focus-visible,
+#merchLegacy select:focus-visible,
+#merchLegacy textarea:focus-visible,
+#merchLegacy [tabindex]:focus-visible {
+  outline: 3px solid #7bd8ff !important;
+  outline-offset: 3px !important;
+}
+
+/* QC: respect small-screen safe areas around the cart actions. */
+@media (max-width: 620px) {
+  #merchLegacy #cartItems {
+    padding-bottom: max(24px, env(safe-area-inset-bottom)) !important;
+  }
+  #merchLegacy #cartFooter {
+    flex-shrink: 0 !important;
+  }
+}
