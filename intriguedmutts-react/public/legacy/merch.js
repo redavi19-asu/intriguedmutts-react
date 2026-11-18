@@ -131,7 +131,7 @@ function lockScroll() {
       checkout.style.fontSize = "19px";
       checkout.style.fontWeight = "900";
       checkout.style.borderRadius = "999px";
-      checkout.style.cursor = "pointer";
+      checkout.style.cursor = "not-allowed";
     }
 
     // 4) Add labels beside numbers (Subtotal / Shipping / Tax / Total)
@@ -370,6 +370,8 @@ const cartTaxEl = document.getElementById("cartTax");
 const cartTotalEl = document.getElementById("cartTotal");
 const paypalTotalNote = document.getElementById("paypalTotalNote");
 const checkoutBtn = document.getElementById("checkoutBtn");
+// Temporary storefront payment hold; Worker independently blocks new PayPal orders.
+const CHECKOUT_PAUSED = true;
 const editShippingFromCartBtn = document.getElementById("editShippingFromCartBtn");
 const shipStatusPill = document.getElementById("shipStatusPill");
 
@@ -577,7 +579,9 @@ function renderCart() {
 
   const subtotal = calcSubtotal(cart);
   cartSubtotalEl.textContent = money(subtotal);
-  checkoutBtn.disabled = false;
+  checkoutBtn.disabled = CHECKOUT_PAUSED;
+  checkoutBtn.textContent = CHECKOUT_PAUSED ? "Checkout Temporarily Unavailable" : "Checkout (PayPal)";
+  checkoutBtn.style.cursor = CHECKOUT_PAUSED ? "not-allowed" : "pointer";
 
   estimateCartTotals();
 }
@@ -792,6 +796,7 @@ async function estimateCartTotals() {
 
 // Patch: use sanitized shipping for worker
 async function checkoutCartWithPayPal() {
+  if (CHECKOUT_PAUSED) return;
   const cart = getCart();
   if (!cart.length) return;
 
@@ -862,8 +867,8 @@ async function checkoutCartWithPayPal() {
       alert("Checkout failed: " + err.message);
     }
   } finally {
-    checkoutBtn.disabled = false;
-    checkoutBtn.textContent = "Checkout (PayPal)";
+    checkoutBtn.disabled = CHECKOUT_PAUSED;
+    checkoutBtn.textContent = CHECKOUT_PAUSED ? "Checkout Temporarily Unavailable" : "Checkout (PayPal)";
   }
 }
 
