@@ -125,7 +125,7 @@ export default function Merch() {
             <div id="paypalTotalNote"></div>
 
             <button id="editShippingFromCartBtn">Edit shipping</button>
-            <button id="checkoutBtn">Checkout (PayPal)</button>
+            <button id="checkoutBtn" type="button" disabled aria-disabled="true" title="Checkout is temporarily unavailable">Checkout Temporarily Unavailable</button>
           </div>
         </div>
 
